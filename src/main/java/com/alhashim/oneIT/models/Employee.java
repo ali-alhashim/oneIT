@@ -47,6 +47,8 @@ public class Employee {
 
     private String password;
 
+    private String officeLocation;
+
 //-------- the Relationship filed-----------
 
     @ManyToOne
@@ -205,5 +207,13 @@ public class Employee {
 
     public void setTasks(Set<EmployeeTask> tasks) {
         this.tasks = tasks;
+    }
+
+    public String getOfficeLocation() {
+        return officeLocation;
+    }
+
+    public void setOfficeLocation(String officeLocation) {
+        this.officeLocation = officeLocation;
     }
 }
