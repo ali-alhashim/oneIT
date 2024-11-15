@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Configuration
@@ -53,7 +54,8 @@ public class AdminUserInitializer {
                 // Set additional admin properties if needed
                 admin.setName("Admin User");
                 admin.setRoles(Set.of(superAdminRole));
-
+                admin.setCreatedAt(LocalDateTime.now());
+                admin.setPersonalMobile("966547078933");
                 employeeRepository.save(admin);
                 System.out.println("Admin user created with badge number: " + badgeNumber);
             } else {

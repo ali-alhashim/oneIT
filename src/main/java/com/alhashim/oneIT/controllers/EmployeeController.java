@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -18,6 +19,8 @@ public class EmployeeController {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+
     @GetMapping("/list")
     public String employeeList(Model model)
     {
@@ -27,4 +30,20 @@ public class EmployeeController {
 
         return "employee/list";
     }
+
+    @GetMapping("/add")
+    public String addEmployeePage(Model model)
+    {
+        return "employee/add";
+    }
+
+    @GetMapping("/detail")
+    public  String detailPage(Model model, @RequestParam String badgeNumber)
+    {
+        Employee employee = employeeRepository.findByBadgeNumber(badgeNumber).orElse(null);
+
+        return "employee/detail";
+    }
+
+
 }

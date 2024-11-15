@@ -49,6 +49,8 @@ public class Employee {
 
     private String officeLocation;
 
+    private String gender;
+
 //-------- the Relationship filed-----------
 
     @ManyToOne
@@ -215,5 +217,13 @@ public class Employee {
 
     public void setOfficeLocation(String officeLocation) {
         this.officeLocation = officeLocation;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 }

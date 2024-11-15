@@ -30,6 +30,7 @@ public class MainController {
             model.addAttribute("userName", employee.getName());
             model.addAttribute("userArName", employee.getAr_name());
             model.addAttribute("imageFileName", employee.getImageFileName());
+            model.addAttribute("workEmail", employee.getWorkEmail());
             return "dashboard";
 
 
