@@ -31,6 +31,7 @@ public class MainController {
             model.addAttribute("userArName", employee.getAr_name());
             model.addAttribute("imageFileName", employee.getImageFileName());
             model.addAttribute("workEmail", employee.getWorkEmail());
+            model.addAttribute("workMobile",employee.getWorkMobile());
             return "dashboard";
 
 
