@@ -43,6 +43,7 @@ public class Employee {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+
     private Date birthDate;
 
     private String password;

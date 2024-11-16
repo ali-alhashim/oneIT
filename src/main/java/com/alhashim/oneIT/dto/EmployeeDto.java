@@ -1,6 +1,7 @@
 package com.alhashim.oneIT.dto;
 
 import jakarta.validation.constraints.NotEmpty;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
@@ -20,8 +21,10 @@ public class EmployeeDto {
 
     private String officeLocation;
 
+
     private MultipartFile imageFile;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date birthDate;
 
     private String gender;

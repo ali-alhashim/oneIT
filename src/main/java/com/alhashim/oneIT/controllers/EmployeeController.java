@@ -3,7 +3,9 @@ package com.alhashim.oneIT.controllers;
 
 import com.alhashim.oneIT.dto.EmployeeDto;
 import com.alhashim.oneIT.models.Employee;
+import com.alhashim.oneIT.models.Role;
 import com.alhashim.oneIT.repositories.EmployeeRepository;
+import com.alhashim.oneIT.repositories.RoleRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -11,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,7 +24,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/employee")
@@ -32,6 +37,9 @@ public class EmployeeController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    RoleRepository roleRepository;
 
 
     @GetMapping("/list")
@@ -92,6 +100,9 @@ public class EmployeeController {
            {
                System.out.println("saving image file exception "+ e.getMessage() );
 
+               result.addError(new FieldError("employeeDto", "imageFile", e.getMessage()));
+               return "employee/add";
+
            }
 
 
@@ -105,13 +116,48 @@ public class EmployeeController {
            employee.setPersonalMobile(employeeDto.getPersonalMobile());
            employee.setAr_name(employeeDto.getAr_name());
            employee.setPassword(passwordEncoder.encode(employeeDto.getPassword()));
+
            employee.setBirthDate(employeeDto.getBirthDate());
+
            employee.setGender(employeeDto.getGender());
            employee.setImageFileName(storageFileName);
            employee.setOfficeLocation(employeeDto.getOfficeLocation());
            employee.setStatus(employeeDto.getStatus());
            employee.setWorkMobile(employeeDto.getWorkMobile());
            employee.setWorkEmail(employeeDto.getWorkEmail());
+
+            Set<Role> roles = new HashSet<>();
+
+           if(employeeDto.isIs_MANAGER())
+           {
+               Role role = roleRepository.findByRoleName("MANAGER").orElse(null);
+               roles.add(role);
+               employee.setRoles(roles);
+           }
+
+
+            if(employeeDto.isIs_USER())
+            {
+                Role role = roleRepository.findByRoleName("USER").orElse(null);
+
+                roles.add(role);
+
+                employee.setRoles(roles);
+            }
+
+            if(employeeDto.isIs_SUPERADMIN())
+            {
+                Role role = roleRepository.findByRoleName("SUPERADMIN").orElse(null);
+                roles.add(role);
+                employee.setRoles(roles);
+            }
+
+            if(employeeDto.isIs_SUPPORT())
+            {
+                Role role = roleRepository.findByRoleName("SUPPORT").orElse(null);
+                roles.add(role);
+                employee.setRoles(roles);
+            }
 
 
            try
@@ -121,6 +167,8 @@ public class EmployeeController {
            catch (Exception e)
            {
                System.out.println(e.getMessage());
+
+               return "employee/add";
            }
 
 

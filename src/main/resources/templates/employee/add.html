@@ -27,6 +27,8 @@
           <div class="form-floating my-1">
               <input type="text" class="form-control" id="name"  name="name" required th:field="${employeeDto.name}">
               <label for="name">Name</label>
+              <p th:if="${#fields.hasErrors('name')}" th:errorclass="text-danger" th:errors="${employeeDto.name}"></p>
+
           </div>
 
           <div class="form-floating my-1">
@@ -63,6 +65,7 @@
           <div class="mb-3">
               <label for="formFile" class="form-label">Photo</label>
               <input class="form-control" type="file" id="formFile" name="imageFileName" th:field="${employeeDto.imageFile}">
+              <p th:if="${#fields.hasErrors('imageFile')}" th:errorclass="text-danger" th:errors="${employeeDto.imageFile}"></p>
           </div>
 
 
@@ -74,6 +77,7 @@
           <div class="form-floating my-1">
               <input type="date" class="form-control" id="birthDate"  name="birthDate" th:field="${employeeDto.birthDate}">
               <label for="birthDate">Birth Date</label>
+              <p th:if="${#fields.hasErrors('birthDate')}" th:errorclass="text-danger" th:errors="${employeeDto.birthDate}"></p>
           </div>
 
           <div class="form-floating my-1">
@@ -100,25 +104,26 @@
           <div class="form-floating my-1">
               <input type="password" class="form-control" id="password"  name="password" required th:field="${employeeDto.password}">
               <label for="password">Password</label>
+              <p th:if="${#fields.hasErrors('password')}" th:errorclass="text-danger" th:errors="${employeeDto.password}"></p>
           </div>
 
           <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" role="switch" id="userSwitchCheckDefault" value="USER" th:field="${employeeDto.is_USER}">
+              <input class="form-check-input" type="checkbox" role="switch" id="userSwitchCheckDefault" name="is_USER" value="true" th:field="${employeeDto.is_USER}">
               <label class="form-check-label" for="userSwitchCheckDefault">USER</label>
           </div>
 
           <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" role="switch" id="managerSwitchCheckDefault" value="MANAGER" th:field="${employeeDto.is_MANAGER}">
+              <input class="form-check-input" type="checkbox" role="switch" id="managerSwitchCheckDefault" name="is_MANAGER" value="true" th:field="${employeeDto.is_MANAGER}">
               <label class="form-check-label" for="managerSwitchCheckDefault">MANAGER</label>
           </div>
 
           <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" role="switch" id="supportSwitchCheckDefault" value="SUPPORT" th:field="${employeeDto.is_SUPPORT}">
+              <input class="form-check-input" type="checkbox" role="switch" id="supportSwitchCheckDefault" name="is_SUPPORT" value="true" th:field="${employeeDto.is_SUPPORT}">
               <label class="form-check-label" for="supportSwitchCheckDefault">SUPPORT</label>
           </div>
 
           <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" role="switch" id="adminSwitchCheckDefault" value="SUPERADMIN" th:field="${employeeDto.is_SUPERADMIN}">
+              <input class="form-check-input" type="checkbox" role="switch" id="adminSwitchCheckDefault" name="is_SUPERADMIN" value="true" th:field="${employeeDto.is_SUPERADMIN}">
               <label class="form-check-label" for="adminSwitchCheckDefault">SUPERADMIN</label>
           </div>
 
