@@ -70,8 +70,23 @@ public class EmployeeController {
 
         if(employeeDto.getBadgeNumber().isEmpty())
         {
-            //generate auto badgeNumber
-            //get last employee badge number like A0000 + 1 the new = A0001
+                //generate auto badgeNumber
+                //get last employee badge number like A0000 + 1 the new = A0001
+               String theLastBadgeNumber = employeeRepository.findLastBadgeNumber();
+                if (theLastBadgeNumber != null && !theLastBadgeNumber.isEmpty()) {
+                    int numericPart = Integer.parseInt(theLastBadgeNumber.substring(1));
+                    numericPart++;
+                    theNextBadgeNumber = "A" + String.format("%04d", numericPart);
+                }
+                else
+                {
+                    theNextBadgeNumber = "A00001";
+                }
+
+        }
+        else
+        {
+            theNextBadgeNumber = employeeDto.getBadgeNumber();
         }
 
 

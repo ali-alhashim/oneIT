@@ -10,4 +10,7 @@ public interface  EmployeeRepository  extends JpaRepository<Employee, Long> {
 
     @Query("SELECT e FROM Employee e JOIN FETCH e.roles WHERE e.badgeNumber = :badgeNumber")
      Optional<Employee>  findByBadgeNumber(String badgeNumber);
+
+    @Query("SELECT e.badgeNumber FROM Employee e ORDER BY e.badgeNumber DESC LIMIT 1")
+    String findLastBadgeNumber();
 }

@@ -22,6 +22,7 @@
               <input type="text" class="form-control" id="badgeNumber"  name="badgeNumber" th:field="${employeeDto.badgeNumber}">
               <label for="badgeNumber">Badge Number</label>
               <p>if you leave it empty system will auto generate a sequence from A0001 +   </p>
+              <p th:if="${#fields.hasErrors('badgeNumber')}" th:errorclass="text-danger" th:errors="${employeeDto.badgeNumber}"></p>
           </div>
 
           <div class="form-floating my-1">
@@ -39,17 +40,20 @@
           <div class="form-floating my-1">
               <input type="email" class="form-control" id="workEmail"  name="workEmail" th:field="${employeeDto.workEmail}">
               <label for="workEmail">Work Email</label>
+              <p th:if="${#fields.hasErrors('workEmail')}" th:errorclass="text-danger" th:errors="${employeeDto.workEmail}"></p>
           </div>
 
           <div class="form-floating my-1">
               <input type="email" class="form-control" id="personalEmail"  name="personalEmail" th:field="${employeeDto.personalEmail}">
               <label for="personalEmail">Personal Email</label>
+              <p th:if="${#fields.hasErrors('personalEmail')}" th:errorclass="text-danger" th:errors="${employeeDto.personalEmail}"></p>
           </div>
 
 
           <div class="form-floating my-1">
               <input type="text" class="form-control" id="workMobile"  name="workMobile" th:field="${employeeDto.workMobile}">
               <label for="workMobile">Work Mobile</label>
+              <p th:if="${#fields.hasErrors('workMobile')}" th:errorclass="text-danger" th:errors="${employeeDto.workMobile}"></p>
           </div>
 
           <div class="form-floating my-1">

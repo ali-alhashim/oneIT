@@ -24,16 +24,16 @@ public class Employee {
 
     private String ar_name;
 
-    @Column(unique = true)
+
     private String workEmail;
 
-    @Column(unique = true)
+
     private String personalEmail;
 
-    @Column(unique = true)
+
     private String workMobile;
 
-    @Column(unique = true)
+
     private String personalMobile;
 
     private String imageFileName;

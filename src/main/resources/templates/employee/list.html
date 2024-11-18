@@ -41,10 +41,11 @@
     <table class="table border">
         <thead>
         <th>#</th>
-        <th>Badge Number</th>
+        <th>Photo</th>
+        <th style="white-space: nowrap;">Badge Number</th>
         <th>Name</th>
         <th>Department</th>
-        <th>Work Mobile</th>
+        <th style="white-space: nowrap;">Work Mobile</th>
         <th>Email</th>
         <th>Created At</th>
         </thead>
@@ -55,9 +56,14 @@
                 <input type="checkbox" name="badgeNumber" th:value="${employee.badgeNumber}"/>
             </td>
             <td>
+                <img th:src="@{'/images/'+${employee.badgeNumber}+'/'+${employee.imageFileName}}" alt="..." width="100"/>
+            </td>
+            <td>
                 <a class="btn btn-info" th:text="${employee.badgeNumber}" th:href="@{/employee/detail(badgeNumber=${employee.badgeNumber})}"></a>
             </td>
-            <td th:text="${employee.name + ' - ' + employee.ar_name}"></td>
+            <td>
+                <p th:text="${employee.name}"></p><br/><p th:text="${employee.ar_name}"></p>
+            </td>
             <td th:text="${employee.department}"></td>
             <td th:text="${employee.workMobile}"></td>
             <td th:text="${employee.workEmail}"></td>
