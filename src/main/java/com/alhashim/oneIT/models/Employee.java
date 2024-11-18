@@ -69,11 +69,11 @@ public class Employee {
 
     @ManyToMany
     @JoinTable(
-            name = "employee_tasks",
+            name = "employee_notifications",
             joinColumns = @JoinColumn(name = "employee_id"),
-            inverseJoinColumns = @JoinColumn(name = "task_id")
+            inverseJoinColumns = @JoinColumn(name = "notification_id")
     )
-    private Set<EmployeeTask> tasks = new HashSet<>();
+    private Set<Notification> notifications = new HashSet<>();
 
 
     public Long getId() {
@@ -204,12 +204,12 @@ public class Employee {
         this.roles = roles;
     }
 
-    public Set<EmployeeTask> getTasks() {
-        return tasks;
+    public Set<Notification> getNotifications() {
+        return notifications;
     }
 
-    public void setTasks(Set<EmployeeTask> tasks) {
-        this.tasks = tasks;
+    public void setTasks(Set<Notification> notifications) {
+        this.notifications = notifications;
     }
 
     public String getOfficeLocation() {
