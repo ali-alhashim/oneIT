@@ -21,6 +21,8 @@ public class EmployeeDto {
 
     private String officeLocation;
 
+    private Long department;
+
 
     private MultipartFile imageFile;
 
@@ -177,5 +179,13 @@ public class EmployeeDto {
 
     public void setWorkMobile(String workMobile) {
         this.workMobile = workMobile;
+    }
+
+    public Long getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Long department) {
+        this.department = department;
     }
 }

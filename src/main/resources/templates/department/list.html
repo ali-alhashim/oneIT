@@ -1,10 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
 
+</head>
+<body class="bg-body-secondary">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container bordered my-5">
+
+    <div class="row" id="toolbar">
+        <div class="col-4">
+            <a href="/department/add" class="btn btn-success">Add</a>
+        </div>
+
+        <div class="col-4">
+            <a href="#" class="btn btn-outline-success">Import CSV</a>
+        </div>
+
+        <div class="col-4">
+            <form method="get">
+                <div class="row">
+                    <div class="col">
+                        <input type="text" name="keyword" class="form-control" placeholder="Enter Keyword..."/>
+                    </div>
+                    <div class="col">
+                        <input type="submit" class="btn btn-dark" value="Search">
+                    </div>
+
+
+                </div>
+            </form>
+        </div>
+    </div>
+    <hr/>
+    <!--Department list  -->
+    <div class="table-responsive">
+        <table class="table border">
+            <thead>
+            <td><input type="checkbox" name="all"/> </td>
+            <th>#</th>
+            <th>Name</th>
+            <th style="white-space: nowrap;">Arabic Name</th>
+            <th>Manager</th>
+            <th>Total Members</th>
+
+            </thead>
+
+            <tbody>
+            <tr th:each="employee: ${employees}">
+                <td>
+                    <input type="checkbox" name="badgeNumber" th:value="${employee.badgeNumber}"/>
+                </td>
+                <td>
+                    <img th:src="@{'/images/'+${employee.badgeNumber}+'/'+${employee.imageFileName}}" alt="..." width="100"/>
+                </td>
+                <td>
+                    <a class="btn btn-info" th:text="${employee.badgeNumber}" th:href="@{/employee/detail(badgeNumber=${employee.badgeNumber})}"></a>
+                </td>
+                <td>
+                    <p th:text="${employee.name}"></p><br/><p th:text="${employee.ar_name}"></p>
+                </td>
+                <td th:text="${employee.department}"></td>
+                <td th:text="${employee.workMobile}"></td>
+                <td th:text="${employee.workEmail}"></td>
+                <td th:text="${employee.createdAt}"></td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+    <!--/Department list -->
+
+</div>
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

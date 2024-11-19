@@ -34,6 +34,7 @@ public class MainController {
             model.addAttribute("workMobile",employee.getWorkMobile());
             model.addAttribute("personalMobile", employee.getPersonalMobile());
             model.addAttribute("roles", employee.getRoles());
+            model.addAttribute("pageTitle","Dashboard");
             return "dashboard";
 
 

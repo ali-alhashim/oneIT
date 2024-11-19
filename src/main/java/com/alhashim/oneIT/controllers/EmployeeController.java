@@ -48,7 +48,7 @@ public class EmployeeController {
 
         List<Employee> employees = employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
         model.addAttribute("employees", employees);
-
+        model.addAttribute("pageTitle","Employees List");
         return "employee/list";
     }
 
@@ -57,6 +57,7 @@ public class EmployeeController {
     {
         EmployeeDto employeeDto = new EmployeeDto();
         model.addAttribute("employeeDto",employeeDto);
+        model.addAttribute("pageTitle","Add New Employee");
         return "employee/add";
     }
 
@@ -70,18 +71,26 @@ public class EmployeeController {
 
         if(employeeDto.getBadgeNumber().isEmpty())
         {
+            System.out.println("Badge Number is Empty generate auto badgeNumber");
                 //generate auto badgeNumber
                 //get last employee badge number like A0000 + 1 the new = A0001
                String theLastBadgeNumber = employeeRepository.findLastBadgeNumber();
+
+               System.out.println("the last badge number was : "+theLastBadgeNumber);
+
                 if (theLastBadgeNumber != null && !theLastBadgeNumber.isEmpty()) {
                     int numericPart = Integer.parseInt(theLastBadgeNumber.substring(1));
                     numericPart++;
                     theNextBadgeNumber = "A" + String.format("%04d", numericPart);
+
+
                 }
                 else
                 {
                     theNextBadgeNumber = "A00001";
                 }
+
+
 
         }
         else
@@ -125,7 +134,8 @@ public class EmployeeController {
 
            Employee employee = new Employee();
 
-           employee.setBadgeNumber(employeeDto.getBadgeNumber());
+           employee.setBadgeNumber(theNextBadgeNumber);
+
            employee.setName(employeeDto.getName());
            employee.setCreatedAt(LocalDateTime.now());
            employee.setPersonalMobile(employeeDto.getPersonalMobile());
