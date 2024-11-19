@@ -2,7 +2,7 @@ package com.alhashim.oneIT.models;
 
 
 import jakarta.persistence.*;
-
+import org.springframework.data.annotation.LastModifiedDate;
 
 
 import java.time.LocalDateTime;
@@ -40,7 +40,10 @@ public class Employee {
 
     private String status;
 
+    @Column(updatable = false)
     private LocalDateTime createdAt;
+
+    @LastModifiedDate
     private LocalDateTime updatedAt;
 
 
@@ -54,7 +57,7 @@ public class Employee {
 
 //-------- the Relationship filed-----------
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "department_id")
     private Department department;
 
@@ -227,4 +230,6 @@ public class Employee {
     public void setGender(String gender) {
         this.gender = gender;
     }
+
+
 }

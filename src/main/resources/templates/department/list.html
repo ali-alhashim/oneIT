@@ -41,30 +41,26 @@
             <td><input type="checkbox" name="all"/> </td>
             <th>#</th>
             <th>Name</th>
-            <th style="white-space: nowrap;">Arabic Name</th>
             <th>Manager</th>
             <th>Total Members</th>
 
             </thead>
 
             <tbody>
-            <tr th:each="employee: ${employees}">
+            <tr th:each="department: ${departments}">
                 <td>
-                    <input type="checkbox" name="badgeNumber" th:value="${employee.badgeNumber}"/>
+                    <input type="checkbox" name="badgeNumber" th:value="${department.id}"/>
+                </td>
+
+                <td>
+                    <a class="btn btn-info" th:text="${department.id}" th:href="@{/department/detail(id=${department.id})}"></a>
                 </td>
                 <td>
-                    <img th:src="@{'/images/'+${employee.badgeNumber}+'/'+${employee.imageFileName}}" alt="..." width="100"/>
+                    <p th:text="${department.name}"></p><br/><p th:text="${department.ar_name}"></p>
                 </td>
-                <td>
-                    <a class="btn btn-info" th:text="${employee.badgeNumber}" th:href="@{/employee/detail(badgeNumber=${employee.badgeNumber})}"></a>
-                </td>
-                <td>
-                    <p th:text="${employee.name}"></p><br/><p th:text="${employee.ar_name}"></p>
-                </td>
-                <td th:text="${employee.department}"></td>
-                <td th:text="${employee.workMobile}"></td>
-                <td th:text="${employee.workEmail}"></td>
-                <td th:text="${employee.createdAt}"></td>
+                <td th:text="${department.manager.name}"></td>
+                <td th:text="${department.getTotalEmployees()}"></td>
+
             </tr>
 
             </tbody>

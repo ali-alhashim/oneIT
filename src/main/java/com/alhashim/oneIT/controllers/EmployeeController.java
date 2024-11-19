@@ -2,8 +2,10 @@ package com.alhashim.oneIT.controllers;
 
 
 import com.alhashim.oneIT.dto.EmployeeDto;
+import com.alhashim.oneIT.models.Department;
 import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.models.Role;
+import com.alhashim.oneIT.repositories.DepartmentRepository;
 import com.alhashim.oneIT.repositories.EmployeeRepository;
 import com.alhashim.oneIT.repositories.RoleRepository;
 import jakarta.validation.Valid;
@@ -41,6 +43,9 @@ public class EmployeeController {
     @Autowired
     RoleRepository roleRepository;
 
+    @Autowired
+    DepartmentRepository departmentRepository;
+
 
     @GetMapping("/list")
     public String employeeList(Model model)
@@ -56,16 +61,20 @@ public class EmployeeController {
     public String addEmployeePage(Model model)
     {
         EmployeeDto employeeDto = new EmployeeDto();
+        List<Department> departments = departmentRepository.findAll();
         model.addAttribute("employeeDto",employeeDto);
         model.addAttribute("pageTitle","Add New Employee");
+        model.addAttribute("departments",departments);
         return "employee/add";
     }
 
     @PostMapping("/add")
-    public String CreateEmployee(@Valid @ModelAttribute EmployeeDto employeeDto, BindingResult result)
+    public String CreateEmployee(@Valid @ModelAttribute EmployeeDto employeeDto, BindingResult result, Model model)
     {
         String theNextBadgeNumber ="";
         String storageFileName ="";
+        List<Department> departments = departmentRepository.findAll();
+        model.addAttribute("departments",departments);
 
 
 
@@ -150,6 +159,12 @@ public class EmployeeController {
            employee.setStatus(employeeDto.getStatus());
            employee.setWorkMobile(employeeDto.getWorkMobile());
            employee.setWorkEmail(employeeDto.getWorkEmail());
+
+           Department department = departmentRepository.findById(employeeDto.getDepartment()).orElse(null);
+           if(department !=null)
+           {
+               employee.setDepartment(department);
+           }
 
             Set<Role> roles = new HashSet<>();
 

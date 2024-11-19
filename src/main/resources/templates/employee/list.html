@@ -62,7 +62,7 @@
             <td>
                 <p th:text="${employee.name}"></p><br/><p th:text="${employee.ar_name}"></p>
             </td>
-            <td th:text="${employee.department}"></td>
+            <td th:text="${employee.department != null ? employee.department.name : 'No Department'}"></td>
             <td th:text="${employee.workMobile}"></td>
             <td th:text="${employee.workEmail}"></td>
             <td th:text="${employee.createdAt}"></td>
