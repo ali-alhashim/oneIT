@@ -7,7 +7,7 @@ public class DepartmentDto {
 
     @NotEmpty(message = "The name is required")
     private String name;
-    private String ar_name;
+    private String arName;
     private String description;
     private String manager; //his badge number
 
@@ -19,12 +19,12 @@ public class DepartmentDto {
         this.name = name;
     }
 
-    public String getAr_name() {
-        return ar_name;
+    public String getArName() {
+        return arName;
     }
 
-    public void setAr_name(String ar_name) {
-        this.ar_name = ar_name;
+    public void setArName(String arName) {
+        this.arName = arName;
     }
 
     public String getDescription() {

@@ -13,4 +13,8 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
     @Query("SELECT COUNT(e) FROM Employee e WHERE e.department.id = :departmentId")
     long countEmployeesByDepartmentId(@Param("departmentId") Long departmentId);
 
+
+    @Query("SELECT d FROM Department d LEFT JOIN FETCH d.employees WHERE d.id = :id")
+    Optional<Department> findByIdWithEmployees(@Param("id") Long id);
+
 }

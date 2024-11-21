@@ -148,7 +148,7 @@ public class EmployeeController {
            employee.setName(employeeDto.getName());
            employee.setCreatedAt(LocalDateTime.now());
            employee.setPersonalMobile(employeeDto.getPersonalMobile());
-           employee.setAr_name(employeeDto.getAr_name());
+           employee.setArName(employeeDto.getArName());
            employee.setPassword(passwordEncoder.encode(employeeDto.getPassword()));
 
            employee.setBirthDate(employeeDto.getBirthDate());

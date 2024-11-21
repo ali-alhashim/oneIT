@@ -25,14 +25,14 @@
             </div>
 
             <div class="form-floating my-1">
-                <input type="text" class="form-control" id="ar_name"  name="name" th:field="${departmentDto.ar_name}">
-                <label for="ar_name">Arabic Name</label>
+                <input type="text" class="form-control" id="arName"  name="arName" th:field="${departmentDto.arName}">
+                <label for="arName">Arabic Name</label>
 
-                <p th:if="${#fields.hasErrors('ar_name')}" th:errorclass="text-danger" th:errors="${departmentDto.ar_name}"></p>
+                <p th:if="${#fields.hasErrors('arName')}" th:errorclass="text-danger" th:errors="${departmentDto.arName}"></p>
             </div>
 
             <div class="form-floating my-1">
-                <input type="text" class="form-control" id="description"  name="name" th:field="${departmentDto.description}">
+                <input type="text" class="form-control" id="description"  name="description" th:field="${departmentDto.description}">
                 <label for="description">Description</label>
 
                 <p th:if="${#fields.hasErrors('description')}" th:errorclass="text-danger" th:errors="${departmentDto.description}"></p>
@@ -52,7 +52,7 @@
                         <option
                                 th:each="employee: ${employees}"
                                 th:value="${employee.badgeNumber}"
-                                th:text="${employee.name} +'-'+ ${employee.ar_name}">
+                                th:text="${employee.name} +'-'+ ${employee.arName}">
 
                         </option>
 

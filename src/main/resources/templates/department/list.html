@@ -56,9 +56,9 @@
                     <a class="btn btn-info" th:text="${department.id}" th:href="@{/department/detail(id=${department.id})}"></a>
                 </td>
                 <td>
-                    <p th:text="${department.name}"></p><br/><p th:text="${department.ar_name}"></p>
+                    <p th:text="${department.name}"></p><br/><p th:text="${department.arName}"></p>
                 </td>
-                <td th:text="${department.manager.name}"></td>
+                <td th:text="${department.manager != null ? department.manager.name : 'No Manager'}"></td>
                 <td th:text="${department.getTotalEmployees()}"></td>
 
             </tr>

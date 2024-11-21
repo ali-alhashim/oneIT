@@ -7,6 +7,7 @@ import com.alhashim.oneIT.models.Department;
 import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.repositories.DepartmentRepository;
 import com.alhashim.oneIT.repositories.EmployeeRepository;
+import com.alhashim.oneIT.services.DepartmentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/department")
@@ -28,6 +30,9 @@ public class DepartmentController {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private DepartmentService departmentService;
 
 
     @GetMapping("/list")
@@ -62,8 +67,8 @@ public class DepartmentController {
 
         if(result.hasErrors())
         {
-
-            return "department/add";
+            result.addError(new FieldError("departmentDto", "name", result.getFieldErrors().toString()));
+            return "/department/add";
         }
 
         Employee departmentManager = employeeRepository.findByBadgeNumber(departmentDto.getManager()).orElse(null);
@@ -71,7 +76,7 @@ public class DepartmentController {
 
         Department department = new Department();
         department.setName(departmentDto.getName());
-        department.setAr_name(departmentDto.getAr_name());
+        department.setArName(departmentDto.getArName());
         department.setDescription(departmentDto.getDescription());
         department.setCreatedAt(LocalDateTime.now());
         if(departmentManager !=null)
@@ -86,25 +91,39 @@ public class DepartmentController {
         catch (Exception e)
         {
             result.addError(new FieldError("departmentDto", "name", e.getMessage()));
-            return "department/add";
+            return "/department/add";
         }
 
 
-        return "department/list";
+        return "redirect:/department/list";
     }
 
     @GetMapping("/detail")
-    public String departmentDetail(Model model, @RequestParam long id)
+    public String departmentDetail(Model model, @RequestParam long id, @RequestParam(required = false) String keyword)
     {
+        Set<Employee> departmentEmployees;
 
         AddEmployeeToDepartmentDto addEmpDepartmentDto = new AddEmployeeToDepartmentDto();
 
+        List<Employee> employees = employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
 
         Department department =  departmentRepository.findById(id).orElse(null);
 
+        if(keyword ==null || keyword.isEmpty())
+        {
+            assert department != null;
+            departmentEmployees = department.getEmployees();
+        }
+        else
+        {
 
-        List<Employee> employees = employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+            System.out.println("Search for employee with keyword : "+keyword);
+            departmentEmployees = departmentService.searchEmployeesInDepartment(department.getId(),keyword);
+        }
+
+
         model.addAttribute("employees", employees);
+        model.addAttribute("departmentEmployees", departmentEmployees);
 
 
        if(department !=null)
@@ -122,6 +141,14 @@ public class DepartmentController {
     @PostMapping("/add-employee")
     public String AddEmployeeToDepartment(@Valid @ModelAttribute AddEmployeeToDepartmentDto addEmpDepartmentDto, BindingResult result ,Model model)
     {
+        Employee employee = employeeRepository.findByBadgeNumber(addEmpDepartmentDto.getBadgeNumber()).orElse(null);
+        Department department = departmentRepository.findById(addEmpDepartmentDto.getDepartmentId()).orElse(null);
+        if(employee !=null && department !=null)
+        {
+            employee.setDepartment(department);
+            employee.setUpdatedAt(LocalDateTime.now());
+            employeeRepository.save(employee);
+        }
         return "redirect:/department/detail?id="+addEmpDepartmentDto.getDepartmentId().toString();
     }
 }

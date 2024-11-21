@@ -13,7 +13,7 @@ public class EmployeeDto {
 
     private String badgeNumber;
 
-    private String ar_name;
+    private String arName;
 
     private String workEmail;
 
@@ -61,12 +61,12 @@ public class EmployeeDto {
         this.badgeNumber = badgeNumber;
     }
 
-    public String getAr_name() {
-        return ar_name;
+    public String getArName() {
+        return arName;
     }
 
-    public void setAr_name(String ar_name) {
-        this.ar_name = ar_name;
+    public void setArName(String arName) {
+        this.arName = arName;
     }
 
     public String getWorkEmail() {

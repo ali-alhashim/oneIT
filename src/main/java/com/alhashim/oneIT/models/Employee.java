@@ -22,7 +22,7 @@ public class Employee {
 
     private String name;
 
-    private String ar_name;
+    private String arName;
 
 
     private String workEmail;
@@ -103,12 +103,12 @@ public class Employee {
         this.name = name;
     }
 
-    public String getAr_name() {
-        return ar_name;
+    public String getArName() {
+        return arName;
     }
 
-    public void setAr_name(String ar_name) {
-        this.ar_name = ar_name;
+    public void setArName(String ar_name) {
+        this.arName = ar_name;
     }
 
     public String getWorkEmail() {

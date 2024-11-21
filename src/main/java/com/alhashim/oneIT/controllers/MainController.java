@@ -28,7 +28,7 @@ public class MainController {
 
             model.addAttribute("badgeNumber", badgeNumber);
             model.addAttribute("userName", employee.getName());
-            model.addAttribute("userArName", employee.getAr_name());
+            model.addAttribute("userArName", employee.getArName());
             model.addAttribute("imageFileName", employee.getImageFileName());
             model.addAttribute("workEmail", employee.getWorkEmail());
             model.addAttribute("workMobile",employee.getWorkMobile());

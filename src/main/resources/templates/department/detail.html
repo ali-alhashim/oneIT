@@ -9,6 +9,19 @@
 
 <div class="container bordered my-5">
 
+    <hr/>
+    <div class="row" id="toolbar1">
+        <div class="col-4">
+            <a class="btn btn-success" href="/department/edit">Edit Department</a>
+        </div>
+
+
+        <div class="col-4">
+
+        </div>
+    </div>
+    <hr/>
+
     <div class="row rounded border p-4 bg-light">
         <table class="table">
             <tr>
@@ -18,44 +31,46 @@
                 <th>Department Name</th><td th:text="${department.name}"></td>
             </tr>
             <tr>
-                <th>Arabic Name</th><td th:text="${department.ar_name}"></td>
+                <th>Arabic Name</th><td th:text="${department.arName}"></td>
             </tr>
             <tr>
                 <th>Description</th><td th:text="${department.description}"></td>
             </tr>
             <tr>
-                <th>Manager</th><td th:text="${department.manager.name}"></td>
+                <th>Manager</th><td th:text="${department.manager != null ? department.manager.name : 'No Manager'}"></td>
             </tr>
             <tr>
                 <th>Members</th><td th:text="${department.getTotalEmployees()}"></td>
             </tr>
         </table>
     </div>
-    <hr/>
 
+
+    <hr/>
     <div class="row" id="toolbar">
         <div class="col-4">
             <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">Add Employee</button>
         </div>
 
 
-
         <div class="col-4">
             <form method="get">
                 <div class="row">
                     <div class="col">
+                        <input type="hidden" name="id" th:value="${department.id}"/>
                         <input type="text" name="keyword" class="form-control" placeholder="Enter Keyword..."/>
                     </div>
                     <div class="col">
                         <input type="submit" class="btn btn-dark" value="Search">
                     </div>
 
-
                 </div>
             </form>
         </div>
     </div>
     <hr/>
+
+
     <!--Department Employee list  -->
     <div class="table-responsive">
         <table class="table border">
@@ -71,7 +86,7 @@
             </thead>
 
             <tbody>
-            <tr th:each="employee: ${department.getEmployees()}">
+            <tr th:each="employee: ${departmentEmployees}">
                 <td>
                     <input type="checkbox" name="badgeNumber" th:value="${employee.badgeNumber}"/>
                 </td>
@@ -82,7 +97,7 @@
                     <a class="btn btn-info" th:text="${employee.badgeNumber}" th:href="@{/employee/detail(badgeNumber=${employee.badgeNumber})}"></a>
                 </td>
                 <td>
-                    <p th:text="${employee.name}"></p><br/><p th:text="${employee.ar_name}"></p>
+                    <p th:text="${employee.name}"></p><br/><p th:text="${employee.arName}"></p>
                 </td>
 
                 <td th:text="${employee.workMobile}"></td>
@@ -120,7 +135,7 @@
                             <option
                                     th:each="employee: ${employees}"
                                     th:value="${employee.badgeNumber}"
-                                    th:text="${employee.name} +'-'+ ${employee.ar_name}">
+                                    th:text="${employee.name} +'-'+ ${employee.arName}">
 
                             </option>
                         </select>
