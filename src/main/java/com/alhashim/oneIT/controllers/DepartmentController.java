@@ -1,5 +1,6 @@
 package com.alhashim.oneIT.controllers;
 
+import com.alhashim.oneIT.dto.AddEmployeeToDepartmentDto;
 import com.alhashim.oneIT.dto.DepartmentDto;
 
 import com.alhashim.oneIT.models.Department;
@@ -56,10 +57,12 @@ public class DepartmentController {
     @PostMapping("/add")
     public String addDepartment(@Valid @ModelAttribute DepartmentDto departmentDto, BindingResult result ,Model model)
     {
+        List<Employee> employees = employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+        model.addAttribute("employees", employees);
+
         if(result.hasErrors())
         {
-            List<Employee> employees = employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-            model.addAttribute("employees", employees);
+
             return "department/add";
         }
 
@@ -83,6 +86,7 @@ public class DepartmentController {
         catch (Exception e)
         {
             result.addError(new FieldError("departmentDto", "name", e.getMessage()));
+            return "department/add";
         }
 
 
@@ -92,15 +96,32 @@ public class DepartmentController {
     @GetMapping("/detail")
     public String departmentDetail(Model model, @RequestParam long id)
     {
-       Department department =  departmentRepository.findById(id).orElse(null);
+
+        AddEmployeeToDepartmentDto addEmpDepartmentDto = new AddEmployeeToDepartmentDto();
+
+
+        Department department =  departmentRepository.findById(id).orElse(null);
+
+
+        List<Employee> employees = employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+        model.addAttribute("employees", employees);
+
 
        if(department !=null)
        {
+           addEmpDepartmentDto.setDepartmentId(department.getId()); // Set departmentId
            model.addAttribute("pageTitle","Department Detail");
            model.addAttribute("department", department);
+           model.addAttribute("addEmpDepartmentDto", addEmpDepartmentDto);
            return "department/detail";
        }
 
         return "department/list";
+    }
+
+    @PostMapping("/add-employee")
+    public String AddEmployeeToDepartment(@Valid @ModelAttribute AddEmployeeToDepartmentDto addEmpDepartmentDto, BindingResult result ,Model model)
+    {
+        return "redirect:/department/detail?id="+addEmpDepartmentDto.getDepartmentId().toString();
     }
 }

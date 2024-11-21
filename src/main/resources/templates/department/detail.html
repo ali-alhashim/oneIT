@@ -35,7 +35,7 @@
 
     <div class="row" id="toolbar">
         <div class="col-4">
-            <a href="/department/addEmployee" class="btn btn-success">Add Employee</a>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">Add Employee</button>
         </div>
 
 
@@ -96,6 +96,75 @@
     <!--/Employee list -->
 
 </div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addEmployeeModalLabel">Add Employee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <form id="addEmployeeForm" method="post" action="/department/add-employee" th:object="${addEmpDepartmentDto}" th:with="_csrfToken=${_csrf.token}">
+
+                    <input type="hidden" name="departmentId"  th:field="${addEmpDepartmentDto.departmentId}"/>
+
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+
+                    <div class="mb-3">
+                        <label for="selectEmployee" class="form-label">Select Employee</label>
+                        <select id="selectEmployee" class="form-select" style="width: 100%;" name="badgeNumber" th:field="${addEmpDepartmentDto.badgeNumber}">
+                            <option
+                                    th:each="employee: ${employees}"
+                                    th:value="${employee.badgeNumber}"
+                                    th:text="${employee.name} +'-'+ ${employee.ar_name}">
+
+                            </option>
+                        </select>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveEmployeeButton">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/modal-->
+
+<script>
+
+    $(document).ready(function() {
+                   $('#selectEmployee').select2(
+                   {
+                     placeholder: "Select an employee",
+                     allowClear: true,
+                     dropdownParent: $('#addEmployeeModal')
+                   }
+                   );
+                 });
+
+
+
+     $('#saveEmployeeButton').on('click', function ()
+     {
+        const form = $('#addEmployeeForm');
+        if ($('#selectEmployee').val())
+        {
+          form.submit(); // Submit the form if a value is selected
+        }
+        else
+        {
+          alert('Please select an employee.');
+        }
+       });
+
+</script>
 
 
 <div th:replace="~{fragments/footer :: footer}"></div>
