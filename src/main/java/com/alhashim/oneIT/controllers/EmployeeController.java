@@ -2,14 +2,17 @@ package com.alhashim.oneIT.controllers;
 
 
 import com.alhashim.oneIT.dto.EmployeeDto;
+import com.alhashim.oneIT.dto.ImportEmployeeDto;
 import com.alhashim.oneIT.models.Department;
 import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.models.Role;
 import com.alhashim.oneIT.repositories.DepartmentRepository;
 import com.alhashim.oneIT.repositories.EmployeeRepository;
 import com.alhashim.oneIT.repositories.RoleRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -19,12 +22,16 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -48,10 +55,22 @@ public class EmployeeController {
 
 
     @GetMapping("/list")
-    public String employeeList(Model model)
+    public String employeeList(Model model, @RequestParam(required = false) String keyword)
     {
+        //for search
+        List<Employee> employees;
+        if(keyword !=null && !keyword.isEmpty())
+        {
+            employees = employeeRepository.findByKeyword(keyword);
+        }
+        else
+        {
+           employees = employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+        }
+        // ---
 
-        List<Employee> employees = employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+        ImportEmployeeDto importEmployeeDto = new ImportEmployeeDto();
+        model.addAttribute("importEmployeeDto", importEmployeeDto);
         model.addAttribute("employees", employees);
         model.addAttribute("pageTitle","Employees List");
         return "employee/list";
@@ -221,8 +240,140 @@ public class EmployeeController {
     public  String detailPage(Model model, @RequestParam String badgeNumber)
     {
         Employee employee = employeeRepository.findByBadgeNumber(badgeNumber).orElse(null);
+        if(employee !=null)
+        {
+            model.addAttribute("pageTitle","Employee Detail");
+            model.addAttribute("badgeNumber", badgeNumber);
+            model.addAttribute("userName", employee.getName());
+            model.addAttribute("userArName", employee.getArName());
+            model.addAttribute("imageFileName", employee.getImageFileName());
+            model.addAttribute("workEmail", employee.getWorkEmail());
+            model.addAttribute("workMobile",employee.getWorkMobile());
+            model.addAttribute("personalMobile", employee.getPersonalMobile());
+            model.addAttribute("roles", employee.getRoles());
+        }
+        else
+        {
+            model.addAttribute("message","No Employee with this Badge Number "+badgeNumber);
+            return "/404";
+        }
 
         return "employee/detail";
+    }
+
+    @GetMapping("/downloadTemplate")
+    public void downloadTemplate(HttpServletResponse response)
+    {
+        //create CSV file template for employee table
+        //download to client pc
+        response.setContentType("text/csv; charset=UTF-8");
+        response.setHeader("Content-Disposition", "attachment; filename=employee_template.csv");
+        List<Employee> employees = employeeRepository.findAll();
+        try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_8))) {
+            writer.write('\ufeff');
+            // Write CSV header row
+            writer.println("badgeNumber,name,arName,workEmail,workMobile,status,birthDate,gender");
+
+            employees.forEach(employee -> {
+                writer.println( employee.getBadgeNumber() +","+ employee.getName() +","+ employee.getArName() +","+ employee.getWorkEmail() +","+ employee.getWorkMobile() +","+ employee.getStatus() +","+ employee.getBirthDate() +","+ employee.getGender());
+            });
+
+
+        } catch (IOException e) {
+            e.printStackTrace(); // Log the error in production
+        }
+
+    }
+
+
+    @PostMapping("/importCSV")
+    public String importCSV(ImportEmployeeDto importEmployeeDto, Model model)
+    {
+        // upload CSV file to public/upload/employee/
+        // for security check only upload .csv file
+        // read CSV each row and insert to our DB
+        // Base directory for file uploads
+        String uploadDir = "public/upload/employee/";
+
+        Path uploadPath = Paths.get(uploadDir, "employee");
+        try {
+            Files.createDirectories(uploadPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Redirect to error page if the directory cannot be created
+            model.addAttribute("message", e.getMessage());
+            return "/404";
+        }
+
+        MultipartFile file = importEmployeeDto.getCsvFile();
+
+        // Validate file type
+        if (!file.getOriginalFilename().endsWith(".csv")) {
+            // Redirect to an error page for invalid file type
+            model.addAttribute("message", "invalid file type");
+            return "/404";
+        }
+
+        // Save the file
+        Path filePath = uploadPath.resolve(file.getOriginalFilename());
+        try {
+            Files.write(filePath, file.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Redirect to an error page if the file cannot be saved
+            model.addAttribute("message", e.getMessage());
+            return "/404";
+        }
+
+        // Read and process the CSV file
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        //get USER role
+        Role userRole = roleRepository.findByRoleName("USER").orElse(null);
+        Set<Role> roles = new HashSet<>();
+        roles.add(userRole);
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath.toFile()))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                // Split the line by commas to get CSV columns
+                String[] data = line.split(",");
+
+                // Skip the header row or invalid rows
+                if (data.length < 6 || "Employee ID".equalsIgnoreCase(data[0])) {
+                    continue;
+                }
+
+                // Parse and insert data into the database
+                try{
+                    Employee employee = new Employee();
+                    employee.setBadgeNumber(data[0].trim());
+                    employee.setName(data[1].trim());
+                    employee.setArName(data[2].trim());
+                    employee.setWorkEmail(data[3].trim());
+                    employee.setWorkMobile(data[4].trim());
+                    employee.setStatus(data[5].trim());
+                    Date birthDate = dateFormat.parse(data[6].trim());
+                    employee.setBirthDate(birthDate); //from string to date format [1965-05-20]
+                    employee.setGender(data[7].trim());
+                    employee.setRoles(roles);
+                    employee.setCreatedAt(LocalDateTime.now());
+                    employeeRepository.save(employee);
+                }
+                catch (Exception e)
+                {
+                   System.out.println(e.getMessage());
+                }
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Redirect to an error page if reading the file fails
+           System.out.println(e.getMessage());
+        }
+
+
+
+        return "redirect:/employee/list";
     }
 
 

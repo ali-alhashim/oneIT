@@ -10,12 +10,41 @@
 <div class="container bordered my-5">
 
      <div class="row" id="toolbar">
-         <div class="col-4">
+         <div class="col-2">
              <a href="/employee/add" class="btn btn-success">Add</a>
          </div>
 
          <div class="col-4">
-             <a href="#" class="btn btn-outline-success">Import CSV</a>
+             <a href="/employee/downloadTemplate" class="btn btn-success">Download employee template CSV</a>
+         </div>
+
+         <div class="col-2">
+             <button  class="btn btn-outline-success" id="importCSV">Import CSV</button>
+
+             <form method="post" enctype="multipart/form-data" th:object="${importEmployeeDto}" th:with="_csrfToken=${_csrf.token}" id="importCSVForm" action="/employee/importCSV">
+                 <input type="file" id="formFile" name="csvFileName" th:field="${importEmployeeDto.csvFile}" style="display:none">
+                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+             </form>
+
+             <script>
+                    const importBtn = document.getElementById("importCSV");
+                    const formFile = document.getElementById("formFile");
+                    const importCSVForm = document.getElementById("importCSVForm");
+
+                    // Handle button click to trigger file input
+                    importBtn.onclick = function () {
+                        formFile.click();
+                    };
+
+                    // Submit the form after a file is selected
+                    formFile.onchange = function () {
+                        if (formFile.files.length > 0) {
+                            importCSVForm.submit();
+                        } else {
+                            alert("No file selected!");
+                        }
+                    };
+             </script>
          </div>
 
          <div class="col-4">
@@ -35,6 +64,7 @@
      </div>
     <hr/>
     <!--Employee list  -->
+    <h4 th:text="${'Total Records: '+ employees.size()}"></h4>
     <div class="table-responsive">
     <table class="table border">
         <thead>
@@ -45,7 +75,7 @@
         <th>Department</th>
         <th style="white-space: nowrap;">Work Mobile</th>
         <th>Email</th>
-        <th>Created At</th>
+        <th>Status</th>
         </thead>
 
         <tbody>
@@ -65,7 +95,7 @@
             <td th:text="${employee.department != null ? employee.department.name : 'No Department'}"></td>
             <td th:text="${employee.workMobile}"></td>
             <td th:text="${employee.workEmail}"></td>
-            <td th:text="${employee.createdAt}"></td>
+            <td th:text="${employee.status}"></td>
         </tr>
 
         </tbody>
