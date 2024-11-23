@@ -12,7 +12,10 @@ import com.alhashim.oneIT.repositories.RoleRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -29,9 +32,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -55,23 +58,30 @@ public class EmployeeController {
 
 
     @GetMapping("/list")
-    public String employeeList(Model model, @RequestParam(required = false) String keyword)
+    public String employeeList(Model model, @RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size )
     {
         //for search
-        List<Employee> employees;
+        Page<Employee> employeePage;
         if(keyword !=null && !keyword.isEmpty())
         {
-            employees = employeeRepository.findByKeyword(keyword);
+            // Implement a paginated search query in your repository
+            employeePage = employeeRepository.findByKeyword(keyword, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
         }
         else
         {
-           employees = employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+            // Fetch all employees with pagination
+            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+            employeePage = employeeRepository.findAll(pageable);
         }
         // ---
 
         ImportEmployeeDto importEmployeeDto = new ImportEmployeeDto();
         model.addAttribute("importEmployeeDto", importEmployeeDto);
-        model.addAttribute("employees", employees);
+        model.addAttribute("employees", employeePage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", employeePage.getTotalPages());
+        model.addAttribute("pageSize", size);
+        model.addAttribute("totalItems", employeePage.getTotalElements());
         model.addAttribute("pageTitle","Employees List");
         return "employee/list";
     }

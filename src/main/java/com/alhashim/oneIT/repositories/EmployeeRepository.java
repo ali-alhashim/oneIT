@@ -1,6 +1,8 @@
 package com.alhashim.oneIT.repositories;
 
 import com.alhashim.oneIT.models.Employee;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,11 +19,13 @@ public interface  EmployeeRepository  extends JpaRepository<Employee, Long> {
     String findLastBadgeNumber();
 
 
+
+
     @Query("SELECT e FROM Employee e WHERE " +
             "LOWER(e.badgeNumber) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(e.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(e.arName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(e.workMobile) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(e.workEmail) LIKE LOWER(CONCAT('%', :keyword, '%'))")
-    List<Employee> findByKeyword(@Param("keyword") String keyword);
+    Page<Employee> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
 }
