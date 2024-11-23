@@ -84,7 +84,7 @@ public class EmployeeController {
         model.addAttribute("totalItems", employeePage.getTotalElements());
         model.addAttribute("pageTitle","Employees List");
         return "employee/list";
-    }
+    } // GET List
 
     @GetMapping("/add")
     public String addEmployeePage(Model model)
@@ -95,7 +95,7 @@ public class EmployeeController {
         model.addAttribute("pageTitle","Add New Employee");
         model.addAttribute("departments",departments);
         return "employee/add";
-    }
+    } // GET Add
 
     @PostMapping("/add")
     public String CreateEmployee(@Valid @ModelAttribute EmployeeDto employeeDto, BindingResult result, Model model)
@@ -244,7 +244,7 @@ public class EmployeeController {
 
             return "redirect:/employee/list";
 
-    }
+    } // POST Add
 
     @GetMapping("/detail")
     public  String detailPage(Model model, @RequestParam String badgeNumber)
@@ -260,7 +260,10 @@ public class EmployeeController {
             model.addAttribute("workEmail", employee.getWorkEmail());
             model.addAttribute("workMobile",employee.getWorkMobile());
             model.addAttribute("personalMobile", employee.getPersonalMobile());
+            model.addAttribute("officeLocation", employee.getOfficeLocation());
             model.addAttribute("roles", employee.getRoles());
+
+            model.addAttribute("departmentName", employee.getDepartment() !=null ? employee.getDepartment().getName():"No Department");
         }
         else
         {
@@ -269,7 +272,7 @@ public class EmployeeController {
         }
 
         return "employee/detail";
-    }
+    } // GET Detail
 
     @GetMapping("/downloadTemplate")
     public void downloadTemplate(HttpServletResponse response)
@@ -293,7 +296,7 @@ public class EmployeeController {
             e.printStackTrace(); // Log the error in production
         }
 
-    }
+    } //GET CSV Template
 
 
     @PostMapping("/importCSV")
@@ -384,7 +387,89 @@ public class EmployeeController {
 
 
         return "redirect:/employee/list";
-    }
+    } // POST import CSV
+
+
+
+
+    @GetMapping("/edit")
+    public  String editPage(Model model, @RequestParam String badgeNumber)
+    {
+        System.out.println("GET Edit Page Incoming badgeNumber: " + badgeNumber);
+
+        Employee employee = employeeRepository.findByBadgeNumber(badgeNumber).orElse(null);
+        if(employee !=null)
+        {
+            EmployeeDto employeeDto = new EmployeeDto();
+
+            employeeDto.setBadgeNumber(employee.getBadgeNumber());
+
+            employeeDto.setName(employee.getName());
+            employeeDto.setArName(employee.getArName());
+
+            if(employee.getDepartment() !=null)
+            {
+                employeeDto.setDepartment(employee.getDepartment().getId());
+            }
+
+
+            employeeDto.setGender(employee.getGender());
+            employeeDto.setBirthDate(employee.getBirthDate());
+            employeeDto.setOfficeLocation(employee.getOfficeLocation());
+            employeeDto.setWorkEmail(employee.getWorkEmail());
+            employeeDto.setWorkMobile(employee.getWorkMobile());
+            employeeDto.setStatus(employee.getStatus());
+
+            List<Department> departments = departmentRepository.findAll();
+            model.addAttribute("employeeDto",employeeDto);
+            model.addAttribute("pageTitle","Edit Employee");
+            model.addAttribute("departments",departments);
+            return "employee/edit";
+        }
+        else
+        {
+            model.addAttribute("message", "GET Edit Page:No Employee with this Badge Number: "+badgeNumber);
+            return "/404";
+        }
+
+    } //--------GET edit
+
+
+    @PostMapping("/edit")
+    public String updateEmployee(@Valid @ModelAttribute EmployeeDto employeeDto, BindingResult result, Model model)
+    {
+
+        System.out.println("employeeDto = " + employeeDto.toString());
+
+
+
+        Employee employee  = employeeRepository.findByBadgeNumber(employeeDto.getBadgeNumber()).orElse(null);
+
+        if(employee !=null)
+        {
+            System.out.println("updating "+employee.getName() +" information ...");
+            employee.setOfficeLocation(employeeDto.getOfficeLocation());
+            employee.setWorkMobile(employeeDto.getWorkMobile());
+            employeeRepository.save(employee);
+            return "redirect:/employee/detail?badgeNumber="+employee.getBadgeNumber();
+        }
+        else
+        {
+            System.out.println("No Employee with is Badge Number ! "+employeeDto.getBadgeNumber());
+            if(result.hasErrors())
+            {
+                model.addAttribute("message", result.getFieldError());
+                return "/404";
+            }
+
+            model.addAttribute("message", "POST EDIT Page:No Employee with this Badge Number: "+employeeDto.getBadgeNumber());
+            return "/404";
+        }
+
+
+
+
+    } //POST update employee
 
 
 }

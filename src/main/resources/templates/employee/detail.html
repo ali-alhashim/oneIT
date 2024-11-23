@@ -23,7 +23,7 @@
             </div>
 
             <div class="col-3">
-                <a class="btn  btn-secondary" href="#">Edit information</a>
+                <a class="btn  btn-secondary" th:href="@{'/employee/edit?badgeNumber=' + ${badgeNumber} }">Edit information</a>
             </div>
 
             <div class="col-3">
@@ -57,6 +57,12 @@
                     </tr>
                     <tr>
                         <th>Personal Mobile</th> <td th:text="${personalMobile}"></td>
+                    </tr>
+                    <tr>
+                        <th>Department Name</th> <td th:text="${departmentName}"></td>
+                    </tr>
+                    <tr>
+                        <th>Office Location</th> <td th:text="${officeLocation}"></td>
                     </tr>
                     <tr>
                         <th>

@@ -33,7 +33,7 @@ public class EmployeeDto {
 
     private String status;
 
-    @NotEmpty(message = "set password is required")
+
     private String password;
 
     private boolean is_USER;
@@ -125,11 +125,11 @@ public class EmployeeDto {
         this.status = status;
     }
 
-    public @NotEmpty(message = "set password is required") String getPassword() {
+    public  String getPassword() {
         return password;
     }
 
-    public void setPassword(@NotEmpty(message = "set password is required") String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -187,5 +187,15 @@ public class EmployeeDto {
 
     public void setDepartment(Long department) {
         this.department = department;
+    }
+
+
+    @Override
+    public String toString()
+    {
+        return "{BadgeNumber : "+this.getBadgeNumber() +","
+                +"Name:" + this.getName() +","
+                +"ArName:" + this.getArName() +","
+                +"}";
     }
 }

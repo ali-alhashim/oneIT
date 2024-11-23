@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+
+
+</head>
+<body class="bg-body-secondary">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container bordered my-5 ">
+
+    <!--edit Form-->
+    <div class="row rounded border p-4 bg-light">
+        <form method="post" enctype="multipart/form-data" th:object="${employeeDto}" th:with="_csrfToken=${_csrf.token}" action="/employee/edit">
+
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+
+
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="badgeNumber"  name="badgeNumber" th:field="${employeeDto.badgeNumber}" readonly>
+                <label for="badgeNumber">Badge Number</label>
+            </div>
+
+
+
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="name"  name="name" required th:field="${employeeDto.name}">
+                <label for="name">Name</label>
+                <p th:if="${#fields.hasErrors('name')}" th:errorclass="text-danger" th:errors="${employeeDto.name}"></p>
+
+            </div>
+
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="arName"  name="ar_name" th:field="${employeeDto.arName}">
+                <label for="arName">Arabic Name</label>
+            </div>
+
+            <div class="form-floating my-1">
+                <input type="email" class="form-control" id="workEmail"  name="workEmail" th:field="${employeeDto.workEmail}">
+                <label for="workEmail">Work Email</label>
+                <p th:if="${#fields.hasErrors('workEmail')}" th:errorclass="text-danger" th:errors="${employeeDto.workEmail}"></p>
+            </div>
+
+            <div class="form-floating my-1">
+                <input type="email" class="form-control" id="personalEmail"  name="personalEmail" th:field="${employeeDto.personalEmail}">
+                <label for="personalEmail">Personal Email</label>
+                <p th:if="${#fields.hasErrors('personalEmail')}" th:errorclass="text-danger" th:errors="${employeeDto.personalEmail}"></p>
+            </div>
+
+
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="workMobile"  name="workMobile" th:field="${employeeDto.workMobile}">
+                <label for="workMobile">Work Mobile</label>
+                <p th:if="${#fields.hasErrors('workMobile')}" th:errorclass="text-danger" th:errors="${employeeDto.workMobile}"></p>
+            </div>
+
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="personalMobile"  name="personalMobile" th:field="${employeeDto.personalMobile}" >
+                <label for="personalMobile">Personal Mobile</label>
+            </div>
+
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="officeLocation"  name="officeLocation" th:field="${employeeDto.officeLocation}">
+                <label for="officeLocation">Office Location</label>
+            </div>
+
+            <hr/>
+            <div class="row">
+                <div class="col-2">
+                    <label for="departmentField">Department</label>
+                </div>
+                <div class="col-10">
+                    <select class="form-select"  id="departmentField"  name="department" th:field="${employeeDto.department}">
+                        <option th:each="department:${departments}"
+                                th:value="${department.id}"
+                                th:text="${department.name}"
+                        >
+
+                        </option>
+
+                    </select>
+                    <p th:if="${#fields.hasErrors('department')}" th:errorclass="text-danger" th:errors="${employeeDto.department}"></p>
+                </div>
+            </div>
+            <hr/>
+
+
+            <script>
+                $(document).ready(function() {
+                  $('#departmentField').select2();
+                });
+            </script>
+
+
+
+            <div class="mb-3">
+                <label for="formFile" class="form-label">Photo</label>
+                <input class="form-control" type="file" id="formFile" name="imageFileName" th:field="${employeeDto.imageFile}">
+                <p th:if="${#fields.hasErrors('imageFile')}" th:errorclass="text-danger" th:errors="${employeeDto.imageFile}"></p>
+            </div>
+
+
+
+
+
+
+
+            <div class="form-floating my-1">
+                <input type="date" class="form-control" id="birthDate"  name="birthDate" th:field="${employeeDto.birthDate}">
+                <label for="birthDate">Birth Date</label>
+                <p th:if="${#fields.hasErrors('birthDate')}" th:errorclass="text-danger" th:errors="${employeeDto.birthDate}"></p>
+            </div>
+
+            <div class="form-floating my-1">
+                <select class="form-select" id="gender"  name="gender" th:field="${employeeDto.gender}">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+                <label for="gender">Gender</label>
+            </div>
+
+
+            <div class="form-floating my-1">
+                <select class="form-select" id="status"  name="status" th:field="${employeeDto.status}">
+                    <option value="active">active</option>
+                    <option value="inactive">inactive</option>
+                    <option value="resignation">resignation</option>
+                </select>
+                <label for="status">Status</label>
+            </div>
+
+
+
+            <hr/>
+
+
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="userSwitchCheckDefault" name="is_USER" value="true" th:field="${employeeDto.is_USER}" >
+                <label class="form-check-label" for="userSwitchCheckDefault">USER</label>
+            </div>
+            <script>
+                const userSwitchCheckDefault = document.getElementById("userSwitchCheckDefault");
+                userSwitchCheckDefault.checked = true;
+            </script>
+
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="managerSwitchCheckDefault" name="is_MANAGER" value="true" th:field="${employeeDto.is_MANAGER}">
+                <label class="form-check-label" for="managerSwitchCheckDefault">MANAGER</label>
+            </div>
+
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="supportSwitchCheckDefault" name="is_SUPPORT" value="true" th:field="${employeeDto.is_SUPPORT}">
+                <label class="form-check-label" for="supportSwitchCheckDefault">SUPPORT</label>
+            </div>
+
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="adminSwitchCheckDefault" name="is_SUPERADMIN" value="true" th:field="${employeeDto.is_SUPERADMIN}">
+                <label class="form-check-label" for="adminSwitchCheckDefault">SUPERADMIN</label>
+            </div>
+
+
+
+            <div class="row justify-content-between my-3">
+                <div class="col-sm-4 d-grid">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+                <div class="col-sm-4  d-grid">
+                    <a class="btn btn-outline-primary" href="/employee/list" role="button">Cancel</a>
+                </div>
+            </div>
+
+
+
+        </form>
+    </div>
+    <!--/Add Form -->
+
+</div>
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
