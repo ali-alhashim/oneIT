@@ -448,8 +448,96 @@ public class EmployeeController {
         if(employee !=null)
         {
             System.out.println("updating "+employee.getName() +" information ...");
+
             employee.setOfficeLocation(employeeDto.getOfficeLocation());
             employee.setWorkMobile(employeeDto.getWorkMobile());
+            employee.setPersonalMobile(employeeDto.getPersonalMobile());
+            employee.setWorkEmail(employeeDto.getWorkEmail());
+            employee.setName(employeeDto.getName());
+            employee.setArName(employee.getArName());
+            employee.setPersonalEmail(employeeDto.getPersonalEmail());
+            Department department = departmentRepository.findById(employeeDto.getDepartment()).orElse(null);
+            if(department !=null)
+            {
+               employee.setDepartment(department);
+            }
+            employee.setBirthDate(employeeDto.getBirthDate());
+            employee.setGender(employeeDto.getGender());
+            employee.setStatus(employeeDto.getStatus());
+            //-------------Roles
+            Set<Role> roles = new HashSet<>();
+
+            if(employeeDto.isIs_MANAGER())
+            {
+                Role role = roleRepository.findByRoleName("MANAGER").orElse(null);
+                roles.add(role);
+                employee.setRoles(roles);
+            }
+
+
+            if(employeeDto.isIs_USER())
+            {
+                Role role = roleRepository.findByRoleName("USER").orElse(null);
+
+                roles.add(role);
+
+                employee.setRoles(roles);
+            }
+
+            if(employeeDto.isIs_SUPERADMIN())
+            {
+                Role role = roleRepository.findByRoleName("SUPERADMIN").orElse(null);
+                roles.add(role);
+                employee.setRoles(roles);
+            }
+
+            if(employeeDto.isIs_SUPPORT())
+            {
+                Role role = roleRepository.findByRoleName("SUPPORT").orElse(null);
+                roles.add(role);
+                employee.setRoles(roles);
+            }
+            //-------------/Roles
+
+
+            //-------upload photo if exist -----------
+
+            if(!employeeDto.getImageFile().isEmpty())
+            {
+                String storageFileName ="";
+                //Save image file
+                MultipartFile image = employeeDto.getImageFile();
+                Date createdAt = new Date();
+                storageFileName = createdAt.getTime()+"_"+ image.getOriginalFilename();
+                String uploadDir = "public/images/"+employeeDto.getBadgeNumber()+"/";
+                Path uploadPath = Paths.get(uploadDir);
+
+
+                try
+                {
+                    if(!Files.exists(uploadPath))
+                    {
+                        Files.createDirectories(uploadPath);
+                    }
+
+                    InputStream inputStream = image.getInputStream();
+                    Files.copy(inputStream, Paths.get(uploadDir + storageFileName), StandardCopyOption.REPLACE_EXISTING);
+
+                    employee.setImageFileName(storageFileName);
+
+                }
+                catch (Exception e)
+                {
+                    System.out.println("saving image file exception "+ e.getMessage() );
+
+                    result.addError(new FieldError("employeeDto", "imageFile", e.getMessage()));
+                    return "employee/edit?badgeNumber="+employeeDto.getBadgeNumber();
+
+                }
+
+
+            }
+            //-------/upload photo--------------------
             employeeRepository.save(employee);
             return "redirect:/employee/detail?badgeNumber="+employee.getBadgeNumber();
         }
