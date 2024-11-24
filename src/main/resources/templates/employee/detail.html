@@ -23,6 +23,10 @@
             </div>
 
             <div class="col-3">
+                <a class="btn btn-danger" href="#">Reset OTP</a>
+            </div>
+
+            <div class="col-3">
                 <a class="btn  btn-secondary" th:href="@{'/employee/edit?badgeNumber=' + ${badgeNumber} }">Edit information</a>
             </div>
 
@@ -56,10 +60,16 @@
                         <th>Work Mobile</th> <td th:text="${workMobile}"></td>
                     </tr>
                     <tr>
+                        <th>Personal Email</th><td th:text="${personalEmail}"></td>
+                    </tr>
+                    <tr>
                         <th>Personal Mobile</th> <td th:text="${personalMobile}"></td>
                     </tr>
                     <tr>
                         <th>Department Name</th> <td th:text="${departmentName}"></td>
+                    </tr>
+                    <tr>
+                        <th>Status</th> <td th:text="${status}"></td>
                     </tr>
                     <tr>
                         <th>Office Location</th> <td th:text="${officeLocation}"></td>

@@ -259,8 +259,10 @@ public class EmployeeController {
             model.addAttribute("imageFileName", employee.getImageFileName());
             model.addAttribute("workEmail", employee.getWorkEmail());
             model.addAttribute("workMobile",employee.getWorkMobile());
+            model.addAttribute("personalEmail", employee.getPersonalEmail());
             model.addAttribute("personalMobile", employee.getPersonalMobile());
             model.addAttribute("officeLocation", employee.getOfficeLocation());
+            model.addAttribute("Status", employee.getStatus());
             model.addAttribute("roles", employee.getRoles());
 
             model.addAttribute("departmentName", employee.getDepartment() !=null ? employee.getDepartment().getName():"No Department");
@@ -418,7 +420,30 @@ public class EmployeeController {
             employeeDto.setOfficeLocation(employee.getOfficeLocation());
             employeeDto.setWorkEmail(employee.getWorkEmail());
             employeeDto.setWorkMobile(employee.getWorkMobile());
+            employeeDto.setPersonalEmail(employee.getPersonalEmail());
+            employeeDto.setPersonalMobile(employee.getPersonalMobile());
             employeeDto.setStatus(employee.getStatus());
+
+            if(employee.getRoles().stream().anyMatch(role -> "USER".equals(role.getRoleName())))
+            {
+                employeeDto.setIs_USER(true);
+            }
+
+            if(employee.getRoles().stream().anyMatch(role -> "MANAGER".equals(role.getRoleName())))
+            {
+                employeeDto.setIs_MANAGER(true);
+            }
+
+            if(employee.getRoles().stream().anyMatch(role -> "SUPERADMIN".equals(role.getRoleName())))
+            {
+                employeeDto.setIs_SUPERADMIN(true);
+            }
+
+            if(employee.getRoles().stream().anyMatch(role -> "SUPPORT".equals(role.getRoleName())))
+            {
+                employeeDto.setIs_SUPPORT(true);
+            }
+
 
             List<Department> departments = departmentRepository.findAll();
             model.addAttribute("employeeDto",employeeDto);
@@ -455,7 +480,9 @@ public class EmployeeController {
             employee.setWorkEmail(employeeDto.getWorkEmail());
             employee.setName(employeeDto.getName());
             employee.setArName(employee.getArName());
+
             employee.setPersonalEmail(employeeDto.getPersonalEmail());
+
             Department department = departmentRepository.findById(employeeDto.getDepartment()).orElse(null);
             if(department !=null)
             {

@@ -136,26 +136,24 @@
 
 
             <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="userSwitchCheckDefault" name="is_USER" value="true" th:field="${employeeDto.is_USER}" >
+                <input class="form-check-input" type="checkbox" role="switch" id="userSwitchCheckDefault" name="is_USER"  th:field="${employeeDto.is_USER}" th:checked="${employeeDto.is_USER}">
                 <label class="form-check-label" for="userSwitchCheckDefault">USER</label>
             </div>
-            <script>
-                const userSwitchCheckDefault = document.getElementById("userSwitchCheckDefault");
-                userSwitchCheckDefault.checked = true;
-            </script>
+
+
 
             <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="managerSwitchCheckDefault" name="is_MANAGER" value="true" th:field="${employeeDto.is_MANAGER}">
+                <input class="form-check-input" type="checkbox" role="switch" id="managerSwitchCheckDefault" name="is_MANAGER"  th:field="${employeeDto.is_MANAGER}">
                 <label class="form-check-label" for="managerSwitchCheckDefault">MANAGER</label>
             </div>
 
             <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="supportSwitchCheckDefault" name="is_SUPPORT" value="true" th:field="${employeeDto.is_SUPPORT}">
+                <input class="form-check-input" type="checkbox" role="switch" id="supportSwitchCheckDefault" name="is_SUPPORT"  th:field="${employeeDto.is_SUPPORT}">
                 <label class="form-check-label" for="supportSwitchCheckDefault">SUPPORT</label>
             </div>
 
             <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="adminSwitchCheckDefault" name="is_SUPERADMIN" value="true" th:field="${employeeDto.is_SUPERADMIN}">
+                <input class="form-check-input" type="checkbox" role="switch" id="adminSwitchCheckDefault" name="is_SUPERADMIN"  th:field="${employeeDto.is_SUPERADMIN}">
                 <label class="form-check-label" for="adminSwitchCheckDefault">SUPERADMIN</label>
             </div>
 

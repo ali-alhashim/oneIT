@@ -8,6 +8,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -77,6 +78,13 @@ public class Employee {
             inverseJoinColumns = @JoinColumn(name = "notification_id")
     )
     private Set<Notification> notifications = new HashSet<>();
+
+
+    @OneToMany(mappedBy = "user")
+    private List<Device> devices; // Multiple devices per employee
+
+
+    //--------------
 
 
     public Long getId() {
