@@ -3,6 +3,7 @@ package com.alhashim.oneIT.controllers;
 
 import com.alhashim.oneIT.dto.EmployeeDto;
 import com.alhashim.oneIT.dto.ImportEmployeeDto;
+import com.alhashim.oneIT.dto.RestPasswordDto;
 import com.alhashim.oneIT.models.Department;
 import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.models.Role;
@@ -252,6 +253,9 @@ public class EmployeeController {
         Employee employee = employeeRepository.findByBadgeNumber(badgeNumber).orElse(null);
         if(employee !=null)
         {
+            RestPasswordDto restPasswordDto = new RestPasswordDto();
+            restPasswordDto.setBadgeNumber(badgeNumber);
+            model.addAttribute("restPasswordDto",restPasswordDto);
             model.addAttribute("pageTitle","Employee Detail");
             model.addAttribute("badgeNumber", badgeNumber);
             model.addAttribute("userName", employee.getName());
@@ -585,6 +589,25 @@ public class EmployeeController {
 
 
     } //POST update employee
+
+
+    //POST Reset password
+
+    @PostMapping("/restPassword")
+    public String resetPassword(@Valid @ModelAttribute RestPasswordDto restPasswordDto, Model model)
+    {
+        System.out.println("you want to reset password for employee with badgeNumber "+restPasswordDto.getBadgeNumber());
+        Employee employee = employeeRepository.findByBadgeNumber(restPasswordDto.getBadgeNumber()).orElse(null);
+
+        if(employee !=null)
+        {
+            employee.setPassword(passwordEncoder.encode(restPasswordDto.getPassword()));
+            employeeRepository.save(employee);
+            return "redirect:/employee/detail?badgeNumber="+employee.getBadgeNumber();
+        }
+        model.addAttribute("message", "No Employee with this Badge Number ! "+restPasswordDto.getBadgeNumber());
+        return "/404";
+    }
 
 
 }

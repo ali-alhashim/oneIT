@@ -19,7 +19,7 @@
                 <hr/>
             </div>
             <div class="col-3">
-                <a class="btn btn-danger" href="#">Reset Password</a>
+                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#resetPasswordModal">Reset Password</button>
             </div>
 
             <div class="col-3">
@@ -134,7 +134,58 @@
         </div>
         <!--/Notification Center -->
 
-    </div>
+        <!--restPassword Modal -->
+        <div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="resetPasswordLabel">Reset Password</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <form id="restPasswordForm" method="post" action="/employee/restPassword" th:object="${restPasswordDto}" th:with="_csrfToken=${_csrf.token}">
+
+                            <input type="hidden" name="badgeNumber"  th:field="${restPasswordDto.badgeNumber}"/>
+
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+
+                            <div class="form-floating my-1">
+                                <input type="password" class="form-control" id="password"  name="password" required th:field="${restPasswordDto.password}">
+                                <label for="password">Password</label>
+                                <p th:if="${#fields.hasErrors('password')}" th:errorclass="text-danger" th:errors="${restPasswordDto.password}"></p>
+                            </div>
+
+                        </form>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="resetPasswordButton">Reset Password</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            $('#resetPasswordButton').on('click', function ()
+               {
+                  const form = $('#restPasswordForm');
+                  if ($('#password').val())
+                  {
+                    form.submit(); // Submit the form if a value is not empty
+                  }
+                  else
+                  {
+                    alert('Please enter password.');
+                  }
+                 });
+        </script>
+        <!--/modal-->
+
+
+    </div><!--/Container -->
 
 
 </main>
