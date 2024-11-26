@@ -56,6 +56,9 @@ public class Employee {
 
     private String gender;
 
+
+    private String otpCode;
+
 //-------- the Relationship filed-----------
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -215,13 +218,7 @@ public class Employee {
         this.roles = roles;
     }
 
-    public Set<Notification> getNotifications() {
-        return notifications;
-    }
 
-    public void setTasks(Set<Notification> notifications) {
-        this.notifications = notifications;
-    }
 
     public String getOfficeLocation() {
         return officeLocation;
@@ -239,5 +236,27 @@ public class Employee {
         this.gender = gender;
     }
 
+    public String getOtpCode() {
+        return otpCode;
+    }
 
+    public void setOtpCode(String otpCode) {
+        this.otpCode = otpCode;
+    }
+
+    public Set<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(Set<Notification> notifications) {
+        this.notifications = notifications;
+    }
+
+    public List<Device> getDevices() {
+        return devices;
+    }
+
+    public void setDevices(List<Device> devices) {
+        this.devices = devices;
+    }
 }

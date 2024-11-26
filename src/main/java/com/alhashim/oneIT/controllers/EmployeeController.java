@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -266,7 +267,7 @@ public class EmployeeController {
             model.addAttribute("personalEmail", employee.getPersonalEmail());
             model.addAttribute("personalMobile", employee.getPersonalMobile());
             model.addAttribute("officeLocation", employee.getOfficeLocation());
-            model.addAttribute("Status", employee.getStatus());
+            model.addAttribute("status", employee.getStatus());
             model.addAttribute("roles", employee.getRoles());
 
             model.addAttribute("departmentName", employee.getDepartment() !=null ? employee.getDepartment().getName():"No Department");
@@ -607,6 +608,30 @@ public class EmployeeController {
         }
         model.addAttribute("message", "No Employee with this Badge Number ! "+restPasswordDto.getBadgeNumber());
         return "/404";
+    }
+
+    @PostMapping("/changePassword")
+    public String changePassword(@RequestParam String currentPassword, @RequestParam String newPassword)
+    {
+        //check current password & set new password
+        String badgeNumber = SecurityContextHolder.getContext().getAuthentication().getName();
+        Employee employee = employeeRepository.findByBadgeNumber(badgeNumber).orElse(null);
+        if(employee !=null)
+        {
+            // Get the hashed current password stored in the database
+             String storedPassword = employee.getPassword();
+            // Verify that the provided current password matches the stored password
+            if (passwordEncoder.matches(currentPassword, storedPassword)) {
+                // Hash the new password before saving
+                String hashedNewPassword = passwordEncoder.encode(newPassword);
+
+                // Update the employee's password
+                employee.setPassword(hashedNewPassword);
+                employeeRepository.save(employee);
+                return "";
+            }
+        }
+        return "";
     }
 
 

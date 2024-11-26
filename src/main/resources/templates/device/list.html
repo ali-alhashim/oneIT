@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+
+</head>
+<body class="bg-body-secondary">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container bordered my-5">
+
+    <div class="row" id="toolbar">
+        <div class="col-2">
+            <a href="/device/add" class="btn btn-success">Add</a>
+        </div>
+
+        <div class="col-4">
+            <a href="/device/downloadTemplate" class="btn btn-success">Download devices template CSV</a>
+        </div>
+
+        <div class="col-2">
+            <button  class="btn btn-outline-success" id="importCSV">Import CSV</button>
+
+            <form method="post" enctype="multipart/form-data" th:object="${importDeviceDto}" th:with="_csrfToken=${_csrf.token}" id="importCSVForm" action="/device/importCSV">
+                <input type="file" id="formFile" name="csvFileName" th:field="${importDeviceDto.csvFile}" style="display:none">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+            </form>
+
+            <script>
+                const importBtn = document.getElementById("importCSV");
+                const formFile = document.getElementById("formFile");
+                const importCSVForm = document.getElementById("importCSVForm");
+
+                // Handle button click to trigger file input
+                importBtn.onclick = function () {
+                    formFile.click();
+                };
+
+                // Submit the form after a file is selected
+                formFile.onchange = function () {
+                    if (formFile.files.length > 0) {
+                        importCSVForm.submit();
+                    } else {
+                        alert("No file selected!");
+                    }
+                };
+            </script>
+        </div>
+
+        <div class="col-4">
+            <form method="get">
+                <div class="row">
+                    <div class="col">
+                        <input type="text" name="keyword" class="form-control" placeholder="Enter Keyword..."/>
+                    </div>
+                    <div class="col">
+                        <input type="submit" class="btn btn-dark" value="Search">
+                    </div>
+
+
+                </div>
+            </form>
+        </div>
+    </div>
+    <hr/>
+    <!--Devices list  -->
+    <h4 th:text="${'Total Records: '+ devices.size()}"></h4>
+    <div class="table-responsive">
+        <table class="table border">
+            <thead>
+            <th>#</th>
+            <th>Photo</th>
+            <th style="white-space: nowrap;">Serial Number</th>
+            <th>Category</th>
+            <th>Manufacture</th>
+            <th>Current User</th>
+            <th style="white-space: nowrap;">Acquisition Date</th>
+            <th>Status</th>
+            </thead>
+
+            <tbody>
+            <tr th:each="device: ${devices}">
+                <td>
+                    <input type="checkbox" name="serialNumber" th:value="${device.serialNumber}"/>
+                </td>
+                <td>
+                    <img th:src="@{'/images/device/'+${device.serialNumber}+'/'+${device.imageFileName}}" alt="..." width="100"/>
+                </td>
+                <td>
+                    <a class="btn btn-info" th:text="${device.serialNumber}" th:href="@{/device/detail(serialNumber=${device.serialNumber})}"></a>
+                </td>
+                <td th:text="${device.category}"></td>
+                <td th:text="${device.manufacture}"></td>
+                <td th:text="${device.user != null ? device.user.name : 'No User'}"></td>
+                <td th:text="${device.acquisitionDate}"></td>
+                <td th:text="${device.status}"></td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+    <!--/Employee list -->
+
+
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <li class="page-item">
+                <a class="page-link" th:href="@{/device/list(page=${currentPage - 1}, size=${pageSize})}">Previous</a>
+            </li>
+
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                <a class="page-link"
+                   th:href="@{/device/list(page=${i}, size=${pageSize})}"
+                   th:classappend="${i == currentPage} ? 'active'">
+                    <span th:text="${i + 1}"></span>
+                </a>
+            </li>
+
+
+
+            <li class="page-item">
+                <a class="page-link" th:href="@{/device/list(page=${currentPage + 1}, size=${pageSize})}">Next</a>
+            </li>
+
+        </ul>
+    </nav>
+
+
+</div>
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
