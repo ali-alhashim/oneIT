@@ -17,7 +17,7 @@ public class MainController {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    @GetMapping("/dashboard")
+    @GetMapping({"/dashboard","/",""})
     public String dashboardPage(Model model)
     {
         String badgeNumber = SecurityContextHolder.getContext().getAuthentication().getName();

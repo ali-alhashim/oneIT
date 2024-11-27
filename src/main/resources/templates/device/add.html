@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+
+
+</head>
+<body class="bg-body-secondary">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container bordered my-5 ">
+
+    <!--Add Form-->
+    <div class="row rounded border p-4 bg-light">
+        <form method="post" enctype="multipart/form-data" th:object="${deviceDto}" th:with="_csrfToken=${_csrf.token}">
+
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+
+
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="serialNumber"  name="serialNumber" th:field="${deviceDto.serialNumber}">
+                <label for="serialNumber">Serial Number</label>
+                <p th:if="${#fields.hasErrors('serialNumber')}" th:errorclass="text-danger" th:errors="${deviceDto.serialNumber}"></p>
+            </div>
+
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="manufacture"  name="name" required th:field="${deviceDto.manufacture}" list="manufactureList">
+                <datalist id="manufactureList">
+                    <option>Dell</option>
+                    <option>HP</option>
+                    <option>Lenovo</option>
+                    <option>Asus</option>
+                    <option>MSI</option>
+                    <option>Microsoft</option>
+                    <option>Apple</option>
+                    <option>Google</option>
+                    <option>Cisco</option>
+                    <option>Sony</option>
+                </datalist>
+                <label for="manufacture">Manufacture</label>
+                <p th:if="${#fields.hasErrors('manufacture')}" th:errorclass="text-danger" th:errors="${deviceDto.manufacture}"></p>
+            </div>
+
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="category"  name="category" th:field="${deviceDto.category}" list="categoryList">
+                <label for="category">Category</label>
+                <datalist id="categoryList">
+                    <option>Laptop</option>
+                    <option>Printer</option>
+                    <option>Monitor</option>
+                    <option>keyboard</option>
+                    <option>Desktop PC</option>
+                </datalist>
+            </div>
+
+
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="description"  name="description" th:field="${deviceDto.description}">
+                <label for="description">Description</label>
+                <p th:if="${#fields.hasErrors('description')}" th:errorclass="text-danger" th:errors="${deviceDto.description}"></p>
+            </div>
+
+
+            <div class="mb-3">
+                <label for="formFile" class="form-label">Photo</label>
+                <input class="form-control" type="file" id="formFile" name="imageFileName" th:field="${deviceDto.imageFile}">
+                <p th:if="${#fields.hasErrors('imageFile')}" th:errorclass="text-danger" th:errors="${deviceDto.imageFile}"></p>
+            </div>
+
+
+
+
+
+
+
+            <div class="form-floating my-1">
+                <input type="date" class="form-control" id="acquisitionDate"  name="acquisitionDate" th:field="${deviceDto.acquisitionDate}">
+                <label for="acquisitionDate">Acquisition Date</label>
+                <p th:if="${#fields.hasErrors('acquisitionDate')}" th:errorclass="text-danger" th:errors="${deviceDto.acquisitionDate}"></p>
+            </div>
+
+
+
+
+            <div class="form-floating my-1">
+                <select class="form-select" id="status"  name="status" th:field="${deviceDto.status}">
+                    <option value="New">New</option>
+                    <option value="Used">Used</option>
+                    <option value="Old">Old</option>
+                </select>
+                <label for="status">Status</label>
+            </div>
+
+
+
+
+
+
+
+            <div class="row justify-content-between my-3">
+                <div class="col-sm-4 d-grid">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+                <div class="col-sm-4  d-grid">
+                    <a class="btn btn-outline-primary" href="/device/list" role="button">Cancel</a>
+                </div>
+            </div>
+
+
+
+        </form>
+    </div>
+    <!--/Add Form -->
+
+</div>
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

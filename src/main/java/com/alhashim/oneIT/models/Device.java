@@ -38,6 +38,8 @@ public class Device {
 
     private Date acquisitionDate;
 
+    private String imageFileName;
+
 
     @ManyToOne
     @JoinColumn(name = "employee_id")
@@ -152,5 +154,13 @@ public class Device {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getImageFileName() {
+        return imageFileName;
+    }
+
+    public void setImageFileName(String imageFileName) {
+        this.imageFileName = imageFileName;
     }
 }
