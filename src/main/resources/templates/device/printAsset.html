@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:insert="~{fragments/header :: head}">
+
+    <style>
+        /* A4 Page Style */
+        @media print {
+            @page {
+                size: A4;
+                margin: 20mm; /* Adjust margin as needed */
+            }
+        }
+
+        /* Wrapper for A4 layout */
+        page[size="A4"] {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 20mm; /* Add padding for content */
+            background: white;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Ensure proper layout for screen and print */
+        page[size="A4"] table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            border: 1px solid #dee2e6; /* Light border for table cells */
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+
+<page size="A4" class="bg-light">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th colspan="2" class="text-center">Asset Information</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><strong>Asset Code</strong></td>
+            <td><span th:text="${asset.code}">ASSET001</span></td>
+        </tr>
+        <tr>
+            <td><strong>Category</strong></td>
+            <td><span th:text="${asset.device.category}">Laptop</span></td>
+        </tr>
+        <tr>
+            <td><strong>Description</strong></td>
+            <td><span th:text="${asset.device.description}">Dell Inspiron 15</span></td>
+        </tr>
+        <tr>
+            <td><strong>Assigned To</strong></td>
+            <td><span th:text="${asset.employee.name}">John Doe</span></td>
+        </tr>
+        </tbody>
+    </table>
+</page>
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

@@ -43,7 +43,10 @@ public class Device {
 
     @ManyToOne
     @JoinColumn(name = "employee_id")
-    private Employee user; // Single user per device
+    private Employee user; // Single user per device this for current user
+
+    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Asset> assets;
 
 
     @Column(updatable = false)
@@ -51,6 +54,15 @@ public class Device {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+
+    public List<Asset> getAssets() {
+        return assets;
+    }
+
+    public void setAssets(List<Asset> assets) {
+        this.assets = assets;
+    }
 
     public Long getId() {
         return id;

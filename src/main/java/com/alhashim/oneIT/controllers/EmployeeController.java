@@ -127,7 +127,7 @@ public class EmployeeController {
                 }
                 else
                 {
-                    theNextBadgeNumber = "A00001";
+                    theNextBadgeNumber = "A0001";
                 }
 
 

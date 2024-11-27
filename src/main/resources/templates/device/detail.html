@@ -140,6 +140,13 @@
                             </option>
                         </select>
                     </div>
+
+                    <div class="form-floating my-1">
+                        <input type="date" class="form-control" id="receivedDate"  name="receivedDate" th:field="${addDeviceUserDto.receivedDate}">
+                        <label for="receivedDate">Received Date</label>
+                        <p th:if="${#fields.hasErrors('receivedDate')}" th:errorclass="text-danger" th:errors="${addDeviceUserDto.receivedDate}"></p>
+                    </div>
+
                 </form>
 
             </div>
@@ -168,7 +175,7 @@
 
      $('#saveEmployeeButton').on('click', function ()
      {
-        const form = $('#addEmployeeForm');
+        const form = $('#addDeviceUserForm');
         if ($('#selectEmployee').val())
         {
           form.submit(); // Submit the form if a value is selected

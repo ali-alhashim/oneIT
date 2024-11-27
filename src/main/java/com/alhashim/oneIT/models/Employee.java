@@ -87,8 +87,19 @@ public class Employee {
     private List<Device> devices; // Multiple devices per employee
 
 
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Asset> assets;
+
     //--------------
 
+
+    public List<Asset> getAssets() {
+        return assets;
+    }
+
+    public void setAssets(List<Asset> assets) {
+        this.assets = assets;
+    }
 
     public Long getId() {
         return id;

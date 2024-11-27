@@ -3,8 +3,10 @@ package com.alhashim.oneIT.controllers;
 import com.alhashim.oneIT.dto.AddDeviceUserDto;
 import com.alhashim.oneIT.dto.DeviceDto;
 import com.alhashim.oneIT.dto.ImportDeviceDto;
+import com.alhashim.oneIT.models.Asset;
 import com.alhashim.oneIT.models.Device;
 import com.alhashim.oneIT.models.Employee;
+import com.alhashim.oneIT.repositories.AssetRepository;
 import com.alhashim.oneIT.repositories.DeviceRepository;
 import com.alhashim.oneIT.repositories.EmployeeRepository;
 import jakarta.validation.Valid;
@@ -38,6 +40,9 @@ public class DeviceController {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private AssetRepository assetRepository;
 
     @GetMapping("/list")
     public String devicesList(Model model, @RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size )
@@ -143,7 +148,8 @@ public class DeviceController {
         Device device = deviceRepository.findBySerialNumber(serialNumber).orElse(null);
         if(device !=null)
         {
-            List<Employee> deviceEmployees = List.of(); //take list of employee who has asset with serialNumber
+
+            List<Employee> deviceEmployees = assetRepository.findEmployeesByDeviceSerialNumber(serialNumber);
 
             AddDeviceUserDto addDeviceUserDto = new AddDeviceUserDto();
 
@@ -164,5 +170,79 @@ public class DeviceController {
             return "/404";
         }
 
+    } //GET Detail
+
+
+    @PostMapping("/addDeviceUser")
+    public String addDeviceUser(@Valid @ModelAttribute AddDeviceUserDto addDeviceUserDto, BindingResult result, Model model)
+    {
+        //-------- Create Next Asset Code
+        String theNextAssetCode ="";
+        String theLastAssetCode = assetRepository.findLastCode();
+
+        if (theLastAssetCode != null && !theLastAssetCode.isEmpty()) {
+            int numericPart = Integer.parseInt(theLastAssetCode.substring(2));
+            numericPart++;
+            theNextAssetCode = "IT" + String.format("%04d", numericPart);
+
+
+        }
+        else
+        {
+            theNextAssetCode = "IT0001";
+        }
+        //-----Asset Code
+
+        if(result.hasErrors())
+        {
+            model.addAttribute("message",result.getFieldError());
+            return "/404";
+        }
+
+        Device device = deviceRepository.findBySerialNumber(addDeviceUserDto.getSerialNumber()).orElse(null);
+        if(device ==null)
+        {
+            model.addAttribute("message","Device Not Found with this serial number !"+addDeviceUserDto.getSerialNumber());
+            return "/404";
+        }
+
+        Employee employee = employeeRepository.findByBadgeNumber(addDeviceUserDto.getBadgeNumber()).orElse(null);
+        if(employee ==null)
+        {
+            model.addAttribute("message","Employee Not found with is Badge Number"+addDeviceUserDto.getBadgeNumber());
+            return "/404";
+        }
+
+        Asset asset = new Asset();
+
+        asset.setCode(theNextAssetCode);
+        asset.setEmployee(employee);
+        asset.setReceivedDate(addDeviceUserDto.getReceivedDate());
+        asset.setDevice(device);
+
+        assetRepository.save(asset);
+
+
+        return "redirect:/device/printAsset?code="+theNextAssetCode;
+    } // POST Add User to Device
+
+
+    @GetMapping("/printAsset")
+    public String printAsset(@RequestParam String code, Model model)
+    {
+        Asset asset = assetRepository.findByCode(code).orElse(null);
+        if(asset !=null)
+        {
+            model.addAttribute("pageTitle","Device Asset");
+            model.addAttribute("asset",asset);
+            return "device/printAsset";
+        }
+
+        model.addAttribute("message", "No asset with this code: "+code);
+        return "/404";
+
     }
+
+
+
 }
