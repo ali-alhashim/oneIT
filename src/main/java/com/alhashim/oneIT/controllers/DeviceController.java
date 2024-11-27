@@ -1,10 +1,12 @@
 package com.alhashim.oneIT.controllers;
 
+import com.alhashim.oneIT.dto.AddDeviceUserDto;
 import com.alhashim.oneIT.dto.DeviceDto;
 import com.alhashim.oneIT.dto.ImportDeviceDto;
 import com.alhashim.oneIT.models.Device;
 import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.repositories.DeviceRepository;
+import com.alhashim.oneIT.repositories.EmployeeRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,6 +35,9 @@ public class DeviceController {
 
     @Autowired
     DeviceRepository deviceRepository;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
 
     @GetMapping("/list")
     public String devicesList(Model model, @RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size )
@@ -129,5 +134,35 @@ public class DeviceController {
 
         deviceRepository.save(device);
         return "redirect:/device/list";
+    } // POST Add
+
+
+    @GetMapping("/detail")
+    public String deviceDetail(Model model, @RequestParam String serialNumber)
+    {
+        Device device = deviceRepository.findBySerialNumber(serialNumber).orElse(null);
+        if(device !=null)
+        {
+            List<Employee> deviceEmployees = List.of(); //take list of employee who has asset with serialNumber
+
+            AddDeviceUserDto addDeviceUserDto = new AddDeviceUserDto();
+
+            addDeviceUserDto.setSerialNumber(serialNumber);
+
+            List<Employee> employees = employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+
+            model.addAttribute("employees", employees);
+            model.addAttribute("deviceEmployees",deviceEmployees);
+            model.addAttribute("pageTitle","Device Detail");
+            model.addAttribute("addDeviceUserDto",addDeviceUserDto);
+            model.addAttribute("device",device);
+            return "device/detail";
+        }
+        else
+        {
+            model.addAttribute("message","No device with this Serial number ! "+serialNumber);
+            return "/404";
+        }
+
     }
 }

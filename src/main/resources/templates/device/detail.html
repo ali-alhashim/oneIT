@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+
+</head>
+<body class="bg-body-secondary">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container bordered my-5">
+
+    <hr/>
+    <div class="row" id="toolbar1">
+        <div class="col-4">
+            <a class="btn btn-success" href="/device/edit">Edit Device</a>
+        </div>
+
+
+        <div class="col-4">
+
+        </div>
+    </div>
+    <hr/>
+
+    <div class="row rounded border p-4 bg-light">
+        <table class="table">
+            <tr>
+                <th>Id</th><td th:text="${device.id}"></td>
+            </tr>
+            <tr>
+                <th>Serial Number</th><td th:text="${device.serialNumber}"></td>
+            </tr>
+            <tr>
+                <th>Category</th><td th:text="${device.category}"></td>
+            </tr>
+            <tr>
+                <th>Description</th><td th:text="${device.description}"></td>
+            </tr>
+
+            <tr>
+                <th>Current User</th><td th:text="${device.user != null ? device.user.name : 'No User'}"></td>
+            </tr>
+
+
+        </table>
+    </div>
+
+
+    <hr/>
+    <div class="row" id="toolbar">
+        <div class="col-4">
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">Add New Device User</button>
+        </div>
+
+
+        <div class="col-4">
+            <form method="get">
+                <div class="row">
+                    <div class="col">
+                        <input type="hidden" name="serialNumber" th:value="${device.serialNumber}"/>
+                        <input type="text" name="keyword" class="form-control" placeholder="Enter Keyword..."/>
+                    </div>
+                    <div class="col">
+                        <input type="submit" class="btn btn-dark" value="Search">
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+    <hr/>
+
+
+    <!--Device Employee list  -->
+    <div class="table-responsive">
+        <table class="table border">
+            <thead>
+            <th>#</th>
+            <th>Photo</th>
+            <th style="white-space: nowrap;">Badge Number</th>
+            <th>Name</th>
+
+            <th style="white-space: nowrap;">Work Mobile</th>
+            <th>Email</th>
+            <th>Created At</th>
+            </thead>
+
+            <tbody>
+            <tr th:each="employee: ${deviceEmployees}">
+                <td>
+                    <input type="checkbox" name="badgeNumber" th:value="${employee.badgeNumber}"/>
+                </td>
+                <td>
+                    <img th:src="@{'/images/'+${employee.badgeNumber}+'/'+${employee.imageFileName}}" alt="..." width="100"/>
+                </td>
+                <td>
+                    <a class="btn btn-info" th:text="${employee.badgeNumber}" th:href="@{/employee/detail(badgeNumber=${employee.badgeNumber})}"></a>
+                </td>
+                <td>
+                    <p th:text="${employee.name}"></p><br/><p th:text="${employee.arName}"></p>
+                </td>
+
+                <td th:text="${employee.workMobile}"></td>
+                <td th:text="${employee.workEmail}"></td>
+                <td th:text="${employee.createdAt}"></td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+    <!--/Employee list -->
+
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addEmployeeModalLabel">Add New Device User </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <form id="addDeviceUserForm" method="post" action="/device/addDeviceUser" th:object="${addDeviceUserDto}" th:with="_csrfToken=${_csrf.token}">
+
+                    <input type="hidden" name="serialNumber"  th:field="${addDeviceUserDto.serialNumber}"/>
+
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+
+                    <div class="mb-3">
+                        <label for="selectEmployee" class="form-label">Select Employee</label>
+                        <select id="selectEmployee" class="form-select" style="width: 100%;" name="badgeNumber" th:field="${addDeviceUserDto.badgeNumber}">
+                            <option
+                                    th:each="employee: ${employees}"
+                                    th:value="${employee.badgeNumber}"
+                                    th:text="${employee.name} +'-'+ ${employee.arName}">
+
+                            </option>
+                        </select>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveEmployeeButton">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/modal-->
+
+<script>
+
+    $(document).ready(function() {
+                   $('#selectEmployee').select2(
+                   {
+                     placeholder: "Select an employee",
+                     allowClear: true,
+                     dropdownParent: $('#addEmployeeModal')
+                   }
+                   );
+                 });
+
+
+
+     $('#saveEmployeeButton').on('click', function ()
+     {
+        const form = $('#addEmployeeForm');
+        if ($('#selectEmployee').val())
+        {
+          form.submit(); // Submit the form if a value is selected
+        }
+        else
+        {
+          alert('Please select an employee.');
+        }
+       });
+
+</script>
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

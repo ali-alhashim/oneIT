@@ -61,6 +61,13 @@
             </div>
 
 
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="purchasePrice"  name="purchasePrice" th:field="${deviceDto.purchasePrice}">
+                <label for="description">Purchase Price</label>
+                <p th:if="${#fields.hasErrors('purchasePrice')}" th:errorclass="text-danger" th:errors="${deviceDto.purchasePrice}"></p>
+            </div>
+
+
             <div class="mb-3">
                 <label for="formFile" class="form-label">Photo</label>
                 <input class="form-control" type="file" id="formFile" name="imageFileName" th:field="${deviceDto.imageFile}">
