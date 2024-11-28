@@ -26,6 +26,14 @@ public class MainController {
         assert employee != null;
         System.out.println("Welcome to Dashboard Page Name: " + employee.getName());
 
+
+        //---------
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        String loginUser = currentUser.getBadgeNumber() +"|"+currentUser.getName();
+        model.addAttribute("loginUser", loginUser);
+        //--------
+
             model.addAttribute("badgeNumber", badgeNumber);
             model.addAttribute("userName", employee.getName());
             model.addAttribute("userArName", employee.getArName());

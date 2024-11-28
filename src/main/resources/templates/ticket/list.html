@@ -94,7 +94,7 @@
                 <td th:text="${ticket.description}"></td>
                 <td th:text="${ticket.priority}"></td>
                 <td>
-                    <a class="btn btn-info" th:text="${ticket.handledBy.badgeNumber}" th:href="@{/employee/detail(badgeNumber=${ticket.handledBy.badgeNumber})}"></a>
+                    <a class="btn btn-info" th:text="${ticket.handledBy !=null ? ticket.handledBy.badgeNumber : 'No Assigned yet'}" th:href="@{/employee/detail(badgeNumber=${ticket.handledBy !=null ? ticket.handledBy.badgeNumber : '#'})}"></a>
                 </td>
                 <td th:text="${ticket.status}"></td>
 

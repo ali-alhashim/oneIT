@@ -11,6 +11,8 @@ import com.alhashim.oneIT.services.DepartmentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -40,6 +42,14 @@ public class DepartmentController {
     {
         List<Department> departments = departmentRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
 
+
+        //---------
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        String loginUser = currentUser.getBadgeNumber() +"|"+currentUser.getName();
+        model.addAttribute("loginUser", loginUser);
+        //--------
+
         model.addAttribute("pageTitle","Department List");
         model.addAttribute("departments",departments);
         return "department/list";
@@ -50,6 +60,13 @@ public class DepartmentController {
     {
 
         List<Employee> employees = employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+
+        //---------
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        String loginUser = currentUser.getBadgeNumber() +"|"+currentUser.getName();
+        model.addAttribute("loginUser", loginUser);
+        //--------
 
 
         DepartmentDto departmentDto = new DepartmentDto();
@@ -120,6 +137,14 @@ public class DepartmentController {
             System.out.println("Search for employee with keyword : "+keyword);
             departmentEmployees = departmentService.searchEmployeesInDepartment(department.getId(),keyword);
         }
+
+
+        //---------
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        String loginUser = currentUser.getBadgeNumber() +"|"+currentUser.getName();
+        model.addAttribute("loginUser", loginUser);
+        //--------
 
 
         model.addAttribute("employees", employees);

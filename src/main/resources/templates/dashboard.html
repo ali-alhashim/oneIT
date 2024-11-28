@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main>
+
+    <div class="container bordered my-5 ">
+
+
+        <!--toolbar-->
+        <div class="row rounded border p-4 bg-light">
+            <div class="row my-3">
+                <h5>Profile</h5>
+                <hr/>
+            </div>
+            <div class="col-3">
+                <a class="btn btn-danger" href="#">Change Password</a>
+            </div>
+
+            <div class="col-3">
+                <a class="btn  btn-secondary" href="#">Update My information</a>
+            </div>
+
+            <div class="col-3">
+                <a class="btn  btn-secondary" href="#">Timesheet</a>
+            </div>
+
+        </div>
+        <!--/toolbar-->
+
+        <!--basic info -->
+        <div class="row rounded border p-4 bg-light">
+            <div class="col-sm-4">
+                <img th:src="@{'/images/'+${badgeNumber}+'/' + ${imageFileName} }" width="150"  alt="No Photo" class="rounded bg-dark"/>
+            </div>
+            <div class="col-sm-8">
+                <table class="table   border">
+                    <tr>
+                        <th>Name </th> <td th:text="${userName}"></td>
+                    </tr>
+                    <tr>
+                        <th>Arabic Name</th><td th:text="${userArName}"></td>
+                    </tr>
+                    <tr>
+                        <th>Badge Number </th> <td th:text="${badgeNumber}"></td>
+                    </tr>
+                    <tr>
+                        <th>Email</th><td th:text="${workEmail}"></td>
+                    </tr>
+                    <tr>
+                        <th>Work Mobile</th> <td th:text="${workMobile}"></td>
+                    </tr>
+                    <tr>
+                        <th>Personal Mobile</th> <td th:text="${personalMobile}"></td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Roles
+                        </th>
+                        <td>
+                            <ul class="list-group">
+                                <li th:each="role:${roles}" th:text="${role.getRoleName()}"  class="list-group-item"></li>
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <!--/basic info -->
+
+        <hr/>
+
+        <!--Notification Center -->
+        <!--toolbar-->
+        <div class="row rounded border p-4 bg-light">
+            <div class="row my-3">
+                <h5>Notifications</h5>
+                <hr/>
+            </div>
+            <div class="col-4">
+                <form method="get">
+                    <div class="row">
+                        <div class="col">
+                            <input type="text" name="keyword" placeholder="Search..." id="notificationSearch" class="form-control">
+                        </div>
+                        <div class="col">
+                            <input type="submit" value="Search" class="btn btn-secondary">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+
+
+        </div>
+        <!--/toolbar-->
+
+        <div class="row rounded border p-4 bg-light">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Date</th>
+                    <th>Subject</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
+        <!--/Notification Center -->
+
+    </div>
+
+
+</main>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

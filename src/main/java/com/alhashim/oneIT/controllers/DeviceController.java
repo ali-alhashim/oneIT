@@ -16,6 +16,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -70,6 +72,14 @@ public class DeviceController {
         model.addAttribute("pageTitle","Devices List");
         model.addAttribute("totalItems", devicePage.getTotalElements());
         model.addAttribute("importDeviceDto",importDeviceDto);
+
+        //---------
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        String loginUser = currentUser.getBadgeNumber() +"|"+currentUser.getName();
+        model.addAttribute("loginUser", loginUser);
+        //--------
+
         return "device/list";
     } // GET List
 
@@ -81,6 +91,14 @@ public class DeviceController {
         model.addAttribute("deviceDto",deviceDto);
         model.addAttribute("pageTitle","Add New Device");
         model.addAttribute("employees", employees);
+
+        //---------
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        String loginUser = currentUser.getBadgeNumber() +"|"+currentUser.getName();
+        model.addAttribute("loginUser", loginUser);
+        //--------
+
         return "device/add";
     } //GET add
 
@@ -171,6 +189,14 @@ public class DeviceController {
             model.addAttribute("pageTitle","Device Detail");
             model.addAttribute("addDeviceUserDto",addDeviceUserDto);
             model.addAttribute("device",device);
+
+            //---------
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+            String loginUser = currentUser.getBadgeNumber() +"|"+currentUser.getName();
+            model.addAttribute("loginUser", loginUser);
+            //--------
+
             return "device/detail";
         }
         else

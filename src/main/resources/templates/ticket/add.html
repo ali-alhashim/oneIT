@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+
+
+</head>
+<body class="bg-body-secondary">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container bordered my-5 ">
+
+    <!--Add Form-->
+    <div class="row rounded border p-4 bg-light">
+        <form method="post" enctype="multipart/form-data" th:object="${ticketDto}" th:with="_csrfToken=${_csrf.token}">
+
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+
+
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="subject"  name="subject" th:field="${ticketDto.subject}">
+                <label for="subject">Subject</label>
+
+                <p th:if="${#fields.hasErrors('subject')}" th:errorclass="text-danger" th:errors="${ticketDto.subject}"></p>
+            </div>
+
+
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="description"  name="subject" th:field="${ticketDto.description}">
+                <label for="description">Description</label>
+
+                <p th:if="${#fields.hasErrors('description')}" th:errorclass="text-danger" th:errors="${ticketDto.description}"></p>
+            </div>
+
+
+            <div class="my-1">
+                <label for="priority">Priority</label>
+                <select class="form-select" id="priority"  name="priority" th:field="${ticketDto.priority}">
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+                <p th:if="${#fields.hasErrors('priority')}" th:errorclass="text-danger" th:errors="${ticketDto.priority}"></p>
+            </div>
+
+
+
+            <div class="my-1">
+                <label for="serialNumber">Related Device</label>
+                <select class="form-select" id="serialNumber"  name="serialNumber" th:field="${ticketDto.serialNumber}">
+                    <option value="none">None</option>
+                    <option th:if="${userAssets !=null}"
+                            th:each="asset :${userAssets}"
+                            th:text="${asset.device.category +'-'+asset.device.serialNumber}"
+                            th:value="${asset.device.serialNumber}">
+
+                    </option>
+
+                </select>
+                <p th:if="${#fields.hasErrors('serialNumber')}" th:errorclass="text-danger" th:errors="${ticketDto.serialNumber}"></p>
+            </div>
+
+
+
+
+
+
+
+
+
+            <hr/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <div class="row justify-content-between my-3">
+                <div class="col-sm-4 d-grid">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+                <div class="col-sm-4  d-grid">
+                    <a class="btn btn-outline-primary" href="/employee/list" role="button">Cancel</a>
+                </div>
+            </div>
+
+
+
+        </form>
+    </div>
+    <!--/Add Form -->
+
+</div>
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

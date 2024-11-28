@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -85,6 +86,14 @@ public class EmployeeController {
         model.addAttribute("pageSize", size);
         model.addAttribute("totalItems", employeePage.getTotalElements());
         model.addAttribute("pageTitle","Employees List");
+
+        //---------
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        String loginUser = currentUser.getBadgeNumber() +"|"+currentUser.getName();
+        model.addAttribute("loginUser", loginUser);
+        //--------
+
         return "employee/list";
     } // GET List
 
@@ -96,6 +105,15 @@ public class EmployeeController {
         model.addAttribute("employeeDto",employeeDto);
         model.addAttribute("pageTitle","Add New Employee");
         model.addAttribute("departments",departments);
+
+
+        //---------
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        String loginUser = currentUser.getBadgeNumber() +"|"+currentUser.getName();
+        model.addAttribute("loginUser", loginUser);
+        //--------
+
         return "employee/add";
     } // GET Add
 
@@ -269,6 +287,13 @@ public class EmployeeController {
             model.addAttribute("officeLocation", employee.getOfficeLocation());
             model.addAttribute("status", employee.getStatus());
             model.addAttribute("roles", employee.getRoles());
+
+            //---------
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+            String loginUser = currentUser.getBadgeNumber() +"|"+currentUser.getName();
+            model.addAttribute("loginUser", loginUser);
+            //--------
 
             model.addAttribute("departmentName", employee.getDepartment() !=null ? employee.getDepartment().getName():"No Department");
         }
@@ -454,6 +479,14 @@ public class EmployeeController {
             model.addAttribute("employeeDto",employeeDto);
             model.addAttribute("pageTitle","Edit Employee");
             model.addAttribute("departments",departments);
+
+            //---------
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+            String loginUser = currentUser.getBadgeNumber() +"|"+currentUser.getName();
+            model.addAttribute("loginUser", loginUser);
+            //--------
+
             return "employee/edit";
         }
         else

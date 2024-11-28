@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:fragment="head">
+    <meta charset="UTF-8">
+    <title th:text="${pageTitle}">OneIT</title>
+
+    <!--bootstrap-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!--jquery-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!--select2-->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+</head>
+<body>
+
+
+
+<nav class="navbar bg-dark navbar-expand-lg  border-bottom border-body" data-bs-theme="dark" th:fragment="header">
+    <a class=" mx-3 nav-item" href="#" th:text="${loginUser}">A000|Admin</a>
+    <div class="container">
+        <a class="navbar-brand" href="#">OneIT</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/dashboard">Home</a>
+                </li>
+
+                <!--IT -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        IT Services
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/request/list">Request IT Asset</a></li>
+                        <li><a class="dropdown-item" href="/ticket/list">IT Ticket</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/device/list">Devices</a></li>
+                        <li><a class="dropdown-item" href="/asset/list">IT Assets</a></li>
+                    </ul>
+                </li>
+                <!--/IT-->
+
+                <!--Procurement Management-->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Procurement Management
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/procurement/order">PO</a></li>
+                        <li><a class="dropdown-item" href="/procurement/invocie">Invoices</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/procurement/vendor">Vendors</a></li>
+                        <li><a class="dropdown-item" href="/procurement/payment">Payment</a></li>
+                    </ul>
+                </li>
+                <!--/Procurement Management-->
+
+                <!--HR -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        HR Management
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/employee/list">Employees</a></li>
+                        <li><a class="dropdown-item" href="/department/list">Department</a></li>
+                    </ul>
+                </li>
+                <!--/HR-->
+
+                <!--System -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        System Administration
+                    </a>
+                    <ul class="dropdown-menu">
+
+
+                        <li><a class="dropdown-item" href="/system/logs">System Logs</a></li>
+                        <li><a class="dropdown-item" href="/system/database">Database</a></li>
+                    </ul>
+                </li>
+                <!--/System -->
+
+
+            </ul>
+            <div id="dateTime" class="text-white"></div> <p class="mx-3"></p> <div id="hijriDate" class="text-white"></div>
+
+            <script>
+                function updateDateTime() {
+                    const dateTimeElement = document.getElementById('dateTime');
+                    const hijriDateElement = document.getElementById('hijriDate');
+                    const now = new Date();
+
+                    // Format the date and time
+                    const formattedDateTime = now.toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: true,
+                    });
+
+                     // Format the Hijri date
+                    const hijriFormatter = new Intl.DateTimeFormat('en-TN-u-ca-islamic', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+
+                     const formattedHijriDate = hijriFormatter.format(now);
+
+                    // Update the content of the element
+                    dateTimeElement.textContent = formattedDateTime;
+                    hijriDateElement.textContent = `  ${formattedHijriDate}`;
+                }
+
+                // Update the date and time every second
+                setInterval(updateDateTime, 1000);
+
+                // Call it once initially to display immediately
+                updateDateTime();
+            </script>
+        </div>
+    </div>
+</nav>
+
+</body>
+</html>
