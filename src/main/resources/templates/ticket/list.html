@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+
+</head>
+<body class="bg-body-secondary">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container bordered my-5">
+
+    <div class="row" id="toolbar">
+        <div class="col-2">
+            <a href="/ticket/add" class="btn btn-success">Add</a>
+        </div>
+
+        <div class="col-4">
+            <a href="/ticket/downloadTemplate" class="btn btn-success">Download employee template CSV</a>
+        </div>
+
+        <div class="col-2">
+            <button  class="btn btn-outline-success" id="importCSV">Import CSV</button>
+
+            <form method="post" enctype="multipart/form-data"  th:with="_csrfToken=${_csrf.token}" id="importCSVForm" action="/ticket/importCSV">
+                <input type="file" id="formFile" name="csvFileName" style="display:none">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+            </form>
+
+            <script>
+                const importBtn = document.getElementById("importCSV");
+                const formFile = document.getElementById("formFile");
+                const importCSVForm = document.getElementById("importCSVForm");
+
+                // Handle button click to trigger file input
+                importBtn.onclick = function () {
+                    formFile.click();
+                };
+
+                // Submit the form after a file is selected
+                formFile.onchange = function () {
+                    if (formFile.files.length > 0) {
+                        importCSVForm.submit();
+                    } else {
+                        alert("No file selected!");
+                    }
+                };
+            </script>
+        </div>
+
+        <div class="col-4">
+            <form method="get">
+                <div class="row">
+                    <div class="col">
+                        <input type="text" name="keyword" class="form-control" placeholder="Enter Keyword..."/>
+                    </div>
+                    <div class="col">
+                        <input type="submit" class="btn btn-dark" value="Search">
+                    </div>
+
+
+                </div>
+            </form>
+        </div>
+    </div>
+    <hr/>
+    <!--Employee list  -->
+    <h4 th:text="${'Total Records: '+ tickets.size()}"></h4>
+    <div class="table-responsive">
+        <table class="table border">
+
+            <thead>
+            <th>#</th>
+            <th>Requested By</th>
+            <th style="white-space: nowrap;">Created At</th>
+            <th>Subject</th>
+            <th>Description</th>
+            <th style="white-space: nowrap;">Priority</th>
+            <th>Handled By</th>
+            <th>Status</th>
+            <th style="white-space: nowrap;">Satisfaction Rating</th>
+
+            </thead>
+
+            <tbody>
+            <tr th:each="ticket: ${tickets}">
+                <td>
+                    <input type="checkbox" name="id" th:value="${ticket.id}"/>
+                </td>
+                <td>
+                    <a class="btn btn-info" th:text="${ticket.requestedBy.badgeNumber}" th:href="@{/employee/detail(badgeNumber=${ticket.requestedBy.badgeNumber})}"></a>
+                </td>
+                <td th:text="${ticket.createdAt}"> </td>
+                <td th:text="${ticket.subject}"></td>
+                <td th:text="${ticket.description}"></td>
+                <td th:text="${ticket.priority}"></td>
+                <td>
+                    <a class="btn btn-info" th:text="${ticket.handledBy.badgeNumber}" th:href="@{/employee/detail(badgeNumber=${ticket.handledBy.badgeNumber})}"></a>
+                </td>
+                <td th:text="${ticket.status}"></td>
+
+                <td th:text="${ticket.satisfactionRating}"></td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+    <!--/ticket list -->
+
+
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <li class="page-item">
+                <a class="page-link" th:href="@{/ticket/list(page=${currentPage - 1}, size=${pageSize})}">Previous</a>
+            </li>
+
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                <a class="page-link"
+                   th:href="@{/ticket/list(page=${i}, size=${pageSize})}"
+                   th:classappend="${i == currentPage} ? 'active'">
+                    <span th:text="${i + 1}"></span>
+                </a>
+            </li>
+
+
+
+            <li class="page-item">
+                <a class="page-link" th:href="@{/ticket/list(page=${currentPage + 1}, size=${pageSize})}">Next</a>
+            </li>
+
+        </ul>
+    </nav>
+
+
+</div>
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
