@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+
+</head>
+<body class="bg-body-secondary">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container bordered my-5">
+
+    <div class="row" id="toolbar">
+        <div class="col-2">
+            <a href="/asset/add" class="btn btn-success">Add</a>
+        </div>
+
+        <div class="col-4">
+            <a href="/asset/downloadTemplate" class="btn btn-success">Download Assets template CSV</a>
+        </div>
+
+        <div class="col-2">
+            <button  class="btn btn-outline-success" id="importCSV">Import CSV</button>
+
+            <form method="post" enctype="multipart/form-data" th:object="${importAssetDto}" th:with="_csrfToken=${_csrf.token}" id="importCSVForm" action="/asset/importCSV">
+                <input type="file" id="formFile" name="csvFileName" th:field="${importAssetDto.csvFile}" style="display:none">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+            </form>
+
+            <script>
+                const importBtn = document.getElementById("importCSV");
+                const formFile = document.getElementById("formFile");
+                const importCSVForm = document.getElementById("importCSVForm");
+
+                // Handle button click to trigger file input
+                importBtn.onclick = function () {
+                    formFile.click();
+                };
+
+                // Submit the form after a file is selected
+                formFile.onchange = function () {
+                    if (formFile.files.length > 0) {
+                        importCSVForm.submit();
+                    } else {
+                        alert("No file selected!");
+                    }
+                };
+            </script>
+        </div>
+
+        <div class="col-4">
+            <form method="get">
+                <div class="row">
+                    <div class="col">
+                        <input type="text" name="keyword" class="form-control" placeholder="Enter Keyword..."/>
+                    </div>
+                    <div class="col">
+                        <input type="submit" class="btn btn-dark" value="Search">
+                    </div>
+
+
+                </div>
+            </form>
+        </div>
+    </div>
+    <hr/>
+    <!--Employee list  -->
+    <h4 th:text="${'Total Records: '+ assets.size()}"></h4>
+    <div class="table-responsive">
+        <table class="table border">
+            <thead>
+            <th>#</th>
+            <th style="white-space: nowrap;">Code</th>
+            <th style="white-space: nowrap;">Badge Number</th>
+            <th style="white-space: nowrap;">Department</th>
+            <th style="white-space: nowrap;">Created Date</th>
+            <th style="white-space: nowrap;">Received By</th>
+            <th style="white-space: nowrap;">Received Date</th>
+            <th style="white-space: nowrap;">Handover Date</th>
+            <th style="white-space: nowrap;">Note</th>
+            <th style="white-space: nowrap;">Received Confirmation</th>
+            <th style="white-space: nowrap;">Handover Confirmation</th>
+            <th style="white-space: nowrap;">Category</th>
+            <th style="white-space: nowrap;">Serial Number</th>
+            <th style="white-space: nowrap;">Description</th>
+            </thead>
+
+            <tbody>
+            <tr th:each="asset: ${assets}">
+                <td>
+                    <input type="checkbox" name="code" th:value="${asset.code}"/>
+                </td>
+                <td>
+                    <a class="btn btn-info" th:text="${asset.code}" th:href="@{'/device/printAsset?code='+${asset.code}}"></a>
+                </td>
+                <td>
+                    <a class="btn btn-info" th:text="${asset.employee.badgeNumber}" th:href="@{/employee/detail(badgeNumber=${asset.employee.badgeNumber})}"></a>
+                </td>
+                <td th:text="${asset.employee.department != null ? asset.employee.department.name : 'No Department'}"></td>
+                <td th:text="${asset.createdAt}"></td>
+                <td th:text="${asset.employee.name}"></td>
+                <td th:text="${asset.receivedDate}"></td>
+
+                <td>
+                    <span th:if="${asset.handoverDate != null}" th:text="${asset.handoverDate}"></span>
+                    <button
+                            th:if="${asset.handoverDate == null}"
+                            class="btn btn-primary btn-sm"
+                            data-bs-toggle="modal"
+                            data-bs-target="#handoverModal"
+                            th:attr="data-asset-code=${asset.code}">
+                        Handover
+                    </button>
+                </td>
+
+                <td th:text="${asset.note}"></td>
+
+                <td th:text="${asset.confirmReceived}"></td>
+                <td th:text="${asset.confirmHandover}"></td>
+                <td th:text="${asset.device.category}"></td>
+                <td>
+                    <a class="btn btn-info" th:text="${asset.device.serialNumber}" th:href="@{/device/detail(serialNumber=${asset.device.serialNumber})}"></a>
+                </td>
+                <td th:text="${asset.device.description}"></td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+    <!--/Employee list -->
+
+
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <li class="page-item">
+                <a class="page-link" th:href="@{/device/list(page=${currentPage - 1}, size=${pageSize})}">Previous</a>
+            </li>
+
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                <a class="page-link"
+                   th:href="@{/device/list(page=${i}, size=${pageSize})}"
+                   th:classappend="${i == currentPage} ? 'active'">
+                    <span th:text="${i + 1}"></span>
+                </a>
+            </li>
+
+
+
+            <li class="page-item">
+                <a class="page-link" th:href="@{/device/list(page=${currentPage + 1}, size=${pageSize})}">Next</a>
+            </li>
+
+        </ul>
+    </nav>
+
+
+</div>
+
+
+<!--*****-->
+<!-- Handover Modal -->
+<div class="modal fade" id="handoverModal" tabindex="-1" aria-labelledby="handoverModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form th:action="@{/device/handover}" method="post" th:with="_csrfToken=${_csrf.token}">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="handoverModalLabel">Handover Asset</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="assetCode" id="assetCode" />
+
+
+                    <div class="mb-3">
+                        <label for="handoverDate" class="form-label">Handover Date</label>
+                        <input type="date" class="form-control" id="handoverDate" name="handoverDate" placeholder="Select a date" required />
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label for="handoverNote" class="form-label">Note</label>
+                        <input type="text" class="form-control" id="handoverNote" name="handoverNote" placeholder="Note"  />
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Attach asset code to hidden input when the modal is triggered
+    const handoverModal = document.getElementById('handoverModal');
+    handoverModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget; // Button that triggered the modal
+        const assetCode = button.getAttribute('data-asset-code'); // Extract data-asset-code
+        const assetCodeInput = document.getElementById('assetCode');
+        assetCodeInput.value = assetCode; // Set hidden input value
+    });
+
+    // Initialize Bootstrap Datepicker (or any other date picker library)
+    $(document).ready(function() {
+        $('#handoverDate').datepicker({
+            format: 'yyyy-mm-dd', // Set date format
+            autoclose: true, // Close picker on date selection
+            todayHighlight: true // Highlight today's date
+        });
+    });
+</script>
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

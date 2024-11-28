@@ -25,6 +25,12 @@
     <div class="row rounded border p-4 bg-light">
         <table class="table">
             <tr>
+                <th>Photo</th>
+                <td>
+                    <img th:src="@{'/images/device/'+${device.serialNumber}+'/'+${device.imageFileName}}" alt="..." width="100"/>
+                </td>
+            </tr>
+            <tr>
                 <th>Id</th><td th:text="${device.id}"></td>
             </tr>
             <tr>
@@ -71,7 +77,7 @@
     <hr/>
 
 
-    <!--Device Employee list  -->
+    <!-- device Assets list  -->
     <div class="table-responsive">
         <table class="table border">
             <thead>
@@ -82,27 +88,49 @@
 
             <th style="white-space: nowrap;">Work Mobile</th>
             <th>Email</th>
-            <th>Created At</th>
+            <th>Asset Code</th>
+            <th>Received Date</th>
+            <th>Handover Date</th>
             </thead>
 
             <tbody>
-            <tr th:each="employee: ${deviceEmployees}">
+            <tr th:each="asset: ${deviceAssets}">
                 <td>
-                    <input type="checkbox" name="badgeNumber" th:value="${employee.badgeNumber}"/>
+                    <input type="checkbox" name="badgeNumber" th:value="${asset.employee.badgeNumber}"/>
                 </td>
                 <td>
-                    <img th:src="@{'/images/'+${employee.badgeNumber}+'/'+${employee.imageFileName}}" alt="..." width="100"/>
+                    <img th:src="@{'/images/'+${asset.employee.badgeNumber}+'/'+${asset.employee.imageFileName}}" alt="..." width="100"/>
                 </td>
                 <td>
-                    <a class="btn btn-info" th:text="${employee.badgeNumber}" th:href="@{/employee/detail(badgeNumber=${employee.badgeNumber})}"></a>
+                    <a class="btn btn-info" th:text="${asset.employee.badgeNumber}" th:href="@{/employee/detail(badgeNumber=${asset.employee.badgeNumber})}"></a>
                 </td>
                 <td>
-                    <p th:text="${employee.name}"></p><br/><p th:text="${employee.arName}"></p>
+                    <p th:text="${asset.employee.name}"></p><br/><p th:text="${asset.employee.arName}"></p>
                 </td>
 
-                <td th:text="${employee.workMobile}"></td>
-                <td th:text="${employee.workEmail}"></td>
-                <td th:text="${employee.createdAt}"></td>
+                <td th:text="${asset.employee.workMobile}"></td>
+                <td th:text="${asset.employee.workEmail}"></td>
+                <td>
+                    <a class="btn btn-info" th:text="${asset.code}" th:href="@{'/device/printAsset?code='+${asset.code}}"></a>
+                </td>
+                <td th:text="${asset.receivedDate}"></td>
+
+                <td>
+                    <span th:if="${asset.handoverDate != null}" th:text="${asset.handoverDate}"></span>
+                    <button
+                            th:if="${asset.handoverDate == null}"
+                            class="btn btn-primary btn-sm"
+                            data-bs-toggle="modal"
+                            data-bs-target="#handoverModal"
+                            th:attr="data-asset-code=${asset.code}">
+                        Handover
+                    </button>
+                </td>
+
+
+
+
+
             </tr>
 
             </tbody>
@@ -187,6 +215,65 @@
        });
 
 </script>
+
+
+
+<!-- Handover Modal -->
+<div class="modal fade" id="handoverModal" tabindex="-1" aria-labelledby="handoverModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form th:action="@{/device/handover}" method="post" th:with="_csrfToken=${_csrf.token}">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="handoverModalLabel">Handover Asset</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="assetCode" id="assetCode" />
+
+
+                    <div class="mb-3">
+                        <label for="handoverDate" class="form-label">Handover Date</label>
+                        <input type="date" class="form-control" id="handoverDate" name="handoverDate" placeholder="Select a date" required />
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label for="handoverNote" class="form-label">Note</label>
+                        <input type="text" class="form-control" id="handoverNote" name="handoverNote" placeholder="Note"  />
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Attach asset code to hidden input when the modal is triggered
+    const handoverModal = document.getElementById('handoverModal');
+    handoverModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget; // Button that triggered the modal
+        const assetCode = button.getAttribute('data-asset-code'); // Extract data-asset-code
+        const assetCodeInput = document.getElementById('assetCode');
+        assetCodeInput.value = assetCode; // Set hidden input value
+    });
+
+    // Initialize Bootstrap Datepicker (or any other date picker library)
+    $(document).ready(function() {
+        $('#handoverDate').datepicker({
+            format: 'yyyy-mm-dd', // Set date format
+            autoclose: true, // Close picker on date selection
+            todayHighlight: true // Highlight today's date
+        });
+    });
+</script>
+
+
 
 
 <div th:replace="~{fragments/footer :: footer}"></div>

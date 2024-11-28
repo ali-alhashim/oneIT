@@ -3,6 +3,8 @@ package com.alhashim.oneIT.repositories;
 import com.alhashim.oneIT.models.Asset;
 import com.alhashim.oneIT.models.Device;
 import com.alhashim.oneIT.models.Employee;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,4 +28,15 @@ public interface AssetRepository extends JpaRepository<Asset, Long> {
 
 
     Optional<Asset> findByCode(String code);
+
+
+    @Query("SELECT e FROM Asset e WHERE " +
+            "LOWER(e.code) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(e.employee.badgeNumber) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(e.device.category) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(e.device.serialNumber) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(e.employee.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(e.employee.arName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(e.employee.department.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    Page<Asset> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
 }

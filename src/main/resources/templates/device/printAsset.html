@@ -61,6 +61,26 @@
             <td><strong>Assigned To</strong></td>
             <td><span th:text="${asset.employee.name}">John Doe</span></td>
         </tr>
+        <tr>
+            <td><strong>Badge Number</strong></td>
+            <td><span th:text="${asset.employee.badgeNumber}">A000</span></td>
+        </tr>
+        <tr>
+            <td><strong>Department</strong></td>
+            <td><span th:text="${asset.employee.department !=null ? asset.employee.department.name : 'No department'}">John Doe</span></td>
+        </tr>
+        <tr>
+            <td><strong>Email</strong></td>
+            <td><span th:text="${asset.employee.workEmail}">Ali@Ali.com</span></td>
+        </tr>
+        <tr>
+            <td><strong>Mobile</strong></td>
+            <td><span th:text="${asset.employee.workMobile}">05666</span></td>
+        </tr>
+        <tr>
+            <td><strong>Note</strong></td>
+            <td><span th:text="${asset.note}">Note</span></td>
+        </tr>
         </tbody>
     </table>
 </page>

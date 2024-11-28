@@ -26,6 +26,8 @@ public class DeviceDto {
 
     private String invoiceNumber;
 
+    private String badgeNumber;
+
     private String poNumber;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -109,5 +111,13 @@ public class DeviceDto {
 
     public void setAcquisitionDate(Date acquisitionDate) {
         this.acquisitionDate = acquisitionDate;
+    }
+
+    public String getBadgeNumber() {
+        return badgeNumber;
+    }
+
+    public void setBadgeNumber(String badgeNumber) {
+        this.badgeNumber = badgeNumber;
     }
 }

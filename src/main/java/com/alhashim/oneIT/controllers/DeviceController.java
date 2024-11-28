@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -75,9 +76,11 @@ public class DeviceController {
     @GetMapping("/add")
     public String addDevicePage(Model model)
     {
+        List<Employee> employees = employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
         DeviceDto deviceDto = new DeviceDto();
         model.addAttribute("deviceDto",deviceDto);
         model.addAttribute("pageTitle","Add New Device");
+        model.addAttribute("employees", employees);
         return "device/add";
     } //GET add
 
@@ -107,6 +110,12 @@ public class DeviceController {
         device.setCreatedAt(LocalDateTime.now());
         device.setAcquisitionDate(deviceDto.getAcquisitionDate());
         device.setPurchasePrice(deviceDto.getPurchasePrice());
+
+        Employee deviceUser = employeeRepository.findByBadgeNumber(deviceDto.getBadgeNumber()).orElse(null);
+        if(deviceUser !=null)
+        {
+            device.setUser(deviceUser);
+        }
 
         //upload photo if exist
         if(!deviceDto.getImageFile().isEmpty())
@@ -149,7 +158,7 @@ public class DeviceController {
         if(device !=null)
         {
 
-            List<Employee> deviceEmployees = assetRepository.findEmployeesByDeviceSerialNumber(serialNumber);
+            List<Asset> deviceAssets = assetRepository.findByDevice(device).reversed();
 
             AddDeviceUserDto addDeviceUserDto = new AddDeviceUserDto();
 
@@ -158,7 +167,7 @@ public class DeviceController {
             List<Employee> employees = employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
 
             model.addAttribute("employees", employees);
-            model.addAttribute("deviceEmployees",deviceEmployees);
+            model.addAttribute("deviceAssets",deviceAssets);
             model.addAttribute("pageTitle","Device Detail");
             model.addAttribute("addDeviceUserDto",addDeviceUserDto);
             model.addAttribute("device",device);
@@ -219,8 +228,13 @@ public class DeviceController {
         asset.setEmployee(employee);
         asset.setReceivedDate(addDeviceUserDto.getReceivedDate());
         asset.setDevice(device);
+        asset.setCreatedAt(LocalDateTime.now());
 
         assetRepository.save(asset);
+
+        //update current user
+        device.setUser(employee);
+        deviceRepository.save(device);
 
 
         return "redirect:/device/printAsset?code="+theNextAssetCode;
@@ -239,6 +253,25 @@ public class DeviceController {
         }
 
         model.addAttribute("message", "No asset with this code: "+code);
+        return "/404";
+
+    } //GET print Asset
+
+
+
+    @PostMapping("/handover")
+    public String deviceHandover(@RequestParam String assetCode, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date handoverDate, @RequestParam(required = false) String handoverNote)
+    {
+        Asset asset = assetRepository.findByCode(assetCode).orElse(null);
+        if(asset !=null)
+        {
+            asset.setHandoverDate(handoverDate);
+            asset.setNote(handoverNote);
+            asset.setUpdatedAt(LocalDateTime.now());
+            assetRepository.save(asset);
+            return "redirect:/device/detail?serialNumber="+asset.getDevice().getSerialNumber();
+        }
+
         return "/404";
 
     }

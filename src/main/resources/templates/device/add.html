@@ -68,6 +68,28 @@
             </div>
 
 
+
+            <div class="mb-3">
+            <select class="form-select"  id="deviceUser"  name="badgeNumber" th:field="${deviceDto.badgeNumber}">
+                <option value="none">None</option>
+                <option
+                        th:each="employee: ${employees}"
+                        th:value="${employee.badgeNumber}"
+                        th:text="${employee.name} +'-'+ ${employee.arName}">
+
+                </option>
+
+            </select>
+            </div>
+            <script>
+                $(document).ready(function() {
+                  $('#deviceUser').select2();
+                });
+            </script>
+
+
+
+
             <div class="mb-3">
                 <label for="formFile" class="form-label">Photo</label>
                 <input class="form-control" type="file" id="formFile" name="imageFileName" th:field="${deviceDto.imageFile}">
