@@ -14,8 +14,12 @@
             <a href="/ticket/add" class="btn btn-success">Add</a>
         </div>
 
-        <div class="col-4">
-            <a href="/ticket/downloadTemplate" class="btn btn-success">Download employee template CSV</a>
+        <div class="col-2">
+            <button class="btn btn-secondary">Assign Selected Tickets</button>
+        </div>
+
+        <div class="col-2">
+            <a href="/ticket/downloadTemplate" class="btn btn-success">Download CSV</a>
         </div>
 
         <div class="col-2">
@@ -70,6 +74,8 @@
 
             <thead>
             <th>#</th>
+            <th>Id</th>
+            <th>Badge No.</th>
             <th>Requested By</th>
             <th style="white-space: nowrap;">Created At</th>
             <th>Subject</th>
@@ -84,17 +90,31 @@
             <tbody>
             <tr th:each="ticket: ${tickets}">
                 <td>
-                    <input type="checkbox" name="id" th:value="${ticket.id}"/>
+                    <input type="checkbox" name="ticketId" th:value="${ticket.id}">
+                </td>
+                <td>
+                    <a class="btn btn-info" th:text="${ticket.id}" th:href="@{/ticket/detail(id=${ticket.id})}"></a>
                 </td>
                 <td>
                     <a class="btn btn-info" th:text="${ticket.requestedBy.badgeNumber}" th:href="@{/employee/detail(badgeNumber=${ticket.requestedBy.badgeNumber})}"></a>
                 </td>
+                <td th:text="${ticket.requestedBy.name}"></td>
                 <td th:text="${ticket.createdAt}"> </td>
                 <td th:text="${ticket.subject}"></td>
                 <td th:text="${ticket.description}"></td>
                 <td th:text="${ticket.priority}"></td>
                 <td>
-                    <a class="btn btn-info" th:text="${ticket.handledBy !=null ? ticket.handledBy.badgeNumber : 'No Assigned yet'}" th:href="@{/employee/detail(badgeNumber=${ticket.handledBy !=null ? ticket.handledBy.badgeNumber : '#'})}"></a>
+
+
+
+                    <a class="btn btn-info"
+                       th:text="${ticket.handledBy != null ? ticket.handledBy.badgeNumber : 'Handle'}"
+
+                       th:href="${ticket.handledBy != null ? '/employee/detail?badgeNumber=' + ticket.handledBy.badgeNumber : '/ticket/handle?id=' + ticket.id}">
+                    </a>
+
+
+
                 </td>
                 <td th:text="${ticket.status}"></td>
 

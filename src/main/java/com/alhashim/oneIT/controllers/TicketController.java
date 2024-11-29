@@ -21,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -140,5 +141,26 @@ public class TicketController {
 
         return "/404";
 
+    } //add POST
+
+
+    @GetMapping("/handle")
+    public String handleTicket(@RequestParam Long id)
+    {
+        Ticket ticket = ticketRepository.findById(id).orElse(null);
+        if(ticket !=null)
+        {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+
+            ticket.setHandledBy(currentUser);
+            ticket.setAssignedBy(currentUser);
+            ticket.setAssignedDate(LocalDateTime.now());
+            ticket.setStatus("In Progress");
+            ticketRepository.save(ticket);
+            return "redirect:/ticket/list";
+        }
+
+        return "/404";
     }
 }

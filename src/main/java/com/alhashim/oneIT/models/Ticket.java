@@ -6,6 +6,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "tickets")
@@ -30,6 +31,13 @@ public class Ticket {
 
     // Low, Medium, High
     private String priority;
+
+    @Column(updatable = false)
+    private LocalDateTime assignedDate;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "assigned_by", nullable = true)
+    private Employee assignedBy;
 
     // Draft, Submitted, In Progress, Done, Canceled
     private String status;
@@ -147,5 +155,21 @@ public class Ticket {
 
     public void setSatisfactionRating(int satisfactionRating) {
         this.satisfactionRating = satisfactionRating;
+    }
+
+    public LocalDateTime getAssignedDate() {
+        return assignedDate;
+    }
+
+    public void setAssignedDate(LocalDateTime assignedDate) {
+        this.assignedDate = assignedDate;
+    }
+
+    public Employee getAssignedBy() {
+        return assignedBy;
+    }
+
+    public void setAssignedBy(Employee assignedBy) {
+        this.assignedBy = assignedBy;
     }
 }

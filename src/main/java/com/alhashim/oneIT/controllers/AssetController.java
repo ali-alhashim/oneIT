@@ -16,8 +16,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.Base64;
 
 @Controller
 @RequestMapping("/asset")
@@ -65,5 +73,44 @@ public class AssetController {
         model.addAttribute("pageTitle","Assets List");
         model.addAttribute("importAssetDto", importAssetDto);
         return "asset/list";
+    } //GET LIST
+
+
+    @PostMapping("/uploadSignature")
+    public String uploadSignature(@RequestParam("signature") String signature, @RequestParam String assetCode) {
+        Asset asset = assetRepository.findByCode(assetCode).orElse(null);
+        if(asset !=null)
+        {
+            try {
+                // Decode base64 string
+                byte[] decodedBytes = Base64.getDecoder().decode(signature.split(",")[1]);
+
+                // Define the directory and file path
+                String directoryPath = "public/images/asset/signature/";
+                String filePath = directoryPath + assetCode + "_signature.png";
+
+                // Create the directory if it doesn't exist
+                Files.createDirectories(Paths.get(directoryPath));
+
+                // Save the file
+                try (FileOutputStream fos = new FileOutputStream(new File(filePath))) {
+                    fos.write(decodedBytes);
+                }
+
+
+                asset.setSignatureFileName(assetCode + "_signature.png");
+                asset.setConfirmReceived(true);
+                asset.setConfirmationDate(LocalDateTime.now());
+                assetRepository.save(asset);
+
+                return "redirect:/asset/list";
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "Failed to upload signature.";
+            }
+        }
+
+        return "/404";
+
     }
 }

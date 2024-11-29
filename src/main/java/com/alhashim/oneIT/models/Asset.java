@@ -36,6 +36,11 @@ public class Asset {
 
 
     private boolean confirmReceived;
+
+    private LocalDateTime confirmationDate;
+
+    private String signatureFileName;
+
     private boolean confirmHandover;
 
     private String note;
@@ -127,5 +132,21 @@ public class Asset {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getSignatureFileName() {
+        return signatureFileName;
+    }
+
+    public void setSignatureFileName(String signatureFileName) {
+        this.signatureFileName = signatureFileName;
+    }
+
+    public LocalDateTime getConfirmationDate() {
+        return confirmationDate;
+    }
+
+    public void setConfirmationDate(LocalDateTime confirmationDate) {
+        this.confirmationDate = confirmationDate;
     }
 }
