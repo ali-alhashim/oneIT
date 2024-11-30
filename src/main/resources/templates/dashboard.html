@@ -19,7 +19,7 @@
                 <hr/>
             </div>
             <div class="col-3">
-                <a class="btn btn-danger" href="#">Change Password</a>
+                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change Password</button>
             </div>
 
             <div class="col-3">
@@ -58,6 +58,11 @@
                     <tr>
                         <th>Personal Mobile</th> <td th:text="${personalMobile}"></td>
                     </tr>
+
+                    <tr>
+                        <th>Department Name</th> <td th:text="${departmentName}"></td>
+                    </tr>
+
                     <tr>
                         <th>
                             Roles
@@ -118,7 +123,79 @@
         </div>
         <!--/Notification Center -->
 
+
+
+        <!--restPassword Modal -->
+        <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="changePasswordLabel">Change Password</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <form id="changePasswordForm" method="post" action="/changePassword" th:object="${changePasswordDto}" th:with="_csrfToken=${_csrf.token}">
+
+
+
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+
+                            <div class="form-floating my-1">
+                                <input type="password" class="form-control" id="oldPassword"  name="oldPassword" required th:field="${changePasswordDto.oldPassword}">
+                                <label for="oldPassword">Current Password</label>
+                                <p th:if="${#fields.hasErrors('oldPassword')}" th:errorclass="text-danger" th:errors="${changePasswordDto.oldPassword}"></p>
+                            </div>
+
+                            <div class="form-floating my-1">
+                                <input type="password" class="form-control" id="newPassword"  name="newPassword" required th:field="${changePasswordDto.newPassword}">
+                                <label for="newPassword">New Password</label>
+                                <p th:if="${#fields.hasErrors('newPassword')}" th:errorclass="text-danger" th:errors="${changePasswordDto.newPassword}"></p>
+                            </div>
+
+                        </form>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="changePasswordButton">Change Password</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            $('#changePasswordButton').on('click', function ()
+               {
+                  const form = $('#changePasswordForm');
+
+                  if ($('#newPassword').val() && $('#oldPassword').val())
+                  {
+                    form.submit(); // Submit the form if a value is not empty
+                  }
+                  else
+                  {
+                    alert('Please enter your Current & New Password.');
+                  }
+                 });
+        </script>
+        <!--/modal-->
+
     </div>
+
+
+
+    <script th:if="${sweetMessage != null}">
+        console.log('[[${#strings.escapeJavaScript(sweetMessage)}]]');
+        Swal.fire({
+            position: 'top-end',
+            icon: 'success',  // Change this based on the context (e.g., 'error')
+            title: '[[${#strings.escapeJavaScript(sweetMessage)}]]',  // Enclosed in quotes
+            showConfirmButton: false,
+            timer: 1800
+        });
+    </script>
 
 
 </main>

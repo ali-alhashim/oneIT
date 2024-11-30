@@ -230,6 +230,12 @@ public class AssetController {
                         Date handoverDate = dateFormat.parse(data[5].trim()); //from string to date format [1965-05-20]
                         asset.setHandoverDate(handoverDate);
                     }
+                    else
+                    {
+                        //no hand over so the device with the user
+                        device.setUser(employee);
+                        deviceRepository.save(device);
+                    }
 
 
 
