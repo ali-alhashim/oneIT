@@ -16,6 +16,7 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     @Query("SELECT e FROM Device e WHERE " +
             "LOWER(e.serialNumber) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(e.category) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(e.model) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(e.manufacture) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(e.description) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<Device> findByKeyword(@Param("keyword") String keyword, Pageable pageable);

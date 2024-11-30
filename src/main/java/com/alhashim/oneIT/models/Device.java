@@ -24,6 +24,8 @@ public class Device {
 
     private String category;
 
+    private String model;
+
     private String description;
 
     private BigDecimal purchasePrice;
@@ -174,5 +176,13 @@ public class Device {
 
     public void setImageFileName(String imageFileName) {
         this.imageFileName = imageFileName;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
     }
 }

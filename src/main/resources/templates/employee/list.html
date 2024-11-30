@@ -64,7 +64,7 @@
      </div>
     <hr/>
     <!--Employee list  -->
-    <h4 th:text="${'Total Records: '+ employees.size()}"></h4>
+    <h4 th:text="${'Total Records: '+ totalItems}"></h4>
     <div class="table-responsive">
     <table class="table border">
         <thead>
@@ -105,28 +105,44 @@
 
 
 
+    <!--Page navigation -->
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center">
-            <li class="page-item">
-                <a class="page-link" th:href="@{/employee/list(page=${currentPage - 1}, size=${pageSize})}">Previous</a>
+            <!-- Previous Button -->
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                <a class="page-link" th:href="@{/employee/list(page=${currentPage - 1}, size=${pageSize})}" tabindex="-1">Previous</a>
             </li>
 
-            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-                <a class="page-link"
-                   th:href="@{/employee/list(page=${i}, size=${pageSize})}"
-                   th:classappend="${i == currentPage} ? 'active'">
-                    <span th:text="${i + 1}"></span>
-                </a>
+            <!-- Start of Pagination Numbers -->
+            <li class="page-item" th:if="${currentPage > 2}">
+                <a class="page-link" th:href="@{/employee/list(page=0, size=${pageSize})}">1</a>
+            </li>
+            <li class="page-item disabled" th:if="${currentPage > 2}">
+                <a class="page-link">...</a>
             </li>
 
+            <!-- Dynamic Page Numbers -->
+            <li class="page-item" th:each="i : ${#numbers.sequence(currentPage - 2 > 0 ? currentPage - 2 : 0, currentPage + 2 < totalPages - 1 ? currentPage + 2 : totalPages - 1)}"
+                th:classappend="${i == currentPage} ? 'active'">
+                <a class="page-link" th:href="@{/employee/list(page=${i}, size=${pageSize})}" th:text="${i + 1}"></a>
+            </li>
 
+            <!-- End of Pagination Numbers -->
+            <li class="page-item disabled" th:if="${currentPage < totalPages - 3}">
+                <a class="page-link">...</a>
+            </li>
+            <li class="page-item" th:if="${currentPage < totalPages - 3}">
+                <a class="page-link" th:href="@{/employee/list(page=${totalPages - 1}, size=${pageSize})}" th:text="${totalPages}"></a>
+            </li>
 
-            <li class="page-item">
+            <!-- Next Button -->
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
                 <a class="page-link" th:href="@{/employee/list(page=${currentPage + 1}, size=${pageSize})}">Next</a>
             </li>
-
         </ul>
     </nav>
+
+    <!--/page navigation-->
 
 
 </div>

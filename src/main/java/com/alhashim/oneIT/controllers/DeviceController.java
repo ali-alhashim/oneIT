@@ -9,6 +9,7 @@ import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.repositories.AssetRepository;
 import com.alhashim.oneIT.repositories.DeviceRepository;
 import com.alhashim.oneIT.repositories.EmployeeRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,11 +26,13 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -300,7 +303,124 @@ public class DeviceController {
 
         return "/404";
 
-    }
+    } //Post handover device
+
+
+    @PostMapping("/importCSV")
+    public String importDevices(ImportDeviceDto importDeviceDto, Model model)
+    {
+        String uploadDir = "public/upload/device/";
+        Path uploadPath = Paths.get(uploadDir, "device");
+
+        try {
+            Files.createDirectories(uploadPath);
+        } catch (IOException e) {
+
+            // Redirect to error page if the directory cannot be created
+            model.addAttribute("message", e.getMessage());
+            return "/404";
+        }
+
+        MultipartFile file = importDeviceDto.getCsvFile();
+
+        // Validate file type
+        if (!file.getOriginalFilename().endsWith(".csv")) {
+            // Redirect to an error page for invalid file type
+            model.addAttribute("message", "invalid file type");
+            return "/404";
+        }
+
+
+        // Save the file
+        Path filePath = uploadPath.resolve(file.getOriginalFilename());
+        try {
+            Files.write(filePath, file.getBytes());
+        } catch (IOException e) {
+
+            // Redirect to an error page if the file cannot be saved
+            model.addAttribute("message", e.getMessage());
+            return "/404";
+        }
+
+
+        // Read and process the CSV file
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath.toFile()))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                // Split the line by commas to get CSV columns
+                String[] data = line.split(",");
+
+                // Skip the header row or invalid rows
+                if (data.length < 6 || "Serial Number".equalsIgnoreCase(data[0])) {
+                    continue;
+                }
+
+                // Parse and insert data into the database
+                try{
+                    Device device = new Device();
+                    device.setSerialNumber(data[0].trim()); //first csv column is serial number
+                    device.setManufacture(data[1].trim()); // second column is Manufacture
+                    device.setCategory(data[2].trim());    // third column is Category
+                    device.setModel(data[3].trim());
+                    device.setDescription(data[4].trim());
+
+                    Date acquisitionDate = dateFormat.parse(data[5].trim()); //from string to date format [1965-05-20]
+                    device.setAcquisitionDate(acquisitionDate);
+
+                    device.setStatus(data[6].trim());
+                    device.setCreatedAt(LocalDateTime.now());
+
+                    deviceRepository.save(device);
+                }
+                catch (Exception e)
+                {
+                    System.out.println(e.getMessage());
+                }
+
+            }
+        } catch (IOException e) {
+
+            // Redirect to an error page if reading the file fails
+            System.out.println(e.getMessage());
+        } //------------------------------------------------
+
+        return "redirect:/device/list";
+    } // POST importCSV
+
+
+    @GetMapping("/downloadTemplate")
+    public void downloadTemplate(HttpServletResponse response)
+    {
+        //create CSV file template for employee table
+        //download to client pc
+        response.setContentType("text/csv; charset=UTF-8");
+        response.setHeader("Content-Disposition", "attachment; filename=device_template.csv");
+        List<Device> devices = deviceRepository.findAll();
+        try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_8))) {
+            writer.write('\ufeff');
+            // Write CSV header row
+            writer.println("Serial Number,Manufacture, Category, Model,Description,Acquisition Date, Status");
+
+            devices.forEach(device -> {
+                writer.println( device.getSerialNumber() +","+
+                                device.getManufacture() +","+
+                                 device.getCategory() +","+
+                                device.getModel() +","+
+                                device.getDescription() +","+
+                                device.getAcquisitionDate() +","+
+                                device.getStatus() );
+
+            });
+
+
+        } catch (IOException e) {
+           System.out.println(e.getMessage());
+        }
+
+    } //GET CSV Template
+
 
 
 
