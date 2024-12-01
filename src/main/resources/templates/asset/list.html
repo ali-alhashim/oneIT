@@ -46,6 +46,7 @@
         </div>
 
         <div class="col-4">
+
             <form method="get">
                 <div class="row">
                     <div class="col">
@@ -54,10 +55,9 @@
                     <div class="col">
                         <input type="submit" class="btn btn-dark" value="Search">
                     </div>
-
-
                 </div>
             </form>
+
         </div>
     </div>
     <hr/>
@@ -93,9 +93,9 @@
                 <td>
                     <a class="btn btn-info" th:text="${asset.employee.badgeNumber}" th:href="@{/employee/detail(badgeNumber=${asset.employee.badgeNumber})}"></a>
                 </td>
-                <td th:text="${asset.employee.department != null ? asset.employee.department.name : 'No Department'}"></td>
-                <td th:text="${asset.createdAt}"></td>
-                <td th:text="${asset.employee.name}"></td>
+                <td  style="white-space: nowrap;" th:text="${asset.employee.department != null ? asset.employee.department.name : 'No Department'}"></td>
+                <td  style="white-space: nowrap;" th:text="${asset.createdAt}"></td>
+                <td  style="white-space: nowrap;" th:text="${asset.employee.name}"></td>
                 <td th:text="${asset.receivedDate}"></td>
 
                 <td>
@@ -112,8 +112,14 @@
 
                 <td th:text="${asset.note}"></td>
 
-                <td th:text="${asset.confirmReceived}"></td>
-                <td th:text="${asset.confirmHandover}"></td>
+                <td th:text="${asset.confirmReceived}">
+                    <img th:if="${asset.confirmReceived}" th:src="@{/images/upload}">
+                </td>
+
+                <td th:text="${asset.confirmHandover}">
+
+                </td>
+
                 <td th:text="${asset.device.category}"></td>
                 <td>
                     <a class="btn btn-info" th:text="${asset.device.serialNumber}" th:href="@{/device/detail(serialNumber=${asset.device.serialNumber})}"></a>
@@ -133,12 +139,12 @@
         <ul class="pagination justify-content-center">
             <!-- Previous Button -->
             <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                <a class="page-link" th:href="@{/asset/list(page=${currentPage - 1}, size=${pageSize})}" tabindex="-1">Previous</a>
+                <a class="page-link" th:href="@{/asset/list(page=${currentPage - 1}, size=${pageSize}, keyword=${keyword})}" tabindex="-1">Previous</a>
             </li>
 
             <!-- Start of Pagination Numbers -->
             <li class="page-item" th:if="${currentPage > 2}">
-                <a class="page-link" th:href="@{/asset/list(page=0, size=${pageSize})}">1</a>
+                <a class="page-link" th:href="@{/asset/list(page=0, size=${pageSize}, keyword=${keyword})}">1</a>
             </li>
             <li class="page-item disabled" th:if="${currentPage > 2}">
                 <a class="page-link">...</a>
@@ -147,7 +153,7 @@
             <!-- Dynamic Page Numbers -->
             <li class="page-item" th:each="i : ${#numbers.sequence(currentPage - 2 > 0 ? currentPage - 2 : 0, currentPage + 2 < totalPages - 1 ? currentPage + 2 : totalPages - 1)}"
                 th:classappend="${i == currentPage} ? 'active'">
-                <a class="page-link" th:href="@{/asset/list(page=${i}, size=${pageSize})}" th:text="${i + 1}"></a>
+                <a class="page-link" th:href="@{/asset/list(page=${i}, size=${pageSize},keyword=${keyword})}" th:text="${i + 1}"></a>
             </li>
 
             <!-- End of Pagination Numbers -->
@@ -155,12 +161,12 @@
                 <a class="page-link">...</a>
             </li>
             <li class="page-item" th:if="${currentPage < totalPages - 3}">
-                <a class="page-link" th:href="@{/asset/list(page=${totalPages - 1}, size=${pageSize})}" th:text="${totalPages}"></a>
+                <a class="page-link" th:href="@{/asset/list(page=${totalPages - 1}, size=${pageSize}, keyword=${keyword})}" th:text="${totalPages}"></a>
             </li>
 
             <!-- Next Button -->
             <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
-                <a class="page-link" th:href="@{/asset/list(page=${currentPage + 1}, size=${pageSize})}">Next</a>
+                <a class="page-link" th:href="@{/asset/list(page=${currentPage + 1}, size=${pageSize}, keyword=${keyword})}">Next</a>
             </li>
         </ul>
     </nav>

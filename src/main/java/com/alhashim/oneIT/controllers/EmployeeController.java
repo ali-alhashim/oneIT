@@ -27,6 +27,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -59,7 +60,7 @@ public class EmployeeController {
     @Autowired
     DepartmentRepository departmentRepository;
 
-
+       //Employee list only with role of ROLE_ADMIN ROLE_HR, ROLE_SUPPORT
     @GetMapping("/list")
     public String employeeList(Model model, @RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size )
     {
@@ -90,13 +91,15 @@ public class EmployeeController {
         //---------
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
-        String loginUser = currentUser.getBadgeNumber() +"|"+currentUser.getName();
+        String loginUser = currentUser.getBadgeNumber() +" | "+currentUser.getName();
         model.addAttribute("loginUser", loginUser);
         //--------
 
         return "employee/list";
     } // GET List
 
+
+    //role of ROLE_ADMIN, HR, SUPPORT
     @GetMapping("/add")
     public String addEmployeePage(Model model)
     {
@@ -110,13 +113,14 @@ public class EmployeeController {
         //---------
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
-        String loginUser = currentUser.getBadgeNumber() +"|"+currentUser.getName();
+        String loginUser = currentUser.getBadgeNumber() +" | "+currentUser.getName();
         model.addAttribute("loginUser", loginUser);
         //--------
 
         return "employee/add";
     } // GET Add
 
+    //role of SUPERADMIN, HR, SUPPORT
     @PostMapping("/add")
     public String CreateEmployee(@Valid @ModelAttribute EmployeeDto employeeDto, BindingResult result, Model model)
     {
@@ -234,9 +238,19 @@ public class EmployeeController {
                 employee.setRoles(roles);
             }
 
-            if(employeeDto.isIs_SUPERADMIN())
+
+        if(employeeDto.isIs_HR())
+        {
+            Role role = roleRepository.findByRoleName("HR").orElse(null);
+
+            roles.add(role);
+
+            employee.setRoles(roles);
+        }
+
+            if(employeeDto.isIs_ADMIN())
             {
-                Role role = roleRepository.findByRoleName("SUPERADMIN").orElse(null);
+                Role role = roleRepository.findByRoleName("ADMIN").orElse(null);
                 roles.add(role);
                 employee.setRoles(roles);
             }
@@ -266,6 +280,7 @@ public class EmployeeController {
 
     } // POST Add
 
+    //role of SUPERADMIN, HR, SUPPORT
     @GetMapping("/detail")
     public  String detailPage(Model model, @RequestParam String badgeNumber)
     {
@@ -306,6 +321,8 @@ public class EmployeeController {
         return "employee/detail";
     } // GET Detail
 
+
+    //role of SUPERADMIN, HR
     @GetMapping("/downloadTemplate")
     public void downloadTemplate(HttpServletResponse response)
     {
@@ -330,7 +347,7 @@ public class EmployeeController {
 
     } //GET CSV Template
 
-
+    //role of SUPERADMIN
     @PostMapping("/importCSV")
     public String importCSV(ImportEmployeeDto importEmployeeDto, Model model)
     {
@@ -423,7 +440,7 @@ public class EmployeeController {
 
 
 
-
+    //role of SUPERADMIN, HR, SUPPORT
     @GetMapping("/edit")
     public  String editPage(Model model, @RequestParam String badgeNumber)
     {
@@ -464,14 +481,19 @@ public class EmployeeController {
                 employeeDto.setIs_MANAGER(true);
             }
 
-            if(employee.getRoles().stream().anyMatch(role -> "SUPERADMIN".equals(role.getRoleName())))
+            if(employee.getRoles().stream().anyMatch(role -> "ADMIN".equals(role.getRoleName())))
             {
-                employeeDto.setIs_SUPERADMIN(true);
+                employeeDto.setIs_ADMIN(true);
             }
 
             if(employee.getRoles().stream().anyMatch(role -> "SUPPORT".equals(role.getRoleName())))
             {
                 employeeDto.setIs_SUPPORT(true);
+            }
+
+            if(employee.getRoles().stream().anyMatch(role -> "HR".equals(role.getRoleName())))
+            {
+                employeeDto.setIs_HR(true);
             }
 
 
@@ -497,7 +519,7 @@ public class EmployeeController {
 
     } //--------GET edit
 
-
+    //role of SUPERADMIN, HR, SUPPORT
     @PostMapping("/edit")
     public String updateEmployee(@Valid @ModelAttribute EmployeeDto employeeDto, BindingResult result, Model model)
     {
@@ -549,9 +571,9 @@ public class EmployeeController {
                 employee.setRoles(roles);
             }
 
-            if(employeeDto.isIs_SUPERADMIN())
+            if(employeeDto.isIs_ADMIN())
             {
-                Role role = roleRepository.findByRoleName("SUPERADMIN").orElse(null);
+                Role role = roleRepository.findByRoleName("ADMIN").orElse(null);
                 roles.add(role);
                 employee.setRoles(roles);
             }
@@ -627,8 +649,9 @@ public class EmployeeController {
 
     //POST Reset password
 
+    //role of SUPERADMIN, HR, SUPPORT
     @PostMapping("/restPassword")
-    public String resetPassword(@Valid @ModelAttribute RestPasswordDto restPasswordDto, Model model)
+    public String resetPassword(@Valid @ModelAttribute RestPasswordDto restPasswordDto, Model model, RedirectAttributes redirectAttributes)
     {
         System.out.println("you want to reset password for employee with badgeNumber "+restPasswordDto.getBadgeNumber());
         Employee employee = employeeRepository.findByBadgeNumber(restPasswordDto.getBadgeNumber()).orElse(null);
@@ -637,12 +660,15 @@ public class EmployeeController {
         {
             employee.setPassword(passwordEncoder.encode(restPasswordDto.getPassword()));
             employeeRepository.save(employee);
+
+            redirectAttributes.addFlashAttribute("sweetMessage", "Password has been Reset Successfully");
             return "redirect:/employee/detail?badgeNumber="+employee.getBadgeNumber();
         }
         model.addAttribute("message", "No Employee with this Badge Number ! "+restPasswordDto.getBadgeNumber());
         return "/404";
     }
 
+    //role of SUPERADMIN, HR, SUPPORT
     @PostMapping("/changePassword")
     public String changePassword(@RequestParam String currentPassword, @RequestParam String newPassword)
     {

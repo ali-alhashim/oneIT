@@ -186,16 +186,7 @@
 
 
 
-    <script th:if="${sweetMessage != null}">
-        console.log('[[${#strings.escapeJavaScript(sweetMessage)}]]');
-        Swal.fire({
-            position: 'top-end',
-            icon: 'success',  // Change this based on the context (e.g., 'error')
-            title: '[[${#strings.escapeJavaScript(sweetMessage)}]]',  // Enclosed in quotes
-            showConfirmButton: false,
-            timer: 1800
-        });
-    </script>
+
 
 
 </main>

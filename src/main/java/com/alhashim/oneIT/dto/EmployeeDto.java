@@ -39,7 +39,8 @@ public class EmployeeDto {
     private boolean is_USER;
     private boolean is_MANAGER;
     private boolean is_SUPPORT;
-    private boolean is_SUPERADMIN;
+    private boolean is_ADMIN;
+    private boolean is_HR;
 
 
     private String personalMobile;
@@ -157,12 +158,12 @@ public class EmployeeDto {
         this.is_SUPPORT = is_SUPPORT;
     }
 
-    public boolean isIs_SUPERADMIN() {
-        return is_SUPERADMIN;
+    public boolean isIs_ADMIN() {
+        return is_ADMIN;
     }
 
-    public void setIs_SUPERADMIN(boolean is_SUPERADMIN) {
-        this.is_SUPERADMIN = is_SUPERADMIN;
+    public void setIs_ADMIN(boolean is_ADMIN) {
+        this.is_ADMIN = is_ADMIN;
     }
 
     public String getPersonalMobile() {
@@ -189,6 +190,13 @@ public class EmployeeDto {
         this.department = department;
     }
 
+    public boolean isIs_HR() {
+        return is_HR;
+    }
+
+    public void setIs_HR(boolean is_HR) {
+        this.is_HR = is_HR;
+    }
 
     @Override
     public String toString()

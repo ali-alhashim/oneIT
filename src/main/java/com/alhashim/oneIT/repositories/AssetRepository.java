@@ -36,7 +36,7 @@ public interface AssetRepository extends JpaRepository<Asset, Long> {
             "LOWER(e.device.category) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(e.device.serialNumber) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(e.employee.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(e.employee.arName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(e.employee.department.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+            "LOWER(e.employee.arName) LIKE LOWER(CONCAT('%', :keyword, '%'))"
+            )
     Page<Asset> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
 }

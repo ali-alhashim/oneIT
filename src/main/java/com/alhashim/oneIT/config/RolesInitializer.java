@@ -21,7 +21,7 @@ public class RolesInitializer {
         return args -> {
 
 
-                            //  SUPERADMIN role exists, in admin initializer
+                            //  ADMIN role exists, in admin initializer
 
 
                             // Check if USER role exists, if not create it
@@ -29,41 +29,43 @@ public class RolesInitializer {
                             if(userRole ==null){
                                 userRole = new Role();
                                 userRole.setRoleName("USER");
-                                userRole.setCanDelete(false);
-                                userRole.setCanEdit(false);
-                                userRole.setCanRead(true);
-                                userRole.setCanWrite(true);
+
                                 roleRepository.save(userRole);
                                 System.out.println("USER role created.");
                             }
 
 
-                            // Check if MANAGER role exists, if not create it
+                            // Check if ROLE_MANAGER role exists, if not create it
                             Role managerRole = roleRepository.findByRoleName("MANAGER").orElse(null);
                             if(managerRole ==null){
                                 managerRole = new Role();
                                 managerRole.setRoleName("MANAGER");
-                                managerRole.setCanDelete(false);
-                                managerRole.setCanEdit(false);
-                                managerRole.setCanRead(true);
-                                managerRole.setCanWrite(true);
+
                                 roleRepository.save(managerRole);
                                 System.out.println("MANAGER role created.");
                             }
 
 
+                            // Check if ROLE_HR role exists, if not create it
+                            Role hrRole = roleRepository.findByRoleName("HR").orElse(null);
+                            if(hrRole ==null){
+                                hrRole = new Role();
+                                hrRole.setRoleName("HR");
 
-                            // Check if SUPPORT role exists, if not create it
+                                roleRepository.save(hrRole);
+                                System.out.println("HR created.");
+                            }
+
+
+
+                            // Check if ROLE_SUPPORT role exists, if not create it
                             Role supportRole = roleRepository.findByRoleName("SUPPORT").orElse(null);
                             if(supportRole ==null){
                                 supportRole = new Role();
                                 supportRole.setRoleName("SUPPORT");
-                                supportRole.setCanDelete(false);
-                                supportRole.setCanEdit(false);
-                                supportRole.setCanRead(true);
-                                supportRole.setCanWrite(true);
+
                                 roleRepository.save(supportRole);
-                                System.out.println("SUPPORT role created.");
+                                System.out.println("SUPPORT  created.");
                             }
 
                        };

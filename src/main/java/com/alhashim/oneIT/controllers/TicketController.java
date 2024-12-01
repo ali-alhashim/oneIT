@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -48,7 +49,7 @@ public class TicketController {
         Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
 
         boolean isSupportOrAdmin = currentUser.getRoles().stream()
-                .anyMatch(role -> role.getRoleName().equalsIgnoreCase("SUPPORT") || role.getRoleName().equalsIgnoreCase("SUPERADMIN"));
+                .anyMatch(role -> role.getRoleName().equalsIgnoreCase("SUPPORT") || role.getRoleName().equalsIgnoreCase("ADMIN"));
 
 
         Page<Ticket> ticketPage;
@@ -70,6 +71,12 @@ public class TicketController {
                 ticketPage = ticketRepository.findByRequestedBy(currentUser, pageable);
             }
         }
+
+        //---------
+
+        String loginUser = currentUser.getBadgeNumber() +" | "+currentUser.getName();
+        model.addAttribute("loginUser", loginUser);
+        //--------
 
         model.addAttribute("tickets", ticketPage.getContent());
         model.addAttribute("currentPage", page);
@@ -145,22 +152,42 @@ public class TicketController {
 
 
     @GetMapping("/handle")
-    public String handleTicket(@RequestParam Long id)
+    public String handleTicket(@RequestParam Long id, RedirectAttributes redirectAttributes)
     {
-        Ticket ticket = ticketRepository.findById(id).orElse(null);
-        if(ticket !=null)
-        {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
 
-            ticket.setHandledBy(currentUser);
-            ticket.setAssignedBy(currentUser);
-            ticket.setAssignedDate(LocalDateTime.now());
-            ticket.setStatus("In Progress");
-            ticketRepository.save(ticket);
+        boolean isSupportOrAdmin = currentUser.getRoles().stream()
+                .anyMatch(role -> role.getRoleName().equalsIgnoreCase("SUPPORT") || role.getRoleName().equalsIgnoreCase("ADMIN"));
+        if(isSupportOrAdmin)
+        {
+            Ticket ticket = ticketRepository.findById(id).orElse(null);
+
+            if(ticket !=null)
+            {
+
+
+                //check the currentUser must be a support or admin else he can't handle
+
+
+                ticket.setHandledBy(currentUser);
+                ticket.setAssignedBy(currentUser);
+                ticket.setAssignedDate(LocalDateTime.now());
+                ticket.setStatus("In Progress");
+                ticketRepository.save(ticket);
+                return "redirect:/ticket/list";
+            }
+            else
+            {
+                return "/404";
+            }
+        }
+        else
+        {
+            redirectAttributes.addFlashAttribute("sweetMessage", "You Are Not IT Support or Admin to Handel IT Ticket !");
             return "redirect:/ticket/list";
         }
 
-        return "/404";
+
     }
 }

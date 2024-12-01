@@ -75,14 +75,14 @@
             <thead>
             <th>#</th>
             <th>Id</th>
-            <th>Badge No.</th>
-            <th>Requested By</th>
+            <th style="white-space: nowrap;">Badge No.</th>
+            <th style="white-space: nowrap;">Requested By</th>
             <th style="white-space: nowrap;">Created At</th>
-            <th>Subject</th>
-            <th>Description</th>
+            <th style="white-space: nowrap;">Subject</th>
+
             <th style="white-space: nowrap;">Priority</th>
-            <th>Handled By</th>
-            <th>Status</th>
+            <th style="white-space: nowrap;">Handled By</th>
+            <th style="white-space: nowrap;">Status</th>
             <th style="white-space: nowrap;">Satisfaction Rating</th>
 
             </thead>
@@ -95,14 +95,14 @@
                 <td>
                     <a class="btn btn-info" th:text="${ticket.id}" th:href="@{/ticket/detail(id=${ticket.id})}"></a>
                 </td>
-                <td>
+                <td style="white-space: nowrap;">
                     <a class="btn btn-info" th:text="${ticket.requestedBy.badgeNumber}" th:href="@{/employee/detail(badgeNumber=${ticket.requestedBy.badgeNumber})}"></a>
                 </td>
-                <td th:text="${ticket.requestedBy.name}"></td>
-                <td th:text="${ticket.createdAt}"> </td>
-                <td th:text="${ticket.subject}"></td>
-                <td th:text="${ticket.description}"></td>
-                <td th:text="${ticket.priority}"></td>
+                <td style="white-space: nowrap;" th:text="${ticket.requestedBy.name}"></td>
+                <td style="white-space: nowrap;" th:text="${ticket.createdAt}"> </td>
+                <td style="white-space: nowrap;" th:text="${ticket.subject}"></td>
+
+                <td style="white-space: nowrap;" th:text="${ticket.priority}"></td>
                 <td>
 
 

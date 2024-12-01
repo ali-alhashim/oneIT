@@ -24,8 +24,15 @@ public class SecurityConfig  {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/css/**", "/js/**").permitAll() // Allow public access to login and static resources
+                        .requestMatchers("/employee/list").hasAnyRole("ADMIN","HR","SUPPORT")
+                        .requestMatchers("/department/list").hasAnyRole("ADMIN","HR","SUPPORT")
                         .anyRequest().authenticated()
+
                 )
+                .exceptionHandling(exception -> exception
+                        .accessDeniedPage("/403") // Custom 403 Forbidden page
+                )
+
                 .formLogin(form -> form
                         .loginPage("/login")
                         .usernameParameter("badgeNumber") // Custom username parameter
@@ -34,6 +41,7 @@ public class SecurityConfig  {
                         .failureUrl("/login?error=true") // Redirect back to login page on failure
                         .permitAll()
                 )
+
                 .logout(logout -> logout
                         .logoutUrl("/logout") // Logout URL
 

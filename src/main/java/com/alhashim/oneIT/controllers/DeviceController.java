@@ -59,6 +59,8 @@ public class DeviceController {
         {
             // Implement a paginated search query in your repository
             devicePage = deviceRepository.findByKeyword(keyword, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+            model.addAttribute("keyword",keyword);
+
         }
         else
         {
@@ -79,7 +81,7 @@ public class DeviceController {
         //---------
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
-        String loginUser = currentUser.getBadgeNumber() +"|"+currentUser.getName();
+        String loginUser = currentUser.getBadgeNumber() +" | "+currentUser.getName();
         model.addAttribute("loginUser", loginUser);
         //--------
 
@@ -98,7 +100,7 @@ public class DeviceController {
         //---------
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
-        String loginUser = currentUser.getBadgeNumber() +"|"+currentUser.getName();
+        String loginUser = currentUser.getBadgeNumber() +" | "+currentUser.getName();
         model.addAttribute("loginUser", loginUser);
         //--------
 

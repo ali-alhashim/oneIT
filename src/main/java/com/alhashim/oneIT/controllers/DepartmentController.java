@@ -46,7 +46,7 @@ public class DepartmentController {
         //---------
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
-        String loginUser = currentUser.getBadgeNumber() +"|"+currentUser.getName();
+        String loginUser = currentUser.getBadgeNumber() +" | "+currentUser.getName();
         model.addAttribute("loginUser", loginUser);
         //--------
 
@@ -142,7 +142,7 @@ public class DepartmentController {
         //---------
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
-        String loginUser = currentUser.getBadgeNumber() +"|"+currentUser.getName();
+        String loginUser = currentUser.getBadgeNumber() +" | "+currentUser.getName();
         model.addAttribute("loginUser", loginUser);
         //--------
 

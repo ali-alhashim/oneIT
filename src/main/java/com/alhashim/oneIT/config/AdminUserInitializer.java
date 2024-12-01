@@ -30,19 +30,15 @@ public class AdminUserInitializer {
         return args -> {
             String badgeNumber   = "A0000";
             String adminPassword = "admin";
-            String roleName      = "SUPERADMIN";
+            String roleName      = "ADMIN";
 
-            // Check if SUPERADMIN role exists, if not create it
+            // Check if ROLE_ADMIN role exists, if not create it
             Role superAdminRole = roleRepository.findByRoleName(roleName).orElse(null);
             if (superAdminRole == null) {
                 superAdminRole = new Role();
                 superAdminRole.setRoleName(roleName);
-                superAdminRole.setCanEdit(true);
-                superAdminRole.setCanWrite(true);
-                superAdminRole.setCanDelete(true);
-                superAdminRole.setCanRead(true);
                 roleRepository.save(superAdminRole);
-                System.out.println("SUPERADMIN role created.");
+                System.out.println("ADMIN role created.");
             }
 
             // Check if admin user exists
@@ -53,6 +49,7 @@ public class AdminUserInitializer {
 
                 // Set additional admin properties if needed
                 admin.setName("Admin User");
+                admin.setArName("حساب النظام");
                 admin.setRoles(Set.of(superAdminRole));
                 admin.setCreatedAt(LocalDateTime.now());
                 admin.setPersonalMobile("966547078933");

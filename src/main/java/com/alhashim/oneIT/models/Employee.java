@@ -90,6 +90,10 @@ public class Employee {
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Asset> assets;
 
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Document> documents; // Associated documents
+
     //--------------
 
 
@@ -269,5 +273,14 @@ public class Employee {
 
     public void setDevices(List<Device> devices) {
         this.devices = devices;
+    }
+
+
+    public List<Document> getDocuments() {
+        return documents;
+    }
+
+    public void setDocuments(List<Document> documents) {
+        this.documents = documents;
     }
 }

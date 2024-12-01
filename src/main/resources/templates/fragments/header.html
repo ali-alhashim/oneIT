@@ -23,7 +23,22 @@
 
 
 <nav class="navbar bg-dark navbar-expand-lg  border-bottom border-body" data-bs-theme="dark" th:fragment="header">
-    <a class=" mx-3 nav-item" href="#" th:text="${loginUser}">A000|Admin</a>
+
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="${loginUser}">
+            Welcome Mr. Ali Alhashim
+        </a>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="/logout">Logout</a></li>
+
+        </ul>
+    </li>
+    </ul>
+
+
+
+
     <div class="container">
         <a class="navbar-brand" href="#">OneIT</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">

@@ -14,10 +14,7 @@ public class Role {
 
     private String roleName;
 
-    private boolean canEdit;
-    private boolean canWrite;
-    private boolean canDelete;
-    private boolean canRead;
+
 
     @ManyToMany(mappedBy = "roles")
     private Set<Employee> employees = new HashSet<>();
@@ -38,37 +35,7 @@ public class Role {
         this.roleName = roleName;
     }
 
-    public boolean isCanEdit() {
-        return canEdit;
-    }
 
-    public void setCanEdit(boolean canEdit) {
-        this.canEdit = canEdit;
-    }
-
-    public boolean isCanWrite() {
-        return canWrite;
-    }
-
-    public void setCanWrite(boolean canWrite) {
-        this.canWrite = canWrite;
-    }
-
-    public boolean isCanDelete() {
-        return canDelete;
-    }
-
-    public void setCanDelete(boolean canDelete) {
-        this.canDelete = canDelete;
-    }
-
-    public boolean isCanRead() {
-        return canRead;
-    }
-
-    public void setCanRead(boolean canRead) {
-        this.canRead = canRead;
-    }
 
     public Set<Employee> getEmployees() {
         return employees;

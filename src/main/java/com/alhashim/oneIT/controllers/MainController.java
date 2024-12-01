@@ -38,7 +38,9 @@ public class MainController {
         //---------
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
-        String loginUser = currentUser.getBadgeNumber() +"|"+currentUser.getName();
+
+        String loginUser = currentUser.getBadgeNumber() +" | "+currentUser.getName();
+
         model.addAttribute("loginUser", loginUser);
         //--------
 
@@ -114,6 +116,12 @@ public class MainController {
 
 
         return "redirect:/dashboard";
+    }
+
+
+    @GetMapping("/403")
+    public String accessDenied() {
+        return "403"; // This maps to 403.html in the templates folder
     }
 
 

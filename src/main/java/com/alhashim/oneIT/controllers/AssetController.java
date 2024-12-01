@@ -61,6 +61,7 @@ public class AssetController {
         {
             // Implement a paginated search query in your repository
             assetPage = assetRepository.findByKeyword(keyword, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+            model.addAttribute("keyword",keyword);
         }
         else
         {
@@ -73,7 +74,7 @@ public class AssetController {
         //---------
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
-        String loginUser = currentUser.getBadgeNumber() +"|"+currentUser.getName();
+        String loginUser = currentUser.getBadgeNumber() +" | "+currentUser.getName();
         model.addAttribute("loginUser", loginUser);
         //--------
 
