@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main>
+
+    <div class="container bordered my-5 ">
+
+        <div class="col-3 m-1">
+            <a class="btn  btn-secondary" th:href="@{'/ticket/update?id=' + ${ticket.id} }">update</a>
+        </div>
+
+
+        <!--toolbar-->
+        <div class="row rounded border p-4 bg-light">
+            <div class="row my-3">
+                <h5>Status</h5>
+                <hr/>
+                <h6 th:text="${ticket.status}"></h6>
+            </div>
+
+          <!-- -->
+
+
+        </div>
+        <!--/toolbar-->
+
+        <!--basic info -->
+        <div class="row rounded border p-4 bg-light">
+
+
+                <table class="table   border">
+                    <tr>
+                        <th>Created At </th> <td th:text="${ticket.createdAt}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Id </th> <td th:text="${ticket.id}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Badge Number</th> <td th:text="${ticket.requestedBy.badgeNumber}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Requested By</th> <td th:text="${ticket.requestedBy.name}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Subject</th> <td th:text="${ticket.subject}"></td>
+                    </tr>
+                    <tr>
+                        <th>Description</th> <td th:text="${ticket.description}"></td>
+                    </tr>
+                    <tr>
+                        <th>Priority</th> <td th:text="${ticket.priority}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Device</th> <td th:text="${ticket.device !=null ? ticket.device.serialNumber:'No Device' }"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Assigned Date</th> <td th:text="${ticket.assignedDate}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Assigned By</th> <td th:text="${ticket.assignedBy !=null ? ticket.assignedBy.name: 'Not yet assigned'}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Handled By</th> <td th:text="${ticket.handledBy !=null ? ticket.handledBy.name: 'Not yet assigned'}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Solution</th> <td th:text="${ticket.solution}"></td>
+                    </tr>
+                    <tr>
+                        <th>Satisfaction Rating</th> <td th:text="${ticket.satisfactionRating}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Updated At</th> <td th:text="${ticket.updatedAt}"></td>
+                    </tr>
+
+
+
+
+
+
+
+                </table>
+
+        </div>
+        <!--/basic info -->
+
+        <hr/>
+
+        <!-- Ticket Comments -->
+
+
+
+        <!--/Ticket Comments -->
+
+
+
+
+
+    </div><!--/Container -->
+
+
+
+
+</main>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

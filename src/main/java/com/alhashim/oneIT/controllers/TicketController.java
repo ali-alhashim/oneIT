@@ -189,5 +189,39 @@ public class TicketController {
         }
 
 
+    } //Handel
+
+    @GetMapping("/detail")
+    public String ticketDetail(@RequestParam Long id, RedirectAttributes redirectAttributes, Model model)
+    {
+        Ticket ticket = ticketRepository.findById(id).orElse(null);
+        if(ticket ==null)
+        {
+            redirectAttributes.addFlashAttribute("sweetMessage", "Ticket with Id: "+id +" Not Exist !");
+            return "redirect:/ticket/list";
+        }
+
+        //who open the ticket only support or admin or the creator of the ticket
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        if(currentUser ==null)
+        {
+            redirectAttributes.addFlashAttribute("sweetMessage", "Please try to login again !");
+            return "redirect:/ticket/list";
+        }
+
+
+        boolean isSupportOrAdmin = currentUser.getRoles().stream()
+                .anyMatch(role -> role.getRoleName().equalsIgnoreCase("SUPPORT") || role.getRoleName().equalsIgnoreCase("ADMIN"));
+
+        if(!(isSupportOrAdmin || ticket.getRequestedBy() == currentUser))
+        {
+            redirectAttributes.addFlashAttribute("sweetMessage", "you can't view this ticket only for IT Support or System Admin & the Creator of this Ticket");
+            return "redirect:/ticket/list";
+        }
+
+        model.addAttribute("ticket", ticket);
+
+        return "/ticket/detail";
     }
 }
