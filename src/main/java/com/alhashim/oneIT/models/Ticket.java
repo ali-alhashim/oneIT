@@ -7,6 +7,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "tickets")
@@ -32,7 +33,7 @@ public class Ticket {
     // Low, Medium, High
     private String priority;
 
-    @Column(updatable = false)
+
     private LocalDateTime assignedDate;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
@@ -53,6 +54,10 @@ public class Ticket {
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "handled_by", nullable = true)
     private Employee handledBy;
+
+
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
 
 
     private String solution;
@@ -171,5 +176,13 @@ public class Ticket {
 
     public void setAssignedBy(Employee assignedBy) {
         this.assignedBy = assignedBy;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }
