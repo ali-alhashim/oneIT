@@ -250,4 +250,59 @@ public class TicketController {
         redirectAttributes.addFlashAttribute("sweetMessage", "Your Comment Added To Ticket Successfully");
         return "redirect:/ticket/detail";
     }// POST addComment
+
+
+    @PostMapping("/rate")
+    public String ticketRate(RedirectAttributes redirectAttributes, @RequestParam Long id, @RequestParam int rate)
+    {
+        //check current user if he is the creator of ticket he can rate or return error
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+
+        Ticket ticket = ticketRepository.findById(id).orElse(null);
+        if(ticket !=null && currentUser !=null)
+        {
+            if(ticket.getRequestedBy() == currentUser)
+            {
+                ticket.setSatisfactionRating(rate);
+                ticketRepository.save(ticket);
+                redirectAttributes.addAttribute("id",id);
+                return "redirect:/ticket/detail";
+            }
+            redirectAttributes.addFlashAttribute("sweetMessage", "only ticket requester can rate");
+            redirectAttributes.addAttribute("id",id);
+            return "redirect:/ticket/detail";
+        }
+
+        return "/404";
+
+    } //POST Rate
+
+
+    @PostMapping("/update")
+    public String updateTicket(@RequestParam Long id, @RequestParam String solution, @RequestParam String status, RedirectAttributes redirectAttributes)
+    {
+        // only the handler of the ticket  can update the ticket
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        Ticket ticket = ticketRepository.findById(id).orElse(null);
+
+        if(currentUser !=null && ticket !=null)
+        {
+            if(ticket.getHandledBy() == currentUser)
+            {
+                ticket.setStatus(status);
+                ticket.setSolution(solution);
+                ticketRepository.save(ticket);
+                redirectAttributes.addFlashAttribute("sweetMessage", "update successfully");
+            }
+            else{
+                redirectAttributes.addFlashAttribute("sweetMessage", "only ticket handler can update");
+            }
+
+        }
+
+        redirectAttributes.addAttribute("id",id);
+        return "redirect:/ticket/detail";
+    }
 }
