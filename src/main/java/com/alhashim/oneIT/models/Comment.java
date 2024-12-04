@@ -15,8 +15,13 @@ public class Comment {
     private String content;
 
     @ManyToOne
-    @JoinColumn(name = "ticket_id", nullable = false)
+    @JoinColumn(name = "ticket_id", nullable = true)
     private Ticket ticket;
+
+
+    @ManyToOne
+    @JoinColumn(name = "request_id", nullable = true)
+    private Request request;
 
 
     @Column(updatable = false, nullable = false)
@@ -64,5 +69,13 @@ public class Comment {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Request getRequest() {
+        return request;
+    }
+
+    public void setRequest(Request request) {
+        this.request = request;
     }
 }

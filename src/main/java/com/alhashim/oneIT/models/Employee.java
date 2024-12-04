@@ -87,6 +87,10 @@ public class Employee {
     private List<Device> devices; // Multiple devices per employee
 
 
+    @OneToMany(mappedBy = "requestedBy")
+    private List<Request> requests; // Multiple request per employee
+
+
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Asset> assets;
 
@@ -282,5 +286,13 @@ public class Employee {
 
     public void setDocuments(List<Document> documents) {
         this.documents = documents;
+    }
+
+    public List<Request> getRequests() {
+        return requests;
+    }
+
+    public void setRequests(List<Request> requests) {
+        this.requests = requests;
     }
 }
