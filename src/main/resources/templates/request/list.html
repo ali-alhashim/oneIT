@@ -63,11 +63,11 @@
              <td th:text="${request.category}"></td>
              <td th:text="${request.status}"></td>
              <td th:text="${request.updatedAt}"></td>
-             <td>
+             <td style="white-space: nowrap;">
                  <ul>
-                     <li th:if="${request.requiredManagerApproval}"  th:text="${'Manager Approval: ' +(request.managerApproval != null ? request.managerApproval : 'No Response yet') }"></li>
-                     <li th:if="${request.requiredAdminApproval}"    th:text="${'Admin Approval: '   +(request.adminApproval !=null ? request.adminApproval : 'No Response yet')}"></li>
-                     <li th:if="${request.requiredHRApproval}"       th:text="${'HR Approval: ' +(request.hrApproval !=null ? request.hrApproval :'No Response yet')}"></li>
+                     <li th:if="${request.requiredManagerApproval}"  th:text="${'Manager Approval: ' +(request.managerApproval != null ? request.managerApproval : 'No Response ') }"></li>
+                     <li th:if="${request.requiredAdminApproval}"    th:text="${'Admin Approval: '   +(request.adminApproval !=null ? request.adminApproval : 'No Response ')}"></li>
+                     <li th:if="${request.requiredHRApproval}"       th:text="${'HR Approval: ' +(request.hrApproval !=null ? request.hrApproval :'No Response ')}"></li>
                  </ul>
              </td>
             </tr>

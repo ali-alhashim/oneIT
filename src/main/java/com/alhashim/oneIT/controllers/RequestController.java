@@ -1,6 +1,7 @@
 package com.alhashim.oneIT.controllers;
 
 
+import com.alhashim.oneIT.models.Department;
 import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.models.Notification;
 import com.alhashim.oneIT.models.Request;
@@ -176,12 +177,31 @@ public class RequestController {
                 notification.setEmployee(employee);
                 notification.setSubject("Request IT Asset");
 
-                notification.setDescription("Request Number " + request.getId() +
-                                            " Need Your Action. for "+request.getRequestedBy().getName());
+                notification.setDescription("Request Number " + request.getId() +" Need Your Action. for "+request.getRequestedBy().getName());
+
 
                 notification.setPageLink(baseUrl + "/request/detail?id=" + request.getId());
 
                 notificationRepository.save(notification);
+            });
+        }
+
+        if(request.getRequiredManagerApproval())
+        {
+            List<Employee> managers = employeeRepository.findByRoles_RoleName("manager");
+            //get only the manager of requester department
+            Department requesterDepartment = request.getRequestedBy().getDepartment();
+            managers.forEach(manager ->{
+                if((manager.getDepartment() == requesterDepartment) && (requesterDepartment !=null && manager.getDepartment() !=null))
+                {
+                    Notification notification = new Notification();
+                    notification.setCreatedAt(LocalDateTime.now());
+                    notification.setEmployee(manager);
+                    notification.setSubject("Request IT Asset");
+                    notification.setDescription("Request Number " + request.getId() +" Need Your Action. for "+request.getRequestedBy().getName());
+                    notification.setPageLink(baseUrl + "/request/detail?id=" + request.getId());
+                    notificationRepository.save(notification);
+                }
             });
         }
 
@@ -220,7 +240,50 @@ public class RequestController {
         model.addAttribute("request", request);
 
         return "/request/detail";
-    }
+    } // GET Detail
+
+
+    @GetMapping("/approve")
+    public String approveRequest(@RequestParam Long id)
+    {
+        //check first the current user role
+        //also check the required roles
+        Request request = requestRepository.findById(id).orElse(null);
+        if(request ==null)
+        {
+            return "/404";
+        }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        if(currentUser ==null)
+        {
+            return "/404";
+        }
+
+        //if manager approval required and the current user is manager of the requester then approve
+        if(request.getRequiredManagerApproval())
+        {
+            if(currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("MANAGER") ))
+
+            {
+                if((currentUser.getDepartment() == request.getRequestedBy().getDepartment()) && (request.getRequestedBy().getDepartment() !=null && currentUser.getDepartment() !=null))
+                {
+                    request.setManagerApproval(true);
+
+                }
+            }
+            else
+            {
+             System.out.println("Your sent approve for request #"+id+" You are Not Manager for the Requester");
+            }
+        } // -------Manager Approval
+
+        //check all required approval if all true update the status to approved if one false set to rejected
+        request.setUpdatedAt(LocalDateTime.now());
+        requestRepository.save(request);
+        return "redirect:/request/detail?id="+id;
+    } // GET Request Approve
 
 
 }
