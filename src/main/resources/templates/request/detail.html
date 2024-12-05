@@ -1,10 +1,152 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+
 </head>
 <body>
 
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main>
+
+    <div class="container bordered my-5 ">
+
+
+
+
+        <!--toolbar-->
+        <div class="row rounded border p-4 bg-light">
+            <div class="row my-3">
+
+
+
+
+
+            </div>
+
+            <!-- -->
+
+
+        </div>
+        <!--/toolbar-->
+
+        <!--basic info -->
+        <div class="row rounded border p-4 bg-light">
+
+
+            <table class="table   border">
+                <tr>
+                    <th>Status</th> <td th:text="${request.status}"></td>
+                </tr>
+                <tr>
+                    <th>Created At </th> <td th:text="${request.createdAt}"></td>
+                </tr>
+
+                <tr>
+                    <th>Id </th> <td th:text="${request.id}"></td>
+                </tr>
+
+                <tr>
+                    <th>Badge Number</th> <td th:text="${request.requestedBy.badgeNumber}"></td>
+                </tr>
+
+                <tr>
+                    <th>Requested By</th> <td th:text="${request.requestedBy.name}"></td>
+                </tr>
+
+
+                <tr>
+                    <th>Category</th> <td th:text="${request.category}"></td>
+                </tr>
+
+                <tr>
+                    <th>Justification</th> <td th:text="${request.justification}"></td>
+                </tr>
+
+
+
+
+
+                <tr>
+                    <th>Updated At</th> <td th:text="${request.updatedAt}"></td>
+                </tr>
+
+
+
+
+
+
+
+            </table>
+
+        </div>
+        <!--/basic info -->
+
+        <div class="row my-2 border bg-light rounded justify-content-between">
+            <div class="col text-center">
+                <a th:href="@{/request/approve(id=${request.id})}" class="btn btn-success">Approve</a>
+            </div>
+
+            <div class="col text-center">
+                <a th:href="@{/request/reject(id=${request.id})}" class="btn btn-danger">Reject</a>
+            </div>
+        </div>
+
+
+
+
+
+
+        <!--  Comments -->
+        <div>
+            <h3>Comments</h3>
+            <div th:if="${request.getComments() != null and !request.getComments().empty}">
+                <ul>
+                    <li th:each="comment : ${request.getComments()}">
+                        <strong th:text="${comment.employee.name}">Employee Name</strong>:
+                        <span th:text="${comment.content}">Comment Content</span>
+                        <sup th:text="${comment.createdAt}"></sup>
+                    </li>
+                </ul>
+            </div>
+            <div th:if="${request.comments == null or request.comments.empty}">
+                <p>No comments available for this request.</p>
+            </div>
+        </div>
+        <!-- / Comments -->
+
+
+
+        <hr/>
+        <div class="row">
+            <form method="post" action="/request/addComment" th:with="_csrfToken=${_csrf.token}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+                <textarea class="form-control my-2" id="commentId" name="content" placeholder="Write Your Comment..."></textarea>
+                <input type="hidden" name="id" th:value="${request.id}">
+                <input class="btn btn-success my-2" type="submit" value="save">
+            </form>
+
+        </div>
+
+        <hr/>
+
+
+
+
+
+
+    </div><!--/Container -->
+
+
+
+
+
+
+
+
+
+
+</main>
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

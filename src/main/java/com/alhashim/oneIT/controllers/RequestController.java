@@ -130,6 +130,7 @@ public class RequestController {
         request.setRequestedBy(currentUser);
         request.setCreatedAt(LocalDateTime.now());
         request.setUpdatedAt(LocalDateTime.now());
+        request.setJustification(justification);
         request.setStatus("Waiting Approvals ");
 
 
@@ -164,6 +165,8 @@ public class RequestController {
         // send Notification for reject or approval
         String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
 
+
+        //if the approval is required by admin send him notification
         if(request.getRequiredAdminApproval())
         {
             List<Employee> admins = employeeRepository.findByRoles_RoleName("admin");
@@ -186,7 +189,7 @@ public class RequestController {
     } // POST add
 
     @GetMapping("/detail")
-    public String requestDetail(@RequestParam Long id, @RequestParam(required = false) Long nId)
+    public String requestDetail(@RequestParam Long id, @RequestParam(required = false) Long nId, Model model)
     {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -207,6 +210,15 @@ public class RequestController {
                  notificationRepository.save(notification);
              }
         }
+
+        Request request = requestRepository.findById(id).orElse(null);
+        if(request ==null)
+        {
+
+            return "/404";
+        }
+        model.addAttribute("request", request);
+
         return "/request/detail";
     }
 

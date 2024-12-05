@@ -55,7 +55,9 @@
 
             <tbody>
             <tr th:each="request: ${requests}">
-             <td th:text="${request.id}"></td>
+             <td>
+                 <a class="btn btn-info" th:text="${request.id}" th:href="@{/request/detail(id=${request.id})}"></a>
+             </td>
              <td th:text="${request.requestedBy !=null ? request.requestedBy.name : 'None'}"></td>
              <td th:text="${request.createdAt}"></td>
              <td th:text="${request.category}"></td>
