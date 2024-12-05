@@ -74,13 +74,9 @@ public class Employee {
     )
     private Set<Role> roles = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "employee_notifications",
-            joinColumns = @JoinColumn(name = "employee_id"),
-            inverseJoinColumns = @JoinColumn(name = "notification_id")
-    )
-    private Set<Notification> notifications = new HashSet<>();
+
+    @OneToMany(mappedBy = "employee")
+    private List<Notification> notifications;
 
 
     @OneToMany(mappedBy = "user")
@@ -93,6 +89,10 @@ public class Employee {
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Asset> assets;
+
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SystemLog> systemLogs;
 
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -263,13 +263,6 @@ public class Employee {
         this.otpCode = otpCode;
     }
 
-    public Set<Notification> getNotifications() {
-        return notifications;
-    }
-
-    public void setNotifications(Set<Notification> notifications) {
-        this.notifications = notifications;
-    }
 
     public List<Device> getDevices() {
         return devices;
@@ -294,5 +287,21 @@ public class Employee {
 
     public void setRequests(List<Request> requests) {
         this.requests = requests;
+    }
+
+    public List<SystemLog> getSystemLogs() {
+        return systemLogs;
+    }
+
+    public void setSystemLogs(List<SystemLog> systemLogs) {
+        this.systemLogs = systemLogs;
+    }
+
+    public List<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications = notifications;
     }
 }

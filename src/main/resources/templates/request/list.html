@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+
+</head>
+<body class="bg-body-secondary">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container bordered my-5">
+
+    <div class="row" id="toolbar">
+
+
+        <div class="col-2">
+            <a href="/request/add" class="btn btn-success">Add</a>
+        </div>
+
+
+
+
+        <div class="col-4">
+            <form method="get">
+                <div class="row">
+                    <div class="col">
+                        <input type="text" name="keyword" class="form-control" placeholder="Enter Keyword..."/>
+                    </div>
+                    <div class="col">
+                        <input type="submit" class="btn btn-dark" value="Search">
+                    </div>
+
+
+                </div>
+            </form>
+        </div>
+
+
+    </div>
+    <hr/>
+    <!--Devices list  -->
+    <h4 th:text="${'Total Records: '+ totalItems}"></h4>
+    <div class="table-responsive">
+
+
+        <table class="table border">
+            <thead>
+            <th>#</th>
+            <th style="white-space: nowrap;">Request By</th>
+            <th style="white-space: nowrap;">Created At</th>
+            <th style="white-space: nowrap;">Category</th>
+            <th style="white-space: nowrap;">Status</th>
+            <th style="white-space: nowrap;">Updated At</th>
+            <th style="white-space: nowrap;">Approvals</th>
+            </thead>
+
+            <tbody>
+            <tr th:each="request: ${requests}">
+             <td th:text="${request.id}"></td>
+             <td th:text="${request.requestedBy !=null ? request.requestedBy.name : 'None'}"></td>
+             <td th:text="${request.createdAt}"></td>
+             <td th:text="${request.category}"></td>
+             <td th:text="${request.status}"></td>
+             <td th:text="${request.updatedAt}"></td>
+             <td>
+                 <ul>
+                     <li th:if="${request.requiredManagerApproval}"  th:text="${'Manager Approval: ' +(request.managerApproval != null ? request.managerApproval : 'No Response yet') }"></li>
+                     <li th:if="${request.requiredAdminApproval}"    th:text="${'Admin Approval: '   +(request.adminApproval !=null ? request.adminApproval : 'No Response yet')}"></li>
+                     <li th:if="${request.requiredHRApproval}"       th:text="${'HR Approval: ' +(request.hrApproval !=null ? request.hrApproval :'No Response yet')}"></li>
+                 </ul>
+             </td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+    <!--/Employee list -->
+
+
+
+    <!--Page navigation -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <!-- Previous Button -->
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                <a class="page-link" th:href="@{/request/list(page=${currentPage - 1}, size=${pageSize},  keyword=${keyword})}" tabindex="-1">Previous</a>
+            </li>
+
+            <!-- Start of Pagination Numbers -->
+            <li class="page-item" th:if="${currentPage > 2}">
+                <a class="page-link" th:href="@{/request/list(page=0, size=${pageSize},  keyword=${keyword})}">1</a>
+            </li>
+            <li class="page-item disabled" th:if="${currentPage > 2}">
+                <a class="page-link">...</a>
+            </li>
+
+            <!-- Dynamic Page Numbers -->
+            <li class="page-item" th:each="i : ${#numbers.sequence(currentPage - 2 > 0 ? currentPage - 2 : 0, currentPage + 2 < totalPages - 1 ? currentPage + 2 : totalPages - 1)}"
+                th:classappend="${i == currentPage} ? 'active'">
+                <a class="page-link" th:href="@{/request/list(page=${i}, size=${pageSize},  keyword=${keyword})}" th:text="${i + 1}"></a>
+            </li>
+
+            <!-- End of Pagination Numbers -->
+            <li class="page-item disabled" th:if="${currentPage < totalPages - 3}">
+                <a class="page-link">...</a>
+            </li>
+            <li class="page-item" th:if="${currentPage < totalPages - 3}">
+                <a class="page-link" th:href="@{/request/list(page=${totalPages - 1}, size=${pageSize},  keyword=${keyword})}" th:text="${totalPages}"></a>
+            </li>
+
+            <!-- Next Button -->
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                <a class="page-link" th:href="@{/request/list(page=${currentPage + 1}, size=${pageSize} , keyword=${keyword})}">Next</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!--/page navigation-->
+
+
+</div>
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

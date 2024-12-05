@@ -18,10 +18,13 @@ public class Notification {
 
     private String description;
 
-    @ManyToMany(mappedBy = "notifications")
-    private Set<Employee> employees = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "employee_id", nullable = false)
+    private Employee employee;
 
     private LocalDateTime createdAt;
+
+    private String pageLink;
 
     private LocalDateTime readAt;
 
@@ -49,13 +52,7 @@ public class Notification {
         this.description = description;
     }
 
-    public Set<Employee> getEmployees() {
-        return employees;
-    }
 
-    public void setEmployees(Set<Employee> employees) {
-        this.employees = employees;
-    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
@@ -71,5 +68,21 @@ public class Notification {
 
     public void setReadAt(LocalDateTime readAt) {
         this.readAt = readAt;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
+
+    public String getPageLink() {
+        return pageLink;
+    }
+
+    public void setPageLink(String pageLink) {
+        this.pageLink = pageLink;
     }
 }

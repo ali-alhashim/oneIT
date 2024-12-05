@@ -36,6 +36,10 @@ public class Request {
     private Boolean requiredAdminApproval;
     private Boolean requiredHRApproval;
 
+    private Boolean managerApproval;
+    private Boolean adminApproval;
+    private Boolean hrApproval;
+
 
     @OneToMany(mappedBy = "request", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
@@ -126,5 +130,29 @@ public class Request {
 
     public void setRequiredHRApproval(Boolean requiredHRApproval) {
         this.requiredHRApproval = requiredHRApproval;
+    }
+
+    public Boolean getManagerApproval() {
+        return managerApproval;
+    }
+
+    public void setManagerApproval(Boolean managerApproval) {
+        this.managerApproval = managerApproval;
+    }
+
+    public Boolean getAdminApproval() {
+        return adminApproval;
+    }
+
+    public void setAdminApproval(Boolean adminApproval) {
+        this.adminApproval = adminApproval;
+    }
+
+    public Boolean getHrApproval() {
+        return hrApproval;
+    }
+
+    public void setHrApproval(Boolean hrApproval) {
+        this.hrApproval = hrApproval;
     }
 }

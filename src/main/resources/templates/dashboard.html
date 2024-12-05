@@ -113,11 +113,21 @@
                     <th>Date</th>
                     <th>Subject</th>
                     <th>Description</th>
+                    <th>Page</th>
                     <th>Status</th>
                 </tr>
                 </thead>
                 <tbody>
-
+                <tr th:each="notification: ${notificationList}">
+                    <td th:text="${notification.id}"></td>
+                    <td th:text="${notification.createdAt}"></td>
+                    <td th:text="${notification.subject}"></td>
+                    <td th:text="${notification.description}"></td>
+                    <td>
+                        <a th:if="${notification.pageLink !=null}" th:href="${notification.pageLink +'&nId='+notification.id}" class="btn btn-dark">Open</a>
+                    </td>
+                    <td th:text="${notification.readAt}"></td>
+                </tr>
                 </tbody>
             </table>
         </div>

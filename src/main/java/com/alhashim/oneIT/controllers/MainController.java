@@ -3,7 +3,9 @@ package com.alhashim.oneIT.controllers;
 import com.alhashim.oneIT.config.SecurityConfig;
 import com.alhashim.oneIT.dto.ChangePasswordDto;
 import com.alhashim.oneIT.models.Employee;
+import com.alhashim.oneIT.models.SystemLog;
 import com.alhashim.oneIT.repositories.EmployeeRepository;
+import com.alhashim.oneIT.repositories.SystemLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,12 +17,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
+
 @Controller
 
 public class MainController {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private SystemLogRepository systemLogRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -33,6 +40,13 @@ public class MainController {
         System.out.println("Welcome to Dashboard Page badgeNumber: " + badgeNumber);
         assert employee != null;
         System.out.println("Welcome to Dashboard Page Name: " + employee.getName());
+
+        //----- Log login action
+        SystemLog systemLog = new SystemLog();
+        systemLog.setCreatedAt(LocalDateTime.now());
+        systemLog.setEmployee(employee);
+        systemLog.setDescription("Login");
+        systemLogRepository.save(systemLog);
 
 
         //---------
@@ -56,6 +70,8 @@ public class MainController {
             model.addAttribute("workMobile",employee.getWorkMobile());
             model.addAttribute("personalMobile", employee.getPersonalMobile());
 
+            model.addAttribute("notificationList", employee.getNotifications());
+
             if(employee.getDepartment() !=null)
             {
                 model.addAttribute("departmentName", employee.getDepartment().getName());
@@ -67,6 +83,9 @@ public class MainController {
 
             model.addAttribute("roles", employee.getRoles());
             model.addAttribute("pageTitle","Dashboard");
+
+
+
             return "dashboard";
 
 
@@ -99,6 +118,16 @@ public class MainController {
            {
                currentUser.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
                System.out.println("Password has been updated");
+
+
+               //----- Log change password action
+               SystemLog systemLog = new SystemLog();
+               systemLog.setCreatedAt(LocalDateTime.now());
+               systemLog.setEmployee(currentUser);
+               systemLog.setDescription("Change password");
+               systemLogRepository.save(systemLog);
+
+
                employeeRepository.save(currentUser);
                redirectAttributes.addFlashAttribute("sweetMessage", "Password has been updated");
            }
