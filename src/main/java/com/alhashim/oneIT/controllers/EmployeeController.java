@@ -584,6 +584,13 @@ public class EmployeeController {
                 roles.add(role);
                 employee.setRoles(roles);
             }
+
+            if(employeeDto.isIs_HR())
+            {
+                Role role = roleRepository.findByRoleName("HR").orElse(null);
+                roles.add(role);
+                employee.setRoles(roles);
+            }
             //-------------/Roles
 
 

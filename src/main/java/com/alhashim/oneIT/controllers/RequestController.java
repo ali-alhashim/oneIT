@@ -186,6 +186,7 @@ public class RequestController {
             });
         }
 
+        // if the request required manager approval send him notification
         if(request.getRequiredManagerApproval())
         {
             List<Employee> managers = employeeRepository.findByRoles_RoleName("manager");
@@ -202,6 +203,21 @@ public class RequestController {
                     notification.setPageLink(baseUrl + "/request/detail?id=" + request.getId());
                     notificationRepository.save(notification);
                 }
+            });
+        }
+
+        // if the request required HR approval send him notification
+        if(request.getRequiredHRApproval())
+        {
+            List<Employee> hrs = employeeRepository.findByRoles_RoleName("hr");
+            hrs.forEach(hr ->{
+                Notification notification = new Notification();
+                notification.setCreatedAt(LocalDateTime.now());
+                notification.setEmployee(hr);
+                notification.setSubject("Request IT Asset");
+                notification.setDescription("Request Number " + request.getId() +" Need Your Action. for "+request.getRequestedBy().getName());
+                notification.setPageLink(baseUrl + "/request/detail?id=" + request.getId());
+                notificationRepository.save(notification);
             });
         }
 
@@ -279,7 +295,64 @@ public class RequestController {
             }
         } // -------Manager Approval
 
+        // if the request required admin approval and the current user is admin then approved
+        if(request.getRequiredAdminApproval())
+        {
+            if(currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("ADMIN") ))
+            {
+                request.setAdminApproval(true);
+            }
+        }
+
+        // if the request required HR approval and the current user is a member of HR then approved
+        if(request.getRequiredHRApproval())
+        {
+            if(currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("HR") ))
+            {
+                request.setHrApproval(true);
+            }
+        }
+
         //check all required approval if all true update the status to approved if one false set to rejected
+        //-------------
+                    boolean allApprovalsGranted = true;
+                    boolean anyApprovalPending = false; // Track if any required approval is still pending
+
+                    if (Boolean.TRUE.equals(request.getRequiredManagerApproval())) {
+                        if (request.getManagerApproval() == null) {
+                            anyApprovalPending = true; // Mark as pending if not yet set
+                        } else {
+                            allApprovalsGranted = allApprovalsGranted && Boolean.TRUE.equals(request.getManagerApproval());
+                        }
+                    }
+
+                    if (Boolean.TRUE.equals(request.getRequiredAdminApproval())) {
+                        if (request.getAdminApproval() == null) {
+                            anyApprovalPending = true; // Mark as pending if not yet set
+                        } else {
+                            allApprovalsGranted = allApprovalsGranted && Boolean.TRUE.equals(request.getAdminApproval());
+                        }
+                    }
+
+                    if (Boolean.TRUE.equals(request.getRequiredHRApproval())) {
+                        if (request.getHrApproval() == null) {
+                            anyApprovalPending = true; // Mark as pending if not yet set
+                        } else {
+                            allApprovalsGranted = allApprovalsGranted && Boolean.TRUE.equals(request.getHrApproval());
+                        }
+                    }
+
+            // Determine the request status based on approvals
+                    if (anyApprovalPending) {
+                        // Do not set status if any required approval is pending
+                        request.setStatus("PENDING");
+                    } else if (allApprovalsGranted) {
+                        request.setStatus("APPROVED");
+                    } else {
+                        request.setStatus("REJECTED");
+                    }
+
+        //------------
         request.setUpdatedAt(LocalDateTime.now());
         requestRepository.save(request);
         return "redirect:/request/detail?id="+id;
