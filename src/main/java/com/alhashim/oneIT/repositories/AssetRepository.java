@@ -1,6 +1,7 @@
 package com.alhashim.oneIT.repositories;
 
 import com.alhashim.oneIT.models.Asset;
+import com.alhashim.oneIT.models.Department;
 import com.alhashim.oneIT.models.Device;
 import com.alhashim.oneIT.models.Employee;
 import org.springframework.data.domain.Page;
@@ -39,4 +40,26 @@ public interface AssetRepository extends JpaRepository<Asset, Long> {
             "LOWER(e.employee.arName) LIKE LOWER(CONCAT('%', :keyword, '%'))"
             )
     Page<Asset> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
+
+    //return asset under employee with pageable
+    Page<Asset> findByEmployee(Employee employee, Pageable pageable);
+
+    // return asset for employee with search for asset code or device serial number
+    @Query("SELECT t FROM Asset t WHERE t.employee = :employee AND (t.code LIKE %:keyword% OR t.device.serialNumber LIKE %:keyword%)")
+    Page<Asset> findByKeywordAndEmployee(@Param("keyword") String keyword, @Param("employee") Employee employee, Pageable pageable);
+
+    //return asset under department with pageable
+    Page<Asset> findByEmployee_Department(Department department, Pageable pageable);
+
+    //return asset under department with search for asset code or device serial number
+    @Query("SELECT t FROM Asset t " +
+            "WHERE t.employee.department = :department " +
+            "AND (LOWER(t.code) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(t.device.serialNumber) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+    Page<Asset> findByKeywordAndDepartment(@Param("keyword") String keyword,
+                                           @Param("department") Department department,
+                                           Pageable pageable);
+
+
+
 }

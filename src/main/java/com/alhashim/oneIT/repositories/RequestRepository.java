@@ -1,6 +1,8 @@
 package com.alhashim.oneIT.repositories;
 
 
+import com.alhashim.oneIT.models.Department;
+import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.models.Request;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,5 +26,30 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
             "LOWER(e.status) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(e.justification) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<Request> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
+
+    //return all request for employee
+    Page<Request> findByRequestedBy(Employee employee, Pageable pageable);
+
+    //return all request for department
+    Page<Request> findByRequestedBy_Department(Department department, Pageable pageable);
+
+
+    @Query("SELECT t FROM Request t " +
+            "WHERE t.requestedBy.department = :department " +
+            "AND (LOWER(t.category) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(t.requestedBy.badgeNumber) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+    Page<Request> findByKeywordAndDepartment(@Param("keyword") String keyword,
+                                             @Param("department") Department department,
+                                             Pageable pageable);
+
+
+
+    @Query("SELECT t FROM Request t " +
+            "WHERE t.requestedBy = :employee " +
+            "AND (LOWER(t.category) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(t.requestedBy.badgeNumber) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+    Page<Request> findByKeywordAndRequestedBy(@Param("keyword") String keyword,
+                                              @Param("employee") Employee employee,
+                                              Pageable pageable);
 
 }

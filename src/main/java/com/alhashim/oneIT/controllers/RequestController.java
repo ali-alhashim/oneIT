@@ -66,19 +66,69 @@ public class RequestController {
 
         Page<Request> requestPage;
 
-        if(keyword !=null && !keyword.isEmpty())
-        {
-            // Implement a paginated search query in your repository
-            requestPage = requestRepository.findByKeyword(keyword, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
-            model.addAttribute("keyword",keyword);
+        //---------
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        String loginUser = currentUser.getBadgeNumber() +" | "+currentUser.getName();
+        model.addAttribute("loginUser", loginUser);
+        //--------
+        // is support of admin or hr get all
+        boolean isSupportOrAdminOrHR = currentUser.getRoles().stream()
+                .anyMatch(role -> role.getRoleName()
+                        .equalsIgnoreCase("SUPPORT") || role.getRoleName().equalsIgnoreCase("ADMIN")|| role.getRoleName().equalsIgnoreCase("HR"));
 
+        // is Manager so get all asset under employees who are a member of his department
+        boolean isManager = currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("MANAGER"));
+
+        if(isSupportOrAdminOrHR)
+        {
+            if(keyword !=null && !keyword.isEmpty())
+            {
+                // Implement a paginated search query in your repository
+                requestPage = requestRepository.findByKeyword(keyword, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+                model.addAttribute("keyword",keyword);
+
+            }
+            else
+            {
+                // Fetch all  with pagination
+                Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+                requestPage = requestRepository.findAll(pageable);
+            }
+        }
+        else if (isManager)
+        {
+            if(keyword !=null && !keyword.isEmpty())
+            {
+                // Implement a paginated search query in your repository
+                requestPage = requestRepository.findByKeywordAndDepartment(keyword, currentUser.getDepartment(), PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+                model.addAttribute("keyword",keyword);
+
+            }
+            else
+            {
+                // Fetch all  with pagination
+                Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+                requestPage = requestRepository.findByRequestedBy_Department(currentUser.getDepartment(), pageable);
+            }
         }
         else
         {
-            // Fetch all  with pagination
-            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-            requestPage = requestRepository.findAll(pageable);
+            if(keyword !=null && !keyword.isEmpty())
+            {
+                // Implement a paginated search query in your repository
+                requestPage = requestRepository.findByKeywordAndRequestedBy(keyword,currentUser, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+                model.addAttribute("keyword",keyword);
+
+            }
+            else
+            {
+                // Fetch all  with pagination
+                Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+                requestPage = requestRepository.findByRequestedBy(currentUser,pageable);
+            }
         }
+
 
         model.addAttribute("requests", requestPage.getContent());
         model.addAttribute("currentPage", page);
@@ -88,12 +138,7 @@ public class RequestController {
         model.addAttribute("totalItems", requestPage.getTotalElements());
 
 
-        //---------
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
-        String loginUser = currentUser.getBadgeNumber() +" | "+currentUser.getName();
-        model.addAttribute("loginUser", loginUser);
-        //--------
+
 
         return "/request/list";
     } // GET List

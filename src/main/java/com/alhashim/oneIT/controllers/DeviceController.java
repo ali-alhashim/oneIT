@@ -55,19 +55,71 @@ public class DeviceController {
     {
         Page<Device> devicePage;
 
-        if(keyword !=null && !keyword.isEmpty())
-        {
-            // Implement a paginated search query in your repository
-            devicePage = deviceRepository.findByKeyword(keyword, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
-            model.addAttribute("keyword",keyword);
+        //---------
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        String loginUser = currentUser.getBadgeNumber() +" | "+currentUser.getName();
+        model.addAttribute("loginUser", loginUser);
+        //--------
 
+        // is support of admin or hr get all
+        boolean isSupportOrAdminOrHR = currentUser.getRoles().stream()
+                .anyMatch(role -> role.getRoleName()
+                        .equalsIgnoreCase("SUPPORT") || role.getRoleName().equalsIgnoreCase("ADMIN")|| role.getRoleName().equalsIgnoreCase("HR"));
+
+        // is Manager so get all  under employees who are a member of his department
+        boolean isManager = currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("MANAGER"));
+
+        //else none of above so he is user show him only  under him
+        if(isSupportOrAdminOrHR)
+        {
+            if(keyword !=null && !keyword.isEmpty())
+            {
+                // Implement a paginated search query in your repository
+                devicePage = deviceRepository.findByKeyword(keyword, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+                model.addAttribute("keyword",keyword);
+
+            }
+            else
+            {
+                // Fetch all devices with pagination
+                Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+                devicePage = deviceRepository.findAll(pageable);
+            }
+        }
+        else if (isManager)
+        {
+            if(keyword !=null && !keyword.isEmpty())
+            {
+                // Implement a paginated search query in your repository
+                devicePage = deviceRepository.findByKeywordAndDepartment(keyword, currentUser.getDepartment(), PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+                model.addAttribute("keyword",keyword);
+
+            }
+            else
+            {
+                // Fetch all devices with pagination
+                Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+                devicePage = deviceRepository.findByUser_Department(currentUser.getDepartment(), pageable);
+            }
         }
         else
         {
-            // Fetch all devices with pagination
-            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-            devicePage = deviceRepository.findAll(pageable);
+            if(keyword !=null && !keyword.isEmpty())
+            {
+                // Implement a paginated search query in your repository
+                devicePage = deviceRepository.findByKeywordAndUser(keyword, currentUser, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+                model.addAttribute("keyword",keyword);
+
+            }
+            else
+            {
+                // Fetch all devices with pagination
+                Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+                devicePage = deviceRepository.findByUser(currentUser, pageable);
+            }
         }
+
 
         ImportDeviceDto importDeviceDto = new ImportDeviceDto();
         model.addAttribute("devices", devicePage.getContent());
@@ -78,12 +130,7 @@ public class DeviceController {
         model.addAttribute("totalItems", devicePage.getTotalElements());
         model.addAttribute("importDeviceDto",importDeviceDto);
 
-        //---------
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
-        String loginUser = currentUser.getBadgeNumber() +" | "+currentUser.getName();
-        model.addAttribute("loginUser", loginUser);
-        //--------
+
 
         return "device/list";
     } // GET List
@@ -91,18 +138,28 @@ public class DeviceController {
     @GetMapping("/add")
     public String addDevicePage(Model model)
     {
-        List<Employee> employees = employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-        DeviceDto deviceDto = new DeviceDto();
-        model.addAttribute("deviceDto",deviceDto);
-        model.addAttribute("pageTitle","Add New Device");
-        model.addAttribute("employees", employees);
-
         //---------
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
         String loginUser = currentUser.getBadgeNumber() +" | "+currentUser.getName();
         model.addAttribute("loginUser", loginUser);
         //--------
+        boolean isSupportOrAdmin = currentUser.getRoles().stream()
+                .anyMatch(role -> role.getRoleName()
+                        .equalsIgnoreCase("SUPPORT") || role.getRoleName().equalsIgnoreCase("ADMIN"));
+
+        if(!isSupportOrAdmin)
+        {
+          return "/403";
+        }
+
+        List<Employee> employees = employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+        DeviceDto deviceDto = new DeviceDto();
+        model.addAttribute("deviceDto",deviceDto);
+        model.addAttribute("pageTitle","Add New Device");
+        model.addAttribute("employees", employees);
+
+
 
         return "device/add";
     } //GET add
@@ -311,6 +368,18 @@ public class DeviceController {
     @PostMapping("/importCSV")
     public String importDevices(ImportDeviceDto importDeviceDto, Model model)
     {
+
+        // only admin can import  csv file
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+
+        boolean isAdmin = currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("admin"));
+        if(!isAdmin)
+        {
+            return "/403";
+        }
+
+
         String uploadDir = "public/upload/device/";
         Path uploadPath = Paths.get(uploadDir, "device");
 
@@ -395,6 +464,19 @@ public class DeviceController {
     @GetMapping("/downloadTemplate")
     public void downloadTemplate(HttpServletResponse response)
     {
+
+        // only admin can download asset csv file
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+
+        boolean isAdmin = currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("admin"));
+        if(!isAdmin)
+        {
+            response.setStatus(403);
+
+        }
+
+
         //create CSV file template for employee table
         //download to client pc
         response.setContentType("text/csv; charset=UTF-8");

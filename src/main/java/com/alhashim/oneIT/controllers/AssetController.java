@@ -4,6 +4,7 @@ import com.alhashim.oneIT.dto.ImportAssetDto;
 import com.alhashim.oneIT.dto.ImportDeviceDto;
 import com.alhashim.oneIT.models.Asset;
 
+import com.alhashim.oneIT.models.Department;
 import com.alhashim.oneIT.models.Device;
 import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.repositories.AssetRepository;
@@ -55,8 +56,33 @@ public class AssetController {
     {
         Page<Asset> assetPage;
 
+        //---------
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        String loginUser = currentUser.getBadgeNumber() +" | "+currentUser.getName();
+        model.addAttribute("loginUser", loginUser);
+        //--------
+
         ImportAssetDto importAssetDto = new ImportAssetDto();
 
+        // if current user is only user show him only asset under him
+        // if admin ,support and hr show all
+        // if manager show him all asset under his department
+
+        // is support of admin or hr get all
+        boolean isSupportOrAdminOrHR = currentUser.getRoles().stream()
+                                       .anyMatch(role -> role.getRoleName()
+                                       .equalsIgnoreCase("SUPPORT") || role.getRoleName().equalsIgnoreCase("ADMIN")|| role.getRoleName().equalsIgnoreCase("HR"));
+
+        // is Manager so get all asset under employees who are a member of his department
+        boolean isManager = currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("MANAGER"));
+
+        //else none of above so he is user show him only asset under him
+
+
+
+    if(isSupportOrAdminOrHR)
+    {
         if(keyword !=null && !keyword.isEmpty())
         {
             // Implement a paginated search query in your repository
@@ -69,14 +95,38 @@ public class AssetController {
             Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
             assetPage = assetRepository.findAll(pageable);
         }
-
-
-        //---------
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
-        String loginUser = currentUser.getBadgeNumber() +" | "+currentUser.getName();
-        model.addAttribute("loginUser", loginUser);
-        //--------
+    }
+    else if (isManager)
+    {
+        Department department = currentUser.getDepartment();
+        if(keyword !=null && !keyword.isEmpty())
+        {
+            // Implement a paginated search query in your repository
+            assetPage = assetRepository.findByKeywordAndDepartment(keyword,department, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+            model.addAttribute("keyword",keyword);
+        }
+        else
+        {
+            // Fetch all employees with pagination
+            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+            assetPage = assetRepository.findByEmployee_Department(department, pageable);
+        }
+    }
+    else
+    {
+        if(keyword !=null && !keyword.isEmpty())
+        {
+            // Implement a paginated search query in your repository
+            assetPage = assetRepository.findByKeywordAndEmployee(keyword,currentUser, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+            model.addAttribute("keyword",keyword);
+        }
+        else
+        {
+            // Fetch all employees with pagination
+            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+            assetPage = assetRepository.findByEmployee(currentUser, pageable);
+        }
+    }
 
 
         model.addAttribute("assets", assetPage.getContent());
@@ -132,6 +182,17 @@ public class AssetController {
     @PostMapping("/importCSV")
     public String importDevices(ImportAssetDto importAssetDto, Model model)
     {
+        // only admin can import  csv file
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+
+        boolean isAdmin = currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("admin"));
+        if(!isAdmin)
+        {
+            return "/403";
+        }
+        //----------
+
         String uploadDir = "public/upload/asset/";
         Path uploadPath = Paths.get(uploadDir, "asset");
 
@@ -262,6 +323,21 @@ public class AssetController {
     @GetMapping("/downloadTemplate")
     public void downloadTemplate(HttpServletResponse response)
     {
+
+
+
+        // only admin can download asset csv file
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+
+        boolean isAdmin = currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("admin"));
+        if(!isAdmin)
+        {
+            response.setStatus(403);
+
+        }
+        //----------
+
         //create CSV file template for employee table
         //download to client pc
         response.setContentType("text/csv; charset=UTF-8");
