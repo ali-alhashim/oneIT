@@ -9,16 +9,23 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
+import com.alhashim.oneIT.config.CustomLoginSuccessHandler;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 @EnableJpaAuditing
 public class SecurityConfig  {
 
+    private final CustomLoginSuccessHandler customLoginSuccessHandler;
+
+    public SecurityConfig(CustomLoginSuccessHandler customLoginSuccessHandler) {
+        this.customLoginSuccessHandler = customLoginSuccessHandler;
+    }
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+
         return http
 
 
@@ -39,6 +46,7 @@ public class SecurityConfig  {
                         .passwordParameter("password") // Custom password parameter
                         .defaultSuccessUrl("/dashboard") // Redirect to dashboard on successful login
                         .failureUrl("/login?error=true") // Redirect back to login page on failure
+                        .successHandler(customLoginSuccessHandler)
                         .permitAll()
                 )
 

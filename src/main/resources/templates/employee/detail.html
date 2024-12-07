@@ -102,7 +102,8 @@
                 <form method="get">
                     <div class="row">
                         <div class="col">
-                            <input type="text" name="keyword" placeholder="Search..." id="notificationSearch" class="form-control">
+                            <input type="text" name="keyword" placeholder="Search..." id="systemLogSearch" class="form-control">
+                            <input type="hidden" name="badgeNumber" th:value="${badgeNumber}">
                         </div>
                         <div class="col">
                             <input type="submit" value="Search" class="btn btn-secondary">
@@ -116,23 +117,64 @@
         </div>
         <!--/toolbar-->
 
+        <!-- log -->
         <div class="row rounded border p-4 bg-light">
             <table class="table">
                 <thead>
                 <tr>
                     <th>#</th>
                     <th>Date</th>
-                    <th>Subject</th>
                     <th>Description</th>
-                    <th>Status</th>
                 </tr>
                 </thead>
                 <tbody>
-
+                <tr th:each="log : ${systemLogs}">
+                    <td th:text="${log.id}"></td>
+                    <td th:text="${#temporals.format(log.createdAt, 'yyyy-MM-dd hh:mm:ss a')}"></td>
+                    <td th:text="${log.description}"></td>
+                </tr>
                 </tbody>
             </table>
         </div>
-        <!--/Notification Center -->
+        <!--/log  -->
+        <!--Page navigation -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <!-- Previous Button -->
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link" th:href="@{/employee/detail(page=${currentPage - 1}, size=${pageSize})}" tabindex="-1">Previous</a>
+                </li>
+
+                <!-- Start of Pagination Numbers -->
+                <li class="page-item" th:if="${currentPage > 2}">
+                    <a class="page-link" th:href="@{/employee/detail(page=0, size=${pageSize})}">1</a>
+                </li>
+                <li class="page-item disabled" th:if="${currentPage > 2}">
+                    <a class="page-link">...</a>
+                </li>
+
+                <!-- Dynamic Page Numbers -->
+                <li class="page-item" th:each="i : ${#numbers.sequence(currentPage - 2 > 0 ? currentPage - 2 : 0, currentPage + 2 < totalPages - 1 ? currentPage + 2 : totalPages - 1)}"
+                    th:classappend="${i == currentPage} ? 'active'">
+                    <a class="page-link" th:href="@{/employee/detail(page=${i}, size=${pageSize})}" th:text="${i + 1}"></a>
+                </li>
+
+                <!-- End of Pagination Numbers -->
+                <li class="page-item disabled" th:if="${currentPage < totalPages - 3}">
+                    <a class="page-link">...</a>
+                </li>
+                <li class="page-item" th:if="${currentPage < totalPages - 3}">
+                    <a class="page-link" th:href="@{/employee/detail(page=${totalPages - 1}, size=${pageSize})}" th:text="${totalPages}"></a>
+                </li>
+
+                <!-- Next Button -->
+                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                    <a class="page-link" th:href="@{/employee/detail(page=${currentPage + 1}, size=${pageSize})}">Next</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!--/page navigation-->
 
         <!--restPassword Modal -->
         <div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordLabel" aria-hidden="true">

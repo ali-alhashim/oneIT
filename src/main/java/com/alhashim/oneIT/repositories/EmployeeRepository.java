@@ -1,6 +1,7 @@
 package com.alhashim.oneIT.repositories;
 
 import com.alhashim.oneIT.models.Employee;
+import com.alhashim.oneIT.models.SystemLog;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -33,4 +34,7 @@ public interface  EmployeeRepository  extends JpaRepository<Employee, Long> {
             "LOWER(e.workMobile) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(e.workEmail) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<Employee> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
+
+
+
 }

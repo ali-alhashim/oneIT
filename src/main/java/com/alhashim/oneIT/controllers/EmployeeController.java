@@ -7,9 +7,11 @@ import com.alhashim.oneIT.dto.RestPasswordDto;
 import com.alhashim.oneIT.models.Department;
 import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.models.Role;
+import com.alhashim.oneIT.models.SystemLog;
 import com.alhashim.oneIT.repositories.DepartmentRepository;
 import com.alhashim.oneIT.repositories.EmployeeRepository;
 import com.alhashim.oneIT.repositories.RoleRepository;
+import com.alhashim.oneIT.repositories.SystemLogRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +58,9 @@ public class EmployeeController {
 
     @Autowired
     RoleRepository roleRepository;
+
+    @Autowired
+    SystemLogRepository systemLogRepository;
 
     @Autowired
     DepartmentRepository departmentRepository;
@@ -120,7 +125,7 @@ public class EmployeeController {
         return "employee/add";
     } // GET Add
 
-    //role of SUPERADMIN, HR, SUPPORT
+    //role of admin, HR, SUPPORT only can access from securityConfig
     @PostMapping("/add")
     public String CreateEmployee(@Valid @ModelAttribute EmployeeDto employeeDto, BindingResult result, Model model)
     {
@@ -266,6 +271,16 @@ public class EmployeeController {
            try
            {
                employeeRepository.save(employee);
+
+               // Log the  action
+               Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+               Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+               SystemLog systemLog = new SystemLog();
+               systemLog.setCreatedAt(LocalDateTime.now());
+               systemLog.setEmployee(currentUser);
+               systemLog.setDescription("Add New Employee Badge#"+employee.getBadgeNumber() +" Name:"+employee.getName());
+               systemLogRepository.save(systemLog);
+
            }
            catch (Exception e)
            {
@@ -280,13 +295,16 @@ public class EmployeeController {
 
     } // POST Add
 
-    //role of SUPERADMIN, HR, SUPPORT
+    //role of admin, HR, SUPPORT
     @GetMapping("/detail")
-    public  String detailPage(Model model, @RequestParam String badgeNumber)
+    public  String detailPage(Model model, @RequestParam String badgeNumber, @RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size)
     {
         Employee employee = employeeRepository.findByBadgeNumber(badgeNumber).orElse(null);
         if(employee !=null)
         {
+            Page<SystemLog> systemLogPage;
+            systemLogPage = systemLogRepository.findByEmployeeId(employee.getId(), PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+
             RestPasswordDto restPasswordDto = new RestPasswordDto();
             restPasswordDto.setBadgeNumber(badgeNumber);
             model.addAttribute("restPasswordDto",restPasswordDto);
@@ -302,6 +320,14 @@ public class EmployeeController {
             model.addAttribute("officeLocation", employee.getOfficeLocation());
             model.addAttribute("status", employee.getStatus());
             model.addAttribute("roles", employee.getRoles());
+
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", systemLogPage.getTotalPages());
+            model.addAttribute("pageSize", size);
+            model.addAttribute("totalItems", systemLogPage.getTotalElements());
+
+            //
+            model.addAttribute("systemLogs",systemLogPage.getContent() );
 
             //---------
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -633,6 +659,16 @@ public class EmployeeController {
             }
             //-------/upload photo--------------------
             employeeRepository.save(employee);
+
+            // Log the  action
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+            SystemLog systemLog = new SystemLog();
+            systemLog.setCreatedAt(LocalDateTime.now());
+            systemLog.setEmployee(currentUser);
+            systemLog.setDescription("Edit Employee Badge#"+employee.getBadgeNumber() +" Name:"+employee.getName());
+            systemLogRepository.save(systemLog);
+
             return "redirect:/employee/detail?badgeNumber="+employee.getBadgeNumber();
         }
         else
@@ -668,6 +704,15 @@ public class EmployeeController {
             employee.setPassword(passwordEncoder.encode(restPasswordDto.getPassword()));
             employeeRepository.save(employee);
 
+            // Log the  action
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+            SystemLog systemLog = new SystemLog();
+            systemLog.setCreatedAt(LocalDateTime.now());
+            systemLog.setEmployee(currentUser);
+            systemLog.setDescription("Reset Password Employee Badge#"+employee.getBadgeNumber() +" Name:"+employee.getName());
+            systemLogRepository.save(systemLog);
+
             redirectAttributes.addFlashAttribute("sweetMessage", "Password has been Reset Successfully");
             return "redirect:/employee/detail?badgeNumber="+employee.getBadgeNumber();
         }
@@ -675,30 +720,7 @@ public class EmployeeController {
         return "/404";
     }
 
-    //role of SUPERADMIN, HR, SUPPORT
-    @PostMapping("/changePassword")
-    public String changePassword(@RequestParam String currentPassword, @RequestParam String newPassword)
-    {
-        //check current password & set new password
-        String badgeNumber = SecurityContextHolder.getContext().getAuthentication().getName();
-        Employee employee = employeeRepository.findByBadgeNumber(badgeNumber).orElse(null);
-        if(employee !=null)
-        {
-            // Get the hashed current password stored in the database
-             String storedPassword = employee.getPassword();
-            // Verify that the provided current password matches the stored password
-            if (passwordEncoder.matches(currentPassword, storedPassword)) {
-                // Hash the new password before saving
-                String hashedNewPassword = passwordEncoder.encode(newPassword);
 
-                // Update the employee's password
-                employee.setPassword(hashedNewPassword);
-                employeeRepository.save(employee);
-                return "";
-            }
-        }
-        return "";
-    }
 
 
 }

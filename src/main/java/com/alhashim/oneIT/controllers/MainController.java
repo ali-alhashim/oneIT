@@ -41,12 +41,7 @@ public class MainController {
         assert employee != null;
         System.out.println("Welcome to Dashboard Page Name: " + employee.getName());
 
-        //----- Log login action
-        SystemLog systemLog = new SystemLog();
-        systemLog.setCreatedAt(LocalDateTime.now());
-        systemLog.setEmployee(employee);
-        systemLog.setDescription("Login");
-        systemLogRepository.save(systemLog);
+
 
 
         //---------
@@ -95,6 +90,7 @@ public class MainController {
     @GetMapping("/login")
     public String loginPage(Model model)
     {
+
         return "login";
     }
 

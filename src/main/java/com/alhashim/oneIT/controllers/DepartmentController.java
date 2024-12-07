@@ -5,8 +5,10 @@ import com.alhashim.oneIT.dto.DepartmentDto;
 
 import com.alhashim.oneIT.models.Department;
 import com.alhashim.oneIT.models.Employee;
+import com.alhashim.oneIT.models.SystemLog;
 import com.alhashim.oneIT.repositories.DepartmentRepository;
 import com.alhashim.oneIT.repositories.EmployeeRepository;
+import com.alhashim.oneIT.repositories.SystemLogRepository;
 import com.alhashim.oneIT.services.DepartmentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,9 @@ public class DepartmentController {
 
     @Autowired
     private DepartmentService departmentService;
+
+    @Autowired
+    SystemLogRepository systemLogRepository;
 
 
     @GetMapping("/list")
@@ -104,6 +109,16 @@ public class DepartmentController {
         try
         {
             departmentRepository.save(department);
+
+            // Log the  action
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+            SystemLog systemLog = new SystemLog();
+            systemLog.setCreatedAt(LocalDateTime.now());
+            systemLog.setEmployee(currentUser);
+            systemLog.setDescription("Add New Department Name:"+department.getName());
+            systemLogRepository.save(systemLog);
+
         }
         catch (Exception e)
         {
@@ -173,6 +188,15 @@ public class DepartmentController {
             employee.setDepartment(department);
             employee.setUpdatedAt(LocalDateTime.now());
             employeeRepository.save(employee);
+
+            // Log the  action
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+            SystemLog systemLog = new SystemLog();
+            systemLog.setCreatedAt(LocalDateTime.now());
+            systemLog.setEmployee(currentUser);
+            systemLog.setDescription("Add Employee "+employee.getName()+" to  Department Name:"+department.getName());
+            systemLogRepository.save(systemLog);
         }
         return "redirect:/department/detail?id="+addEmpDepartmentDto.getDepartmentId().toString();
     }
