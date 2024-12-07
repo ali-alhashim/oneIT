@@ -6,9 +6,11 @@ import com.alhashim.oneIT.dto.ImportDeviceDto;
 import com.alhashim.oneIT.models.Asset;
 import com.alhashim.oneIT.models.Device;
 import com.alhashim.oneIT.models.Employee;
+import com.alhashim.oneIT.models.SystemLog;
 import com.alhashim.oneIT.repositories.AssetRepository;
 import com.alhashim.oneIT.repositories.DeviceRepository;
 import com.alhashim.oneIT.repositories.EmployeeRepository;
+import com.alhashim.oneIT.repositories.SystemLogRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +51,9 @@ public class DeviceController {
 
     @Autowired
     private AssetRepository assetRepository;
+
+    @Autowired
+    SystemLogRepository systemLogRepository;
 
     @GetMapping("/list")
     public String devicesList(Model model, @RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size )
@@ -190,6 +195,7 @@ public class DeviceController {
         device.setCreatedAt(LocalDateTime.now());
         device.setAcquisitionDate(deviceDto.getAcquisitionDate());
         device.setPurchasePrice(deviceDto.getPurchasePrice());
+        device.setModel(deviceDto.getModel());
 
         Employee deviceUser = employeeRepository.findByBadgeNumber(deviceDto.getBadgeNumber()).orElse(null);
         if(deviceUser !=null)
@@ -227,6 +233,16 @@ public class DeviceController {
 
 
         deviceRepository.save(device);
+
+        // Log the  action
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        SystemLog systemLog = new SystemLog();
+        systemLog.setCreatedAt(LocalDateTime.now());
+        systemLog.setEmployee(currentUser);
+        systemLog.setDescription("Add New Device Category:"+device.getCategory()+" Serial Number:"+device.getSerialNumber());
+        systemLogRepository.save(systemLog);
+
         return "redirect:/device/list";
     } // POST Add
 
@@ -320,6 +336,15 @@ public class DeviceController {
 
         assetRepository.save(asset);
 
+        // Log the  action
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        SystemLog systemLog = new SystemLog();
+        systemLog.setCreatedAt(LocalDateTime.now());
+        systemLog.setEmployee(currentUser);
+        systemLog.setDescription("Add New Asset Category:"+device.getCategory()+" Serial Number: "+device.getSerialNumber() +" Name: "+employee.getName());
+        systemLogRepository.save(systemLog);
+
         //update current user
         device.setUser(employee);
         deviceRepository.save(device);
@@ -357,6 +382,15 @@ public class DeviceController {
             asset.setNote(handoverNote);
             asset.setUpdatedAt(LocalDateTime.now());
             assetRepository.save(asset);
+
+            // Log the  action
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+            SystemLog systemLog = new SystemLog();
+            systemLog.setCreatedAt(LocalDateTime.now());
+            systemLog.setEmployee(currentUser);
+            systemLog.setDescription("Handover Device Category:"+asset.getDevice().getCategory()+" Serial Number:"+asset.getDevice().getSerialNumber()+"From:"+asset.getEmployee().getName());
+            systemLogRepository.save(systemLog);
             return "redirect:/device/detail?serialNumber="+asset.getDevice().getSerialNumber();
         }
 

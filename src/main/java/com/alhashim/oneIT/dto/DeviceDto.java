@@ -20,6 +20,8 @@ public class DeviceDto {
 
     private String category;
 
+    private String model;
+
     private String description;
 
     private BigDecimal purchasePrice;
@@ -119,5 +121,13 @@ public class DeviceDto {
 
     public void setBadgeNumber(String badgeNumber) {
         this.badgeNumber = badgeNumber;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
     }
 }

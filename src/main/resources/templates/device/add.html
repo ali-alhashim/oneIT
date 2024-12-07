@@ -54,6 +54,14 @@
             </div>
 
 
+
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="model"  name="model" th:field="${deviceDto.model}">
+                <label for="model">Model</label>
+                <p th:if="${#fields.hasErrors('model')}" th:errorclass="text-danger" th:errors="${deviceDto.model}"></p>
+            </div>
+
+
             <div class="form-floating my-1">
                 <input type="text" class="form-control" id="description"  name="description" th:field="${deviceDto.description}">
                 <label for="description">Description</label>

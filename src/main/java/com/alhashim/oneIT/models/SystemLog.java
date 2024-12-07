@@ -16,7 +16,7 @@ public class SystemLog {
 
 
     @ManyToOne
-    @JoinColumn(name = "employee_id", nullable = false)
+    @JoinColumn(name = "employee_id", nullable = true)
     private Employee employee;
 
     private String description;

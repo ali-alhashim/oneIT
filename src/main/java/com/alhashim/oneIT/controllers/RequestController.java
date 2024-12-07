@@ -1,13 +1,11 @@
 package com.alhashim.oneIT.controllers;
 
 
-import com.alhashim.oneIT.models.Department;
-import com.alhashim.oneIT.models.Employee;
-import com.alhashim.oneIT.models.Notification;
-import com.alhashim.oneIT.models.Request;
+import com.alhashim.oneIT.models.*;
 import com.alhashim.oneIT.repositories.EmployeeRepository;
 import com.alhashim.oneIT.repositories.NotificationRepository;
 import com.alhashim.oneIT.repositories.RequestRepository;
+import com.alhashim.oneIT.repositories.SystemLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,6 +35,9 @@ public class RequestController {
 
     @Autowired
     EmployeeRepository employeeRepository;
+
+    @Autowired
+    SystemLogRepository systemLogRepository;
 
     @Autowired
     NotificationRepository notificationRepository;
@@ -208,6 +209,14 @@ public class RequestController {
 
         requestRepository.save(request);
 
+        // Log the  action
+
+        SystemLog systemLog = new SystemLog();
+        systemLog.setCreatedAt(LocalDateTime.now());
+        systemLog.setEmployee(currentUser);
+        systemLog.setDescription("Create New Request IT Asset #:"+request.getId());
+        systemLogRepository.save(systemLog);
+
         // send Notification for reject or approval
         String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
 
@@ -332,6 +341,13 @@ public class RequestController {
                 {
                     request.setManagerApproval(true);
 
+                    // Log the  action
+                    SystemLog systemLog = new SystemLog();
+                    systemLog.setCreatedAt(LocalDateTime.now());
+                    systemLog.setEmployee(currentUser);
+                    systemLog.setDescription("Response with Approved as Manager for Request IT Asset #"+request.getId());
+                    systemLogRepository.save(systemLog);
+
                 }
             }
             else
@@ -346,6 +362,13 @@ public class RequestController {
             if(currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("ADMIN") ))
             {
                 request.setAdminApproval(true);
+
+                // Log the  action
+                SystemLog systemLog = new SystemLog();
+                systemLog.setCreatedAt(LocalDateTime.now());
+                systemLog.setEmployee(currentUser);
+                systemLog.setDescription("Response with Approved as Admin for Request IT Asset #"+request.getId());
+                systemLogRepository.save(systemLog);
             }
         }
 
@@ -355,6 +378,13 @@ public class RequestController {
             if(currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("HR") ))
             {
                 request.setHrApproval(true);
+
+                // Log the  action
+                SystemLog systemLog = new SystemLog();
+                systemLog.setCreatedAt(LocalDateTime.now());
+                systemLog.setEmployee(currentUser);
+                systemLog.setDescription("Response with Approved as HR for Request IT Asset #"+request.getId());
+                systemLogRepository.save(systemLog);
             }
         }
 

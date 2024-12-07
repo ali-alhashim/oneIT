@@ -2,10 +2,7 @@ package com.alhashim.oneIT.controllers;
 
 import com.alhashim.oneIT.dto.TicketDto;
 import com.alhashim.oneIT.models.*;
-import com.alhashim.oneIT.repositories.CommentRepository;
-import com.alhashim.oneIT.repositories.DeviceRepository;
-import com.alhashim.oneIT.repositories.EmployeeRepository;
-import com.alhashim.oneIT.repositories.TicketRepository;
+import com.alhashim.oneIT.repositories.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -39,6 +36,8 @@ public class TicketController {
     @Autowired
     CommentRepository commentRepository;
 
+    @Autowired
+    SystemLogRepository systemLogRepository;
     @GetMapping("/list")
     public String ticketList(Model model, @RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size)
     {
@@ -143,6 +142,14 @@ public class TicketController {
 
             ticketRepository.save(ticket);
 
+            // Log the  action
+
+            SystemLog systemLog = new SystemLog();
+            systemLog.setCreatedAt(LocalDateTime.now());
+            systemLog.setEmployee(currentUser);
+            systemLog.setDescription("Create Ticket #"+ticket.getId());
+            systemLogRepository.save(systemLog);
+
 
             return "redirect:/ticket/list";
         }
@@ -176,6 +183,15 @@ public class TicketController {
                 ticket.setAssignedDate(LocalDateTime.now());
                 ticket.setStatus("In Progress");
                 ticketRepository.save(ticket);
+
+                // Log the  action
+
+                SystemLog systemLog = new SystemLog();
+                systemLog.setCreatedAt(LocalDateTime.now());
+                systemLog.setEmployee(currentUser);
+                systemLog.setDescription("Handel Ticket #"+ticket.getId());
+                systemLogRepository.save(systemLog);
+
                 return "redirect:/ticket/list";
             }
             else
@@ -246,6 +262,15 @@ public class TicketController {
         comment.setEmployee(currentUser);
         comment.setCreatedAt(LocalDateTime.now());
         commentRepository.save(comment);
+
+        // Log the  action
+
+        SystemLog systemLog = new SystemLog();
+        systemLog.setCreatedAt(LocalDateTime.now());
+        systemLog.setEmployee(currentUser);
+        systemLog.setDescription("Add Comment to Ticket #"+ticket.getId());
+        systemLogRepository.save(systemLog);
+
         redirectAttributes.addAttribute("id",id);
         redirectAttributes.addFlashAttribute("sweetMessage", "Your Comment Added To Ticket Successfully");
         return "redirect:/ticket/detail";
@@ -266,6 +291,15 @@ public class TicketController {
             {
                 ticket.setSatisfactionRating(rate);
                 ticketRepository.save(ticket);
+
+                // Log the  action
+
+                SystemLog systemLog = new SystemLog();
+                systemLog.setCreatedAt(LocalDateTime.now());
+                systemLog.setEmployee(currentUser);
+                systemLog.setDescription("Rate Ticket #"+ticket.getId());
+                systemLogRepository.save(systemLog);
+
                 redirectAttributes.addAttribute("id",id);
                 return "redirect:/ticket/detail";
             }
@@ -293,6 +327,15 @@ public class TicketController {
             {
                 ticket.setStatus(status);
                 ticket.setSolution(solution);
+
+                // Log the  action
+
+                SystemLog systemLog = new SystemLog();
+                systemLog.setCreatedAt(LocalDateTime.now());
+                systemLog.setEmployee(currentUser);
+                systemLog.setDescription("Update Ticket #"+ticket.getId());
+                systemLogRepository.save(systemLog);
+
                 ticketRepository.save(ticket);
                 redirectAttributes.addFlashAttribute("sweetMessage", "update successfully");
             }
