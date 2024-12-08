@@ -434,4 +434,68 @@ public class RequestController {
     } // GET Request Approve
 
 
+    //GET reject
+    @GetMapping("/reject")
+    public String reject(@RequestParam Long id)
+    {
+        Request request = requestRepository.findById(id).orElse(null);
+        if(request ==null)
+        {
+            return "/404";
+        }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+
+        if(currentUser ==null)
+        {
+            return "/404";
+        }
+
+        Boolean oneReject = false;
+
+        if(request.getRequiredManagerApproval())
+        {
+            //if manager approval is required & current user has manager role
+            if(currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("MANAGER")))
+            {
+                if(request.getManagerApproval() == null)
+                {
+                    request.setManagerApproval(false);
+                    oneReject = true;
+                }
+
+            }
+        } else if (request.getRequiredAdminApproval())
+        {
+            if(currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("ADMIN")))
+            {
+                if(request.getAdminApproval() ==null)
+                {
+                    request.setManagerApproval(false);
+                    oneReject = true;
+                }
+            }
+        } else if (request.getRequiredHRApproval()) {
+            if(currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("HR")))
+            {
+              if(request.getHrApproval()==null)
+              {
+                  request.setManagerApproval(false);
+                  oneReject = true;
+              }
+            }
+        }
+
+        if(oneReject)
+         {
+             request.setStatus("Rejected");
+         }
+        requestRepository.save(request);
+
+        // if current user has right to reject & if he is not approved he can reject
+        return "redirect:/request/detail?id="+id;
+    }
+
+
 }

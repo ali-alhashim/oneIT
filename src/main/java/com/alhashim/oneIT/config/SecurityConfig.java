@@ -10,6 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import com.alhashim.oneIT.config.CustomLoginSuccessHandler;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -18,8 +20,13 @@ public class SecurityConfig  {
 
     private final CustomLoginSuccessHandler customLoginSuccessHandler;
 
-    public SecurityConfig(CustomLoginSuccessHandler customLoginSuccessHandler) {
+    private final OtpVerificationFilter otpVerificationFilter;
+
+
+    public SecurityConfig(CustomLoginSuccessHandler customLoginSuccessHandler, OtpVerificationFilter otpVerificationFilter) {
         this.customLoginSuccessHandler = customLoginSuccessHandler;
+
+        this.otpVerificationFilter = otpVerificationFilter;
     }
 
 
@@ -30,7 +37,7 @@ public class SecurityConfig  {
 
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/css/**", "/js/**").permitAll() // Allow public access to login and static resources
+                        .requestMatchers("/login", "/otp", "/css/**", "/js/**").permitAll() // Allow public access to login and static resources
                         .requestMatchers("/employee/list").hasAnyRole("ADMIN","HR","SUPPORT")
                         .requestMatchers("/department/list").hasAnyRole("ADMIN","HR","SUPPORT")
                         .anyRequest().authenticated()
@@ -58,6 +65,7 @@ public class SecurityConfig  {
                         .deleteCookies("JSESSIONID")
                         .permitAll()
                 )
+               .addFilterAfter(otpVerificationFilter, SecurityContextHolderFilter.class) // Apply OTP check before other filters
                 .build();
     }
 

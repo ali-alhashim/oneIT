@@ -57,7 +57,10 @@ public class Employee {
     private String gender;
 
 
+    //for MFA with Google auth app or similar Microsoft auth
     private String otpCode;
+
+    private boolean isOtpEnabled;
 
 //-------- the Relationship filed-----------
 
@@ -303,5 +306,13 @@ public class Employee {
 
     public void setNotifications(List<Notification> notifications) {
         this.notifications = notifications;
+    }
+
+    public boolean isOtpEnabled() {
+        return isOtpEnabled;
+    }
+
+    public void setOtpEnabled(boolean otpEnabled) {
+        isOtpEnabled = otpEnabled;
     }
 }

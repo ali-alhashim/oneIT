@@ -21,6 +21,7 @@ import org.springframework.security.web.savedrequest.SavedRequest;
 
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 
 @Component
@@ -38,12 +39,11 @@ public class CustomLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-        // Get the currently authenticated username
         String badgeNumber = authentication.getName();
 
-        // Retrieve the Employee entity using the badge number
+        // Retrieve the Employee entity
         Employee employee = employeeRepository.findByBadgeNumber(badgeNumber)
-                .orElseThrow(() -> new RuntimeException("Employee not found with badge number: " + badgeNumber));
+                .orElseThrow(() -> new UsernameNotFoundException("Employee not found with badge number: " + badgeNumber));
 
         // Log the login action
         SystemLog systemLog = new SystemLog();
@@ -52,17 +52,29 @@ public class CustomLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         systemLog.setDescription("Login");
         systemLogRepository.save(systemLog);
 
-        // Retrieve the original URL
         SavedRequest savedRequest = requestCache.getRequest(request, response);
-        if (savedRequest != null) {
-            String targetUrl = savedRequest.getRedirectUrl();
-            redirectStrategy.sendRedirect(request, response, targetUrl);
+        String targetUrl = (savedRequest != null) ? savedRequest.getRedirectUrl() : "/";
+
+        if (employee.getOtpCode() == null) {
+            // First-time login, generate secret key
+            String secretKey = OtpUtil.generateSecretKey();
+            employee.setOtpCode(secretKey);
+            employee.setOtpEnabled(true);
+            employeeRepository.save(employee);
+
+            String otpAuthUrl = OtpUtil.getOtpAuthUrl(secretKey, badgeNumber);
+
+            // Store the target URL in session and redirect to OTP setup page
+            request.getSession().setAttribute("targetUrl", targetUrl);
+            request.getSession().setAttribute("otpAuthUrl", otpAuthUrl);
+            redirectStrategy.sendRedirect(request, response, "/otp-setup");
+        } else if (employee.isOtpEnabled()) {
+            // OTP is enabled, redirect to OTP verification page
+            request.getSession().setAttribute("targetUrl", targetUrl);
+            redirectStrategy.sendRedirect(request, response, "/otp");
         } else {
-            try {
-                super.onAuthenticationSuccess(request, response, authentication);
-            } catch (ServletException e) {
-                throw new RuntimeException(e);
-            }
+            // No OTP required, redirect to the original URL or default URL
+            redirectStrategy.sendRedirect(request, response, targetUrl);
         }
     }
 }

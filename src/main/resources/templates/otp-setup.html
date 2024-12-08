@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Set up OTP</title>
+  <script type="text/javascript" th:src="@{/js/qr/jquery.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/qr/qrcode.js}"></script>
+</head>
+<body>
+<h1>Set up Google Authenticator</h1>
+<p>Scan the QR code below with your Google Authenticator app:</p>
+
+<h4 th:text="${otpAuthUrl}"></h4>
+<div id="qrcode" style="width:200px; height:200px; margin-top:15px;"></div>
+
+<!-- Pass the value of otpAuthUrl to a data attribute -->
+<div id="otpAuthUrl" th:data-url="${otpAuthUrl}" style="display:none;"></div>
+
+<script type="text/javascript">
+  // Retrieve the URL from the data attribute
+  var otpAuthUrl = document.getElementById('otpAuthUrl').getAttribute('data-url');
+
+  // Generate the QR code
+  var qrcode = new QRCode("qrcode", {
+     text: otpAuthUrl,
+     width: 200,
+     height: 200,
+     colorDark : "#000000",
+     colorLight : "#ffffff",
+     correctLevel : QRCode.CorrectLevel.H
+  });
+</script>
+
+<form action="/otp" method="get">
+  <button type="submit">Continue</button>
+</form>
+</body>
+</html>
