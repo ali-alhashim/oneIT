@@ -718,6 +718,46 @@ public class EmployeeController {
         }
         model.addAttribute("message", "No Employee with this Badge Number ! "+restPasswordDto.getBadgeNumber());
         return "/404";
+    } //reset password
+
+    @PostMapping("/resetOTP")
+    public String resetOTP(@RequestParam String badgeNumber, RedirectAttributes redirectAttributes)
+    {
+        System.out.println("request sent to reset OTP :"+badgeNumber);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+
+
+
+
+        Employee employee = employeeRepository.findByBadgeNumber(badgeNumber).orElse(null);
+        if(employee ==null)
+        {
+            return "/404";
+        }
+
+        if(currentUser.getRoles().stream().anyMatch(role -> "ADMIN".equals(role.getRoleName())))
+        {
+            employee.setOtpCode(null);
+            employee.setOtpEnabled(null);
+            employeeRepository.save(employee);
+
+            redirectAttributes.addFlashAttribute("sweetMessage", "OTP has been Reset Successfully  ");
+
+            //log the action
+            SystemLog systemLog = new SystemLog();
+            systemLog.setEmployee(currentUser);
+            systemLog.setCreatedAt(LocalDateTime.now());
+            systemLog.setDescription("OTP Reset for "+employee.getName() +" Badge#:"+employee.getBadgeNumber());
+            systemLogRepository.save(systemLog);
+        }
+        else
+        {
+            return "/403";
+        }
+
+
+        return "redirect:/employee/detail?badgeNumber="+employee.getBadgeNumber();
     }
 
 

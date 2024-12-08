@@ -60,7 +60,7 @@ public class Employee {
     //for MFA with Google auth app or similar Microsoft auth
     private String otpCode;
 
-    private boolean isOtpEnabled;
+    private Boolean isOtpEnabled;
 
 //-------- the Relationship filed-----------
 
@@ -308,11 +308,11 @@ public class Employee {
         this.notifications = notifications;
     }
 
-    public boolean isOtpEnabled() {
+    public Boolean isOtpEnabled() {
         return isOtpEnabled;
     }
 
-    public void setOtpEnabled(boolean otpEnabled) {
-        isOtpEnabled = otpEnabled;
+    public void setOtpEnabled(Boolean otpEnabled) {
+        this.isOtpEnabled = otpEnabled;
     }
 }

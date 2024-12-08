@@ -19,11 +19,17 @@
                 <hr/>
             </div>
             <div class="col-3">
+
                 <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#resetPasswordModal">Reset Password</button>
+
             </div>
 
             <div class="col-3">
-                <a class="btn btn-danger" href="#">Reset OTP</a>
+                <form method="post" action="/employee/resetOTP" th:with="_csrfToken=${_csrf.token}">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+                    <input type="hidden" th:value="${badgeNumber}" name="badgeNumber">
+                <button class="btn btn-danger" >Reset OTP</button>
+                </form>
             </div>
 
             <div class="col-3">

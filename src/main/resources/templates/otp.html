@@ -3,42 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <title>OTP</title>
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 <body class="text-center bg-dark">
-
-
-
-
-    <form method="post" action="/otp" th:action="@{/otp}" th:object="${_csrf.token}">
-
-
-        <div class="row justify-content-center">
-            <div class="col-12 col-md-6 col-lg-4" style="min-width: 500px;">
-                <div class="card bg-white mb-5 mt-5 border-0" style="box-shadow: 0 12px 15px rgba(0, 0, 0, 0.02);">
-                    <div class="card-body p-5 text-center">
-                        <h4>Verify</h4>
-                        <p>Enter Your Code From Google Auth / Microsoft Auth</p>
-
-                        <div class="otp-field mb-4">
-                            <input type="number" class="form-control" name="otp" id="otp" required>
-                        </div>
-
-                        <button class="btn btn-primary mb-3 active">
-                            Verify
-                        </button>
-
-
+<form method="post" action="/otp" th:action="@{/otp}" th:object="${_csrf.token}">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6 col-lg-4" style="min-width: 500px;">
+            <div class="card bg-white mb-5 mt-5 border-0" style="box-shadow: 0 12px 15px rgba(0, 0, 0, 0.02);">
+                <div class="card-body p-5 text-center">
+                    <h4>Verify</h4>
+                    <p>Enter Your Code From Google Auth / Microsoft Auth</p>
+                    <div class="otp-field mb-4">
+                        <input type="number" class="form-control" name="otp" id="otp" required>
                     </div>
+                    <button class="btn btn-primary mb-3 active">
+                        Verify
+                    </button>
+                    <p id="timer" class="text-danger mt-3">Time remaining: 30 seconds</p>
                 </div>
             </div>
         </div>
-
-    </form>
-    <p style="color: red;" th:text="${error}"></p>
-
-
+    </div>
+</form>
+<p style="color: red;" th:text="${error}"></p>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script>
+    const timerElement = document.getElementById('timer');
+    let timer = 30;
+
+    const countdown = () => {
+        timer--;
+        if (timer > 0) {
+            timerElement.textContent = `Time remaining: ${timer} seconds`;
+        } else {
+            timer = 30; // Reset the timer
+            timerElement.textContent = `New code generated. Time remaining: ${timer} seconds`;
+        }
+    };
+
+    setInterval(countdown, 1000);
+</script>
 </body>
 </html>
