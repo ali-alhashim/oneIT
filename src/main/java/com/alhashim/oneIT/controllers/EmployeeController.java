@@ -610,10 +610,9 @@ public class EmployeeController {
 
 
 
-            //-------------Roles only admin can change roles
+            //-------------Roles only admin can set admin role roles
 
-            if( currentUser.getRoles().stream().noneMatch(role -> role.getRoleName().equalsIgnoreCase("ADMIN")))
-            {
+
                 Set<Role> roles = new HashSet<>();
 
                 if(employeeDto.isIs_MANAGER())
@@ -633,12 +632,17 @@ public class EmployeeController {
                     employee.setRoles(roles);
                 }
 
-                if(employeeDto.isIs_ADMIN())
-                {
+            if( currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("ADMIN"))) {
+
+                if (employeeDto.isIs_ADMIN()) {
                     Role role = roleRepository.findByRoleName("ADMIN").orElse(null);
                     roles.add(role);
                     employee.setRoles(roles);
                 }
+
+            } // only admin can give this role
+
+
 
                 if(employeeDto.isIs_SUPPORT())
                 {
@@ -654,9 +658,7 @@ public class EmployeeController {
                     employee.setRoles(roles);
                 }
                 //-------------/Roles
-            }else {
-                System.out.println("You are not admin if you trying to change the roles please contact system admin ");
-            }
+
 
 
 

@@ -298,6 +298,7 @@ public class RequestController {
              {
                  notification.setReadAt(LocalDateTime.now());
                  notificationRepository.save(notification);
+
              }
         }
 
@@ -436,7 +437,7 @@ public class RequestController {
 
     //GET reject
     @GetMapping("/reject")
-    public String reject(@RequestParam Long id)
+    public String reject(@RequestParam Long id, RedirectAttributes redirectAttributes)
     {
         Request request = requestRepository.findById(id).orElse(null);
         if(request ==null)
@@ -452,7 +453,7 @@ public class RequestController {
             return "/404";
         }
 
-        Boolean oneReject = false;
+        boolean oneReject = false;
 
         if(request.getRequiredManagerApproval())
         {
@@ -466,22 +467,24 @@ public class RequestController {
                 }
 
             }
-        } else if (request.getRequiredAdminApproval())
+        }
+        else if (request.getRequiredAdminApproval())
         {
             if(currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("ADMIN")))
             {
                 if(request.getAdminApproval() ==null)
                 {
-                    request.setManagerApproval(false);
+                    request.setAdminApproval(false);
                     oneReject = true;
                 }
             }
-        } else if (request.getRequiredHRApproval()) {
+        }
+        else if (request.getRequiredHRApproval()) {
             if(currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("HR")))
             {
               if(request.getHrApproval()==null)
               {
-                  request.setManagerApproval(false);
+                  request.setHrApproval(false);
                   oneReject = true;
               }
             }
@@ -490,7 +493,15 @@ public class RequestController {
         if(oneReject)
          {
              request.setStatus("Rejected");
+             //log the action
+             SystemLog systemLog = new SystemLog();
+             systemLog.setCreatedAt(LocalDateTime.now());
+             systemLog.setEmployee(currentUser);
+             systemLog.setDescription("Rejected Response to IT Asset Request  #"+request.getId());
+             systemLogRepository.save(systemLog);
+             redirectAttributes.addFlashAttribute("sweetMessage", "Request Rejected Successfully");
          }
+
         requestRepository.save(request);
 
         // if current user has right to reject & if he is not approved he can reject

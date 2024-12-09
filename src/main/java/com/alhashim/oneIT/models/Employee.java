@@ -62,7 +62,7 @@ public class Employee {
 
     private Boolean isOtpEnabled;
 
-    private Boolean isSuspend;
+
 
 //-------- the Relationship filed-----------
 
@@ -318,11 +318,5 @@ public class Employee {
         this.isOtpEnabled = otpEnabled;
     }
 
-    public Boolean getSuspend() {
-        return isSuspend;
-    }
 
-    public void setSuspend(Boolean suspend) {
-        this.isSuspend = suspend;
-    }
 }
