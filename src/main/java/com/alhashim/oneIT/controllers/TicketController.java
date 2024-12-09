@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -84,6 +85,9 @@ public class TicketController {
         model.addAttribute("pageSize", size);
         model.addAttribute("totalItems", ticketPage.getTotalElements());
         model.addAttribute("pageTitle","Ticket List");
+
+        List<Employee> supportEmployees = employeeRepository.findByRoles_RoleName("SUPPORT");
+        model.addAttribute("supportEmployees",supportEmployees);
         return "ticket/list";
     } //GET Ticket List
 
@@ -347,5 +351,57 @@ public class TicketController {
 
         redirectAttributes.addAttribute("id",id);
         return "redirect:/ticket/detail";
+    } //update
+
+
+    @PostMapping("/assign")
+    public String ticketsAssign(@RequestParam String ticketIds, @RequestParam String badgeNumber,RedirectAttributes redirectAttributes)
+    {
+        //only admin can assign tickets to support
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+
+        if(!currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("ADMIN")))
+        {
+           System.out.println("currentUser Not Admin you are don't have permission");
+           return "/403";
+        }
+
+        // Convert ticketIds to a list by splitting with a comma
+        List<String> ticketIdList = Arrays.asList(ticketIds.split(","));
+
+        ticketIdList.forEach(ticketId ->
+        {
+            try
+            {
+                Ticket ticket = ticketRepository.findById(Long.parseLong(ticketId)).orElse(null);
+                if(ticket !=null)
+                {
+                    Employee employee = employeeRepository.findByBadgeNumber(badgeNumber).orElse(null);
+                    if(employee !=null)
+                    {
+                        if(ticket.getStatus() != "Done")
+                        {
+                            ticket.setHandledBy(employee);
+                            ticket.setAssignedBy(currentUser);
+                            ticket.setAssignedDate(LocalDateTime.now());
+                            ticketRepository.save(ticket);
+                            redirectAttributes.addFlashAttribute("sweetMessage", "tickets has been assigned Successfully");
+
+                            //log the action
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                System.out.println(e.getMessage());
+            }
+        });
+
+
+
+
+        return "redirect:/ticket/list";
     }
 }

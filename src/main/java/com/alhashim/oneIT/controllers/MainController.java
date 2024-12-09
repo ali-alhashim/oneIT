@@ -173,12 +173,8 @@ public class MainController {
     }
 
     @PostMapping("/otp")
-    public String verifyOtp(
-            @RequestParam Integer otp,
-            HttpSession session,
-            Principal principal,
-            RedirectAttributes redirectAttributes
-    ) {
+    public String verifyOtp(@RequestParam Integer otp,HttpSession session,Principal principal, RedirectAttributes redirectAttributes )
+    {
         Employee employee = employeeRepository.findByBadgeNumber(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("Employee not found"));
 
@@ -201,7 +197,7 @@ public class MainController {
             session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
 
             // Clean up target URL from session
-            session.removeAttribute("targetUrl");
+            //session.removeAttribute("targetUrl");
 
             return "redirect:" + (targetUrl != null ? targetUrl : "/dashboard");
         } else {

@@ -15,7 +15,7 @@
         </div>
 
         <div class="col-2">
-            <button class="btn btn-secondary">Assign Selected Tickets</button>
+            <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#AssignTicketModal">Assign Selected Tickets</button>
         </div>
 
         <div class="col-2">
@@ -90,7 +90,7 @@
             <tbody>
             <tr th:each="ticket: ${tickets}">
                 <td>
-                    <input type="checkbox" name="ticketId" th:value="${ticket.id}">
+                    <input type="checkbox" name="ticketId" th:value="${ticket.id}" onclick="selectedTicket(this)">
                 </td>
                 <td>
                     <a class="btn btn-info" th:text="${ticket.id}" th:href="@{/ticket/detail(id=${ticket.id})}"></a>
@@ -153,6 +153,86 @@
 
 
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="AssignTicketModal" tabindex="-1" aria-labelledby="AssignTicketModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="AssignTicketModalLabel">Add Employee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <form id="AssignTicketForm" method="post" action="/ticket/assign"  th:with="_csrfToken=${_csrf.token}">
+
+                    <input type="hidden" name="ticketIds" id="ticketIds"  value=""/>
+
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+
+                    <div class="mb-3" th:if="${supportEmployees !=null}">
+                        <label for="selectEmployee" class="form-label">Select Support</label>
+                        <select id="selectEmployee" class="form-select" style="width: 100%;" name="badgeNumber">
+                            <option
+                                    th:each="employee: ${supportEmployees}"
+                                    th:value="${employee.badgeNumber}"
+                                    th:text="${employee.name} +'-'+ ${employee.arName}">
+
+                            </option>
+                        </select>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveEmployeeButton">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/modal-->
+
+<script>
+    const Ids = document.getElementById("ticketIds");
+
+     function selectedTicket(ticket) {
+         // Split the current value into an array of IDs
+         let idArray = Ids.value ? Ids.value.split(",") : [];
+
+         if (ticket.checked) {
+             // Add the ticket value if it's not already in the array
+             if (!idArray.includes(ticket.value)) {
+                 idArray.push(ticket.value);
+             }
+         } else {
+             // Remove the ticket value if it's unchecked
+             idArray = idArray.filter(id => id !== ticket.value);
+         }
+
+         // Update the hidden input with the new comma-separated value
+         Ids.value = idArray.join(",");
+     }
+
+       $(document).ready(function() {
+                    $('#selectEmployee').select2(
+                    {
+                      placeholder: "Select Support employee",
+                      allowClear: true,
+                      dropdownParent: $('#AssignTicketModal')
+                    }
+                    );
+                  });
+
+
+     $('#saveEmployeeButton').on('click', function ()
+     {
+        const form = $('#AssignTicketForm');
+
+          form.submit();
+
+       });
+</script>
 
 
 <div th:replace="~{fragments/footer :: footer}"></div>

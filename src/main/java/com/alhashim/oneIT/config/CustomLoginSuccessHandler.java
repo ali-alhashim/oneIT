@@ -54,6 +54,7 @@ public class CustomLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         SavedRequest savedRequest = requestCache.getRequest(request, response);
         String targetUrl = (savedRequest != null) ? savedRequest.getRedirectUrl() : "/";
+        System.out.println(employee.getBadgeNumber() +" want to open "+targetUrl);
 
         if (employee.getOtpCode() == null) {
             // First-time login, generate secret key

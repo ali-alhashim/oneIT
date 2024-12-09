@@ -466,15 +466,21 @@ public class DeviceController {
                 try{
                     Device device = new Device();
                     device.setSerialNumber(data[0].trim()); //first csv column is serial number
-                    device.setManufacture(data[1].trim()); // second column is Manufacture
-                    device.setCategory(data[2].trim());    // third column is Category
-                    device.setModel(data[3].trim());
-                    device.setDescription(data[4].trim());
 
-                    Date acquisitionDate = dateFormat.parse(data[5].trim()); //from string to date format [1965-05-20]
-                    device.setAcquisitionDate(acquisitionDate);
+                    device.setManufacture(data.length > 1 ? data[1].trim() : null); // second column is Manufacture
+                    device.setCategory(data.length > 2 ? data[2].trim() : null);    // third column is Category
+                    device.setModel(data.length > 3 ? data[3].trim() : null);
+                    device.setDescription(data.length > 4 ? data[4].trim() : null);
 
-                    device.setStatus(data[6].trim());
+                    if(data.length > 5 && !data[5].isEmpty())
+                    {
+                        Date acquisitionDate = dateFormat.parse(data[5].trim()); //from string to date format [1965-05-20]
+                        device.setAcquisitionDate(acquisitionDate);
+                    }
+
+
+
+                    device.setStatus(data.length > 6 ? data[6].trim() : null);
                     device.setCreatedAt(LocalDateTime.now());
 
                     deviceRepository.save(device);

@@ -427,30 +427,44 @@ public class EmployeeController {
                 String[] data = line.split(",");
 
                 // Skip the header row or invalid rows
-                if (data.length < 6 || "Employee ID".equalsIgnoreCase(data[0])) {
+                if (data.length < 1 || "badgeNumber".equalsIgnoreCase(data[0])) {
                     continue;
                 }
 
-                // Parse and insert data into the database
-                try{
+                try {
                     Employee employee = new Employee();
-                    employee.setBadgeNumber(data[0].trim());
-                    employee.setName(data[1].trim());
-                    employee.setArName(data[2].trim());
-                    employee.setWorkEmail(data[3].trim());
-                    employee.setWorkMobile(data[4].trim());
-                    employee.setStatus(data[5].trim());
-                    Date birthDate = dateFormat.parse(data[6].trim());
-                    employee.setBirthDate(birthDate); //from string to date format [1965-05-20]
-                    employee.setGender(data[7].trim());
+                    employee.setBadgeNumber(data[0].trim()); // Mandatory field
+
+                    // Use conditional checks for optional fields
+                    employee.setName(data.length > 1 ? data[1].trim() : null);
+                    employee.setArName(data.length > 2 ? data[2].trim() : null);
+                    employee.setWorkEmail(data.length > 3 ? data[3].trim() : null);
+                    employee.setWorkMobile(data.length > 4 ? data[4].trim() : null);
+                    employee.setStatus(data.length > 5 ? data[5].trim() : null);
+
+                    // Handle birthDate parsing safely
+                    if (data.length > 6 && !data[6].trim().isEmpty()) {
+                        Date birthDate = dateFormat.parse(data[6].trim());
+                        employee.setBirthDate(birthDate);
+                    } else {
+                        employee.setBirthDate(null);
+                    }
+
+                    // Handle gender
+                    employee.setGender(data.length > 7 ? data[7].trim() : null);
+
+                    // Set other fields
                     employee.setRoles(roles);
                     employee.setCreatedAt(LocalDateTime.now());
+
+                    // Save to the repository
                     employeeRepository.save(employee);
+                } catch (Exception e) {
+                    System.out.println("Error processing line: " + line);
+                    System.out.println("Exception: " + e.getMessage());
                 }
-                catch (Exception e)
-                {
-                   System.out.println(e.getMessage());
-                }
+
+
 
             }
         } catch (IOException e) {
