@@ -44,4 +44,9 @@ public class Role {
     public void setEmployees(Set<Employee> employees) {
         this.employees = employees;
     }
+
+    public int getTotalMember()
+    {
+        return this.employees.size();
+    }
 }
