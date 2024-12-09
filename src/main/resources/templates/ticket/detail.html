@@ -18,7 +18,7 @@
         <div class="row rounded border p-4 bg-light">
             <div class="row my-3">
 
-                <div class="col-3 m-1" th:if="${ticket.status =='In Progress'}">
+                <div class="col-3 m-1" th:if="${ticket.status =='In Progress' || ticket.status ==null}">
                     <button class="btn  btn-secondary"  data-bs-toggle="modal" data-bs-target="#updateTicketModal">update</button>
                 </div>
 

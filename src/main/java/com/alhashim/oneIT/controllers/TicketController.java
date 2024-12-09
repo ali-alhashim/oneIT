@@ -355,53 +355,70 @@ public class TicketController {
 
 
     @PostMapping("/assign")
-    public String ticketsAssign(@RequestParam String ticketIds, @RequestParam String badgeNumber,RedirectAttributes redirectAttributes)
-    {
-        //only admin can assign tickets to support
+    public String ticketsAssign(
+            @RequestParam String ticketIds,
+            @RequestParam String badgeNumber,
+            RedirectAttributes redirectAttributes) {
+
+        // Authenticate current user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
 
-        if(!currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("ADMIN")))
-        {
-           System.out.println("currentUser Not Admin you are don't have permission");
-           return "/403";
+        // Check if current user has ADMIN role
+        if (currentUser == null ||
+                currentUser.getRoles().stream().noneMatch(role -> role.getRoleName().equalsIgnoreCase("ADMIN"))) {
+            System.out.println("Current user is not an Admin; you don't have permission.");
+            return "/403"; // Redirect to access denied page
         }
 
-        // Convert ticketIds to a list by splitting with a comma
+        // Convert ticketIds to a list
         List<String> ticketIdList = Arrays.asList(ticketIds.split(","));
 
-        ticketIdList.forEach(ticketId ->
-        {
-            try
-            {
-                Ticket ticket = ticketRepository.findById(Long.parseLong(ticketId)).orElse(null);
-                if(ticket !=null)
-                {
+        // Process each ticket ID
+        ticketIdList.forEach(ticketId -> {
+            try {
+                // Find the ticket by ID
+                Ticket ticket = ticketRepository.findById(Long.parseLong(ticketId.trim())).orElse(null);
+
+                if (ticket != null) {
+                    // Find the employee by badge number
                     Employee employee = employeeRepository.findByBadgeNumber(badgeNumber).orElse(null);
-                    if(employee !=null)
-                    {
-                        if(ticket.getStatus() != "Done")
-                        {
+
+                    if (employee != null) {
+                        // Check if ticket is eligible for reassignment
+                        if (ticket.getStatus() == null ||
+                                (!ticket.getStatus().equalsIgnoreCase("Done") &&
+                                        !ticket.getStatus().equalsIgnoreCase("Canceled"))) {
+
+                            // Assign ticket
                             ticket.setHandledBy(employee);
                             ticket.setAssignedBy(currentUser);
                             ticket.setAssignedDate(LocalDateTime.now());
                             ticketRepository.save(ticket);
-                            redirectAttributes.addFlashAttribute("sweetMessage", "tickets has been assigned Successfully");
+                            // Add success message and redirect
+                            redirectAttributes.addFlashAttribute("sweetMessage", "Tickets have been assigned successfully");
 
-                            //log the action
+                            // Log the action
+                            SystemLog systemLog = new SystemLog();
+                            systemLog.setEmployee(currentUser);
+                            systemLog.setCreatedAt(LocalDateTime.now());
+                            systemLog.setDescription("Assigned Ticket #" + ticket.getId() + " to: " + employee.getName());
+                            systemLogRepository.save(systemLog);
                         }
+                    } else {
+                        System.out.println("Employee with badge number " + badgeNumber + " not found.");
                     }
+                } else {
+                    System.out.println("Ticket with ID " + ticketId + " not found.");
                 }
-            }
-            catch (Exception e)
-            {
-                System.out.println(e.getMessage());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid ticket ID: " + ticketId);
+            } catch (Exception e) {
+                System.out.println("Error processing ticket ID " + ticketId + ": " + e.getMessage());
             }
         });
 
 
-
-
-        return "redirect:/ticket/list";
+        return "redirect:/ticket/list"; // Adjust redirection URL as needed
     }
 }
