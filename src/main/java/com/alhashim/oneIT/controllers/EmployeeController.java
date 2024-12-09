@@ -134,6 +134,9 @@ public class EmployeeController {
         List<Department> departments = departmentRepository.findAll();
         model.addAttribute("departments",departments);
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+
 
 
         if(employeeDto.getBadgeNumber().isEmpty())
@@ -253,12 +256,21 @@ public class EmployeeController {
             employee.setRoles(roles);
         }
 
-            if(employeeDto.isIs_ADMIN())
-            {
-                Role role = roleRepository.findByRoleName("ADMIN").orElse(null);
-                roles.add(role);
-                employee.setRoles(roles);
-            }
+
+            //this role can be given only with admin
+          if(currentUser.getRoles().stream().anyMatch(role -> "ADMIN".equals(role.getRoleName())))
+          {
+              if(employeeDto.isIs_ADMIN())
+              {
+                  Role role = roleRepository.findByRoleName("ADMIN").orElse(null);
+                  roles.add(role);
+                  employee.setRoles(roles);
+              }
+          }
+          else
+          {
+              System.out.println("if you trying add admin role to new user ! you are Not admin");
+          }
 
             if(employeeDto.isIs_SUPPORT())
             {
@@ -273,8 +285,7 @@ public class EmployeeController {
                employeeRepository.save(employee);
 
                // Log the  action
-               Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-               Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+
                SystemLog systemLog = new SystemLog();
                systemLog.setCreatedAt(LocalDateTime.now());
                systemLog.setEmployee(currentUser);
@@ -481,6 +492,7 @@ public class EmployeeController {
 
 
     //role of SUPERADMIN, HR, SUPPORT
+    //but the roles only admin
     @GetMapping("/edit")
     public  String editPage(Model model, @RequestParam String badgeNumber)
     {
@@ -563,6 +575,9 @@ public class EmployeeController {
     @PostMapping("/edit")
     public String updateEmployee(@Valid @ModelAttribute EmployeeDto employeeDto, BindingResult result, Model model)
     {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+
 
         System.out.println("employeeDto = " + employeeDto.toString());
 
@@ -591,47 +606,58 @@ public class EmployeeController {
             employee.setBirthDate(employeeDto.getBirthDate());
             employee.setGender(employeeDto.getGender());
             employee.setStatus(employeeDto.getStatus());
-            //-------------Roles
-            Set<Role> roles = new HashSet<>();
 
-            if(employeeDto.isIs_MANAGER())
+
+
+
+            //-------------Roles only admin can change roles
+
+            if( currentUser.getRoles().stream().noneMatch(role -> role.getRoleName().equalsIgnoreCase("ADMIN")))
             {
-                Role role = roleRepository.findByRoleName("MANAGER").orElse(null);
-                roles.add(role);
-                employee.setRoles(roles);
+                Set<Role> roles = new HashSet<>();
+
+                if(employeeDto.isIs_MANAGER())
+                {
+                    Role role = roleRepository.findByRoleName("MANAGER").orElse(null);
+                    roles.add(role);
+                    employee.setRoles(roles);
+                }
+
+
+                if(employeeDto.isIs_USER())
+                {
+                    Role role = roleRepository.findByRoleName("USER").orElse(null);
+
+                    roles.add(role);
+
+                    employee.setRoles(roles);
+                }
+
+                if(employeeDto.isIs_ADMIN())
+                {
+                    Role role = roleRepository.findByRoleName("ADMIN").orElse(null);
+                    roles.add(role);
+                    employee.setRoles(roles);
+                }
+
+                if(employeeDto.isIs_SUPPORT())
+                {
+                    Role role = roleRepository.findByRoleName("SUPPORT").orElse(null);
+                    roles.add(role);
+                    employee.setRoles(roles);
+                }
+
+                if(employeeDto.isIs_HR())
+                {
+                    Role role = roleRepository.findByRoleName("HR").orElse(null);
+                    roles.add(role);
+                    employee.setRoles(roles);
+                }
+                //-------------/Roles
+            }else {
+                System.out.println("You are not admin if you trying to change the roles please contact system admin ");
             }
 
-
-            if(employeeDto.isIs_USER())
-            {
-                Role role = roleRepository.findByRoleName("USER").orElse(null);
-
-                roles.add(role);
-
-                employee.setRoles(roles);
-            }
-
-            if(employeeDto.isIs_ADMIN())
-            {
-                Role role = roleRepository.findByRoleName("ADMIN").orElse(null);
-                roles.add(role);
-                employee.setRoles(roles);
-            }
-
-            if(employeeDto.isIs_SUPPORT())
-            {
-                Role role = roleRepository.findByRoleName("SUPPORT").orElse(null);
-                roles.add(role);
-                employee.setRoles(roles);
-            }
-
-            if(employeeDto.isIs_HR())
-            {
-                Role role = roleRepository.findByRoleName("HR").orElse(null);
-                roles.add(role);
-                employee.setRoles(roles);
-            }
-            //-------------/Roles
 
 
             //-------upload photo if exist -----------
@@ -675,8 +701,7 @@ public class EmployeeController {
             employeeRepository.save(employee);
 
             // Log the  action
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+
             SystemLog systemLog = new SystemLog();
             systemLog.setCreatedAt(LocalDateTime.now());
             systemLog.setEmployee(currentUser);
