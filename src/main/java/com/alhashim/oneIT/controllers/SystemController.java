@@ -26,6 +26,8 @@ public class SystemController {
 
     @Autowired
     RoleRepository roleRepository;
+    @Autowired
+    EmployeeRepository employeeRepository;
 
     @GetMapping("/roles")
     public String rolesList(Model model)
@@ -47,10 +49,13 @@ public class SystemController {
            return "/404";
        }
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-       employeePage = roleRepository.findByRoleName(role.getRoleName(),pageable );
+       employeePage = employeeRepository.findByRoles_RoleName(role.getRoleName(),pageable );
+
+       List<Employee> employees = employeeRepository.findAll();
 
 
-        model.addAttribute("employees", employeePage.getContent());
+        model.addAttribute("employeePage", employeePage.getContent());
+        model.addAttribute("employees", employees);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", employeePage.getTotalPages());
         model.addAttribute("pageSize", size);

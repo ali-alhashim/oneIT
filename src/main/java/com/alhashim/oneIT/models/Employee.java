@@ -62,6 +62,8 @@ public class Employee {
 
     private Boolean isOtpEnabled;
 
+    private Boolean isSuspend;
+
 //-------- the Relationship filed-----------
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -314,5 +316,13 @@ public class Employee {
 
     public void setOtpEnabled(Boolean otpEnabled) {
         this.isOtpEnabled = otpEnabled;
+    }
+
+    public Boolean getSuspend() {
+        return isSuspend;
+    }
+
+    public void setSuspend(Boolean suspend) {
+        this.isSuspend = suspend;
     }
 }

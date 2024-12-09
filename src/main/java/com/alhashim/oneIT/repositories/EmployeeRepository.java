@@ -24,6 +24,7 @@ public interface  EmployeeRepository  extends JpaRepository<Employee, Long> {
 
 
     List<Employee> findByRoles_RoleName(String roleName);
+    Page<Employee> findByRoles_RoleName(String roleName, Pageable pageable);
 
 
 
