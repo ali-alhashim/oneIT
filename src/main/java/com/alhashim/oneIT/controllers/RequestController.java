@@ -25,6 +25,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/request")
@@ -435,74 +436,93 @@ public class RequestController {
     } // GET Request Approve
 
 
+
+
+    //method to return boolean if he has role name
+    private boolean currentUserHasRole(Employee currentUser, String roleName)
+    {
+        return currentUser.getRoles().stream()
+                .anyMatch(role -> role.getRoleName().equalsIgnoreCase(roleName));
+    }
+
+
     //GET reject
     @GetMapping("/reject")
     public String reject(@RequestParam Long id, RedirectAttributes redirectAttributes)
     {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+
+        System.out.println("Request to Reject IT Asset Request#"+id);
+
+
+
         Request request = requestRepository.findById(id).orElse(null);
         if(request ==null)
         {
             return "/404";
         }
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+
+        System.out.println("Current User Roles: " +
+                currentUser.getRoles().stream()
+                        .map(role -> role.getRoleName())
+                        .collect(Collectors.joining(", ")));
+        System.out.println("Request Manager Approval: " + request.getManagerApproval() +" is Required "+request.getRequiredManagerApproval());
+        System.out.println("Request Admin Approval: " + request.getAdminApproval()     +" is Required "+ request.getRequiredAdminApproval());
+        System.out.println("Request HR Approval: " + request.getHrApproval()           +" is Required "+ request.getRequiredHRApproval());
+
+
 
         if(currentUser ==null)
         {
             return "/404";
         }
 
+
+
         boolean oneReject = false;
 
-        if(request.getRequiredManagerApproval())
-        {
-            //if manager approval is required & current user has manager role
-            if(currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("MANAGER")))
-            {
-                if(request.getManagerApproval() == null)
-                {
-                    request.setManagerApproval(false);
-                    oneReject = true;
-                }
-
-            }
-        }
-        else if (request.getRequiredAdminApproval())
-        {
-            if(currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("ADMIN")))
-            {
-                if(request.getAdminApproval() ==null)
-                {
-                    request.setAdminApproval(false);
-                    oneReject = true;
-                }
-            }
-        }
-        else if (request.getRequiredHRApproval()) {
-            if(currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("HR")))
-            {
-              if(request.getHrApproval()==null)
-              {
-                  request.setHrApproval(false);
-                  oneReject = true;
-              }
+        // Check Manager approval
+        if (request.getRequiredManagerApproval() && request.getManagerApproval() == null) {
+            if (currentUserHasRole(currentUser, "MANAGER")) {
+                request.setManagerApproval(false);
+                oneReject = true;
             }
         }
 
-        if(oneReject)
-         {
-             request.setStatus("Rejected");
-             //log the action
-             SystemLog systemLog = new SystemLog();
-             systemLog.setCreatedAt(LocalDateTime.now());
-             systemLog.setEmployee(currentUser);
-             systemLog.setDescription("Rejected Response to IT Asset Request  #"+request.getId());
-             systemLogRepository.save(systemLog);
-             redirectAttributes.addFlashAttribute("sweetMessage", "Request Rejected Successfully");
-         }
+// Check Admin approval
+        if (request.getRequiredAdminApproval() && request.getAdminApproval() == null) {
+            if (currentUserHasRole(currentUser, "ADMIN")) {
+                request.setAdminApproval(false);
+                oneReject = true;
+            }
+        }
 
-        requestRepository.save(request);
+// Check HR approval
+        if (request.getRequiredHRApproval() && request.getHrApproval() == null) {
+            if (currentUserHasRole(currentUser, "HR")) {
+                request.setHrApproval(false);
+                oneReject = true;
+            }
+        }
+
+// Handle rejection result
+        if (oneReject) {
+            request.setStatus("Rejected");
+            SystemLog systemLog = new SystemLog();
+            systemLog.setCreatedAt(LocalDateTime.now());
+            systemLog.setEmployee(currentUser);
+            systemLog.setDescription("Rejected Response to IT Asset Request #" + request.getId());
+            systemLogRepository.save(systemLog);
+            requestRepository.save(request);
+            redirectAttributes.addFlashAttribute("sweetMessage", "Request Rejected Successfully");
+        } else {
+            redirectAttributes.addFlashAttribute("sweetMessage",
+                    "You do not have the appropriate role or the approval is already processed.");
+        }
+
+
 
         // if current user has right to reject & if he is not approved he can reject
         return "redirect:/request/detail?id="+id;
