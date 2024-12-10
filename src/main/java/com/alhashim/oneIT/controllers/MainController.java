@@ -4,11 +4,17 @@ import com.alhashim.oneIT.config.OtpValidator;
 import com.alhashim.oneIT.config.SecurityConfig;
 import com.alhashim.oneIT.dto.ChangePasswordDto;
 import com.alhashim.oneIT.models.Employee;
+import com.alhashim.oneIT.models.Notification;
 import com.alhashim.oneIT.models.SystemLog;
 import com.alhashim.oneIT.repositories.EmployeeRepository;
+import com.alhashim.oneIT.repositories.NotificationRepository;
 import com.alhashim.oneIT.repositories.SystemLogRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,8 +45,11 @@ public class MainController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    NotificationRepository notificationRepository;
+
     @GetMapping({"/dashboard","/",""})
-    public String dashboardPage(Model model)
+    public String dashboardPage(Model model, @RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size)
     {
         String badgeNumber = SecurityContextHolder.getContext().getAuthentication().getName();
         Employee employee = employeeRepository.findByBadgeNumber(badgeNumber).orElse(null);
@@ -72,7 +81,7 @@ public class MainController {
             model.addAttribute("workMobile",employee.getWorkMobile());
             model.addAttribute("personalMobile", employee.getPersonalMobile());
 
-            model.addAttribute("notificationList", employee.getNotifications());
+
 
             if(employee.getDepartment() !=null)
             {
@@ -86,9 +95,28 @@ public class MainController {
             model.addAttribute("roles", employee.getRoles());
             model.addAttribute("pageTitle","Dashboard");
 
+         Page<Notification> notificationPage;
+        if(keyword !=null && !keyword.isEmpty())
+        {
+            notificationPage = notificationRepository.findByKeyword(keyword, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+        }
+        else
+        {
+            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+            notificationPage = notificationRepository.findByEmployee(employee,pageable);
+        }
 
 
-            return "dashboard";
+        model.addAttribute("notificationList", notificationPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", notificationPage.getTotalPages());
+        model.addAttribute("pageSize", size);
+        model.addAttribute("totalItems", notificationPage.getTotalElements());
+
+
+
+
+            return "/dashboard";
 
 
 

@@ -133,6 +133,45 @@
         </div>
         <!--/Notification Center -->
 
+        <!--Page navigation -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <!-- Previous Button -->
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link" th:href="@{/dashboard(page=${currentPage - 1}, size=${pageSize})}" tabindex="-1">Previous</a>
+                </li>
+
+                <!-- Start of Pagination Numbers -->
+                <li class="page-item" th:if="${currentPage > 2}">
+                    <a class="page-link" th:href="@{/dashboard(page=0, size=${pageSize})}">1</a>
+                </li>
+                <li class="page-item disabled" th:if="${currentPage > 2}">
+                    <a class="page-link">...</a>
+                </li>
+
+                <!-- Dynamic Page Numbers -->
+                <li class="page-item" th:each="i : ${#numbers.sequence(currentPage - 2 > 0 ? currentPage - 2 : 0, currentPage + 2 < totalPages - 1 ? currentPage + 2 : totalPages - 1)}"
+                    th:classappend="${i == currentPage} ? 'active'">
+                    <a class="page-link" th:href="@{/dashboard(page=${i}, size=${pageSize})}" th:text="${i + 1}"></a>
+                </li>
+
+                <!-- End of Pagination Numbers -->
+                <li class="page-item disabled" th:if="${currentPage < totalPages - 3}">
+                    <a class="page-link">...</a>
+                </li>
+                <li class="page-item" th:if="${currentPage < totalPages - 3}">
+                    <a class="page-link" th:href="@{/dashboard(page=${totalPages - 1}, size=${pageSize})}" th:text="${totalPages}"></a>
+                </li>
+
+                <!-- Next Button -->
+                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                    <a class="page-link" th:href="@{/dashboard(page=${currentPage + 1}, size=${pageSize})}">Next</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!--/page navigation-->
+
 
 
         <!--restPassword Modal -->

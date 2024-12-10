@@ -85,7 +85,19 @@
                     <input type="checkbox" name="serialNumber" th:value="${device.serialNumber}"/>
                 </td>
                 <td>
-                    <img th:src="@{'/images/device/'+${device.serialNumber}+'/'+${device.imageFileName}}" alt="..." width="100"/>
+
+                    <img th:src="${device.imageFileName != null
+               ? '/images/device/' + device.serialNumber + '/' + device.imageFileName
+               : (device.category == 'Laptop'
+                   ? '/img/Laptop.png'
+                   : (device.category == 'Printer'
+                       ? '/img/Printer.png'
+                       : (device.category == 'Monitor'
+                           ? '/img/Monitor.png'
+                           : '/img/default.png')))}"
+                         alt="Device Image"
+                         width="100"/>
+
                 </td>
                 <td>
                     <a class="btn btn-info" th:text="${device.serialNumber}" th:href="@{/device/detail(serialNumber=${device.serialNumber})}"></a>
