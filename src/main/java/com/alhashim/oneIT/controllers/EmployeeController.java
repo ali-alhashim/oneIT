@@ -41,10 +41,9 @@ import java.text.SimpleDateFormat;
 
 import java.time.LocalDateTime;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 @Controller
 @RequestMapping("/employee")
@@ -799,6 +798,106 @@ public class EmployeeController {
 
 
         return "redirect:/employee/detail?badgeNumber="+employee.getBadgeNumber();
+    }// reset otp
+
+
+
+    // import photo----------
+    @PostMapping("/importPhoto")
+    public String importPhoto(@RequestParam MultipartFile photoFile, Model model) {
+        String tempDir = "public/upload/temp/";
+        String targetDir = "public/images/";
+
+        // Step 1: Create directories
+        Path tempPath = Paths.get(tempDir);
+        Path targetPath = Paths.get(targetDir);
+
+        try {
+            Files.createDirectories(tempPath);
+            Files.createDirectories(targetPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+            model.addAttribute("message", "Error creating directories: " + e.getMessage());
+            return "/404";
+        }
+
+        // Step 2: Validate file type
+        if (!photoFile.getOriginalFilename().endsWith(".zip")) {
+            model.addAttribute("message", "Invalid file type. Only ZIP files are allowed.");
+            return "/404";
+        }
+
+        // Step 3: Save the ZIP file to the temp directory
+        Path zipFilePath = tempPath.resolve(photoFile.getOriginalFilename());
+        try {
+            Files.write(zipFilePath, photoFile.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+            model.addAttribute("message", "Error saving ZIP file: " + e.getMessage());
+            return "/404";
+        }
+
+        // Step 4: Extract ZIP file and process photos
+        try (ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(zipFilePath))) {
+            ZipEntry entry;
+            while ((entry = zipInputStream.getNextEntry()) != null) {
+                if (!entry.isDirectory()) {
+                    // Extract the base file name (e.g., remove "photo/" prefix)
+                    String fileName = Paths.get(entry.getName()).getFileName().toString();
+
+                    // Validate image file types
+                    if (!fileName.toLowerCase().matches(".*\\.(jpg|jpeg|png)$")) {
+                        System.out.println("Skipping non-image file: " + fileName);
+                        continue;
+                    }
+
+                    // Extract badge number from the file name
+                    String badgeNumber = fileName.substring(0, fileName.lastIndexOf('.')).toUpperCase();
+
+                    // Find employee by badge number
+                    Optional<Employee> employeeOptional = employeeRepository.findByBadgeNumber(badgeNumber);
+                    if (employeeOptional.isPresent()) {
+                        Employee employee = employeeOptional.get();
+
+                        // Create target directory for the employee
+                        Path employeePhotoPath = targetPath.resolve(badgeNumber + "/" + fileName);
+                        Files.createDirectories(employeePhotoPath.getParent());
+
+                        // Save the photo to the target directory
+                        try (OutputStream outputStream = Files.newOutputStream(employeePhotoPath)) {
+                            byte[] buffer = new byte[1024];
+                            int len;
+                            while ((len = zipInputStream.read(buffer)) > 0) {
+                                outputStream.write(buffer, 0, len);
+                            }
+                        }
+
+                        // Update employee's photo path in the database
+                        employee.setImageFileName(employee.getBadgeNumber()+".jpg");
+                        employeeRepository.save(employee);
+                    } else {
+                        System.out.println("No employee found for badge number: " + badgeNumber);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            model.addAttribute("message", "Error extracting ZIP file: " + e.getMessage());
+            return "/404";
+        }
+
+        // Step 5: Clean up temp directory
+        try {
+            Files.walk(tempPath)
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Redirect to employee list
+        model.addAttribute("message", "Photos imported successfully.");
+        return "redirect:/employee/list";
     }
 
 

@@ -14,8 +14,8 @@
              <a href="/employee/add" class="btn btn-success">Add</a>
          </div>
 
-         <div class="col-4">
-             <a href="/employee/downloadTemplate" class="btn btn-success">Download employee template CSV</a>
+         <div class="col-2">
+             <a href="/employee/downloadTemplate" class="btn btn-success">Download CSV</a>
          </div>
 
          <div class="col-2">
@@ -44,6 +44,34 @@
                             alert("No file selected!");
                         }
                     };
+             </script>
+         </div>
+
+         <div class="col-2">
+             <button  class="btn btn-outline-success" id="importPhotoBtn">Import Photo .ZIP</button>
+             <form method="post" enctype="multipart/form-data"  th:with="_csrfToken=${_csrf.token}" id="importPhotoForm" action="/employee/importPhoto">
+                 <input type="file" id="photoFile" name="photoFile"  style="display:none">
+                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+             </form>
+
+             <script>
+                 const importPhotoBtn     = document.getElementById("importPhotoBtn");
+                 const photoFile      = document.getElementById("photoFile");
+                 const importPhotoForm = document.getElementById("importPhotoForm");
+
+                 // Handle button click to trigger file input
+                 importPhotoBtn.onclick = function () {
+                     photoFile.click();
+                 };
+
+                 // Submit the form after a file is selected
+                 photoFile.onchange = function () {
+                     if (photoFile.files.length > 0) {
+                         importPhotoForm.submit();
+                     } else {
+                         alert("No file selected!");
+                     }
+                 };
              </script>
          </div>
 

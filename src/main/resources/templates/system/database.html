@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+
+</head>
+<body class="bg-body-secondary">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+
+
+<div class="container bordered my-5">
+  <hr/>
+  <div class="row" id="toolbar">
+    <div class="col-4">
+      <button class="btn btn-success">Backup Database</button>
+    </div>
+  </div>
+  <hr/>
+
+
+  <div class="row rounded border p-4 bg-light">
+    <table class="table">
+       <tr>
+         <td>Database Name</td><td th:text="${databaseName}">
+       </tr>
+      <tr>
+        <td>Database Size</td><td th:text="${databaseSize}"></td>
+      </tr>
+      <tr>
+        <td>uploads Folder Size</td><td th:text="${uploadsFolderSize}"></td>
+      </tr>
+    </table>
+  </div>
+
+
+
+
+
+
+</div>
+
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
