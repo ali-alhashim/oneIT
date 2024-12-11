@@ -6,6 +6,7 @@ import com.alhashim.oneIT.dto.ChangePasswordDto;
 import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.models.Notification;
 import com.alhashim.oneIT.models.SystemLog;
+import com.alhashim.oneIT.repositories.DeviceRepository;
 import com.alhashim.oneIT.repositories.EmployeeRepository;
 import com.alhashim.oneIT.repositories.NotificationRepository;
 import com.alhashim.oneIT.repositories.SystemLogRepository;
@@ -46,6 +47,9 @@ public class MainController {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
+    private DeviceRepository deviceRepository;
+
+    @Autowired
     NotificationRepository notificationRepository;
 
     @GetMapping({"/dashboard","/",""})
@@ -80,6 +84,18 @@ public class MainController {
             model.addAttribute("workEmail", employee.getWorkEmail());
             model.addAttribute("workMobile",employee.getWorkMobile());
             model.addAttribute("personalMobile", employee.getPersonalMobile());
+
+            int laptopCount = deviceRepository.countByEmployeeAndCategory(employee, "Laptop");
+            model.addAttribute("laptopCount",laptopCount);
+
+            int smartPhoneCount = deviceRepository.countByEmployeeAndCategory(employee, "SmartPhone");
+            model.addAttribute("smartPhoneCount",smartPhoneCount);
+
+            int monitorCount = deviceRepository.countByEmployeeAndCategory(employee, "Monitor");
+            model.addAttribute("monitorCount",monitorCount);
+
+            int printerCount = deviceRepository.countByEmployeeAndCategory(employee, "Printer");
+            model.addAttribute("printerCount",printerCount);
 
 
 

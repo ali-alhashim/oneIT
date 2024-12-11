@@ -23,6 +23,9 @@ public class Invoice {
     @Column(nullable = false)
     private String invoiceNumber;
 
+    @ManyToOne
+    private PurchaseOrder purchaseOrder;
+
     public Long getId() {
         return id;
     }
@@ -53,5 +56,13 @@ public class Invoice {
 
     public void setInvoiceNumber(String invoiceNumber) {
         this.invoiceNumber = invoiceNumber;
+    }
+
+    public PurchaseOrder getPurchaseOrder() {
+        return purchaseOrder;
+    }
+
+    public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
+        this.purchaseOrder = purchaseOrder;
     }
 }

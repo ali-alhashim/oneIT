@@ -3,6 +3,7 @@ package com.alhashim.oneIT.models;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 public class Customer {
@@ -17,6 +18,10 @@ public class Customer {
 
     @Column(updatable = false)
     private LocalDateTime createdAt;
+
+
+    @OneToMany(mappedBy = "customer")
+    private List<Contact> representatives;
 
 
     private String registrationNumber;

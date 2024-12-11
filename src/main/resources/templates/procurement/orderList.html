@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+
+</head>
+<body class="bg-body-secondary">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container bordered my-5">
+
+    <div class="row" id="toolbar">
+        <div class="col-4">
+            <a href="system/role/add" class="btn btn-success">Add</a>
+        </div>
+
+        <div class="col-4">
+            <a href="#" class="btn btn-outline-success">Import CSV</a>
+        </div>
+
+        <div class="col-4">
+            <form method="get">
+                <div class="row">
+                    <div class="col">
+                        <input type="text" name="keyword" class="form-control" placeholder="Enter Keyword..."/>
+                    </div>
+                    <div class="col">
+                        <input type="submit" class="btn btn-dark" value="Search">
+                    </div>
+
+
+                </div>
+            </form>
+        </div>
+    </div>
+    <hr/>
+    <!-- list  -->
+    <div class="table-responsive">
+        <table class="table border">
+            <thead>
+            <td><input type="checkbox" name="all"/> </td>
+            <th>#</th>
+            <th>Code#</th>
+            <th>Created At</th>
+            <th>Vendor</th>
+            <th>Amount</th>
+            <th>Status</th>
+
+            </thead>
+
+            <tbody>
+            <tr th:each="order: ${orders}">
+                <td>
+                    <input type="checkbox" name="id" th:value="${order.id}"/>
+                </td>
+
+                <td>
+                    <a class="btn btn-info" th:text="${order.id}" th:href="@{/procurement/orderDetail(id=${order.id})}"></a>
+                </td>
+
+                <td th:text="${order.code}"></td>
+                <td th:text="${order.createdAt}"></td>
+                <td th:text="${order.vendor}"></td>
+                <td th:text="${order.amount}"></td>
+                <td th:text="${order.status}"></td>
+
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+    <!--/ list -->
+
+
+    <!--Page navigation -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <!-- Previous Button -->
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                <a class="page-link" th:href="@{/procurement/order(page=${currentPage - 1}, size=${pageSize})}" tabindex="-1">Previous</a>
+            </li>
+
+            <!-- Start of Pagination Numbers -->
+            <li class="page-item" th:if="${currentPage > 2}">
+                <a class="page-link" th:href="@{/procurement/order(page=0, size=${pageSize})}">1</a>
+            </li>
+            <li class="page-item disabled" th:if="${currentPage > 2}">
+                <a class="page-link">...</a>
+            </li>
+
+            <!-- Dynamic Page Numbers -->
+            <li class="page-item" th:each="i : ${#numbers.sequence(currentPage - 2 > 0 ? currentPage - 2 : 0, currentPage + 2 < totalPages - 1 ? currentPage + 2 : totalPages - 1)}"
+                th:classappend="${i == currentPage} ? 'active'">
+                <a class="page-link" th:href="@{/procurement/order(page=${i}, size=${pageSize})}" th:text="${i + 1}"></a>
+            </li>
+
+            <!-- End of Pagination Numbers -->
+            <li class="page-item disabled" th:if="${currentPage < totalPages - 3}">
+                <a class="page-link">...</a>
+            </li>
+            <li class="page-item" th:if="${currentPage < totalPages - 3}">
+                <a class="page-link" th:href="@{/procurement/order(page=${totalPages - 1}, size=${pageSize})}" th:text="${totalPages}"></a>
+            </li>
+
+            <!-- Next Button -->
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                <a class="page-link" th:href="@{/procurement/order(page=${currentPage + 1}, size=${pageSize})}">Next</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!--/page navigation-->
+
+</div>
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

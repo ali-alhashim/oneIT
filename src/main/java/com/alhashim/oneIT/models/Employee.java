@@ -84,6 +84,10 @@ public class Employee {
     private List<Notification> notifications;
 
 
+    @OneToMany(mappedBy = "createdBy")
+    private List<PurchaseOrder> purchaseOrders;
+
+
     @OneToMany(mappedBy = "user")
     private List<Device> devices; // Multiple devices per employee
 
@@ -318,5 +322,11 @@ public class Employee {
         this.isOtpEnabled = otpEnabled;
     }
 
+    public List<PurchaseOrder> getPurchaseOrders() {
+        return purchaseOrders;
+    }
 
+    public void setPurchaseOrders(List<PurchaseOrder> purchaseOrders) {
+        this.purchaseOrders = purchaseOrders;
+    }
 }

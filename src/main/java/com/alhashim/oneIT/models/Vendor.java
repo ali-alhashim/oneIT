@@ -21,7 +21,7 @@ public class Vendor {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    @OneToMany
+    @OneToMany(mappedBy = "vendor")
     private List<Contact> representatives;
 
 
@@ -136,4 +136,6 @@ public class Vendor {
     public void setAddress(String address) {
         this.address = address;
     }
+
+
 }

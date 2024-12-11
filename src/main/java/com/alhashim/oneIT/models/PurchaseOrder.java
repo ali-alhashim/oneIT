@@ -5,6 +5,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -17,21 +18,32 @@ public class PurchaseOrder {
 
     @Column(updatable = false)
     private LocalDateTime createdAt;
+    private Date deadLine;
+
+    private String code;
+    private String documentRef;
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
     @ManyToOne
+    @JoinColumn(name = "employee_id", nullable = false)
     private Employee createdBy;
 
     @ManyToOne
+    @JoinColumn(name = "vendor_id", nullable = false)
     private Vendor vendor;
+
+    @OneToMany(mappedBy = "purchaseOrder")
+    private List<Invoice> invoices;
 
     @OneToMany(mappedBy = "purchaseOrder")
     private List<PurchaseOrderLine> lines;
 
     private BigDecimal totalVAT;
     private BigDecimal totalPriceWithVAT;
+
+    private String status;  //draft, sent, accepted, delivered, invoice, paid, cancelled, rejected
 
     public Long getId() {
         return id;
@@ -95,6 +107,46 @@ public class PurchaseOrder {
 
     public void setTotalPriceWithVAT(BigDecimal totalPriceWithVAT) {
         this.totalPriceWithVAT = totalPriceWithVAT;
+    }
+
+    public String getDocumentRef() {
+        return documentRef;
+    }
+
+    public void setDocumentRef(String documentRef) {
+        this.documentRef = documentRef;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public Date getDeadLine() {
+        return deadLine;
+    }
+
+    public void setDeadLine(Date deadLine) {
+        this.deadLine = deadLine;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public List<Invoice> getInvoices() {
+        return invoices;
+    }
+
+    public void setInvoices(List<Invoice> invoices) {
+        this.invoices = invoices;
     }
 
 

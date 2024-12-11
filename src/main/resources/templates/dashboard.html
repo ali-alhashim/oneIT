@@ -1,9 +1,29 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: head}">
+<head th:replace="~{fragments/header :: head}"></head>
 
-</head>
+<style>
+    .circle {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 10px;
+        color: #fff;
+        font-size: 24px;
+    }
+    .circle.light-green { background-color: #c5e3b1; }
+
+    .asset-number {
+        font-size: 14px;
+        margin-top: 5px;
+        font-weight: bold;
+    }
+</style>
 <body>
+
 
 <div th:replace="~{fragments/header :: header}"></div>
 
@@ -75,6 +95,52 @@
                     </tr>
                 </table>
             </div>
+
+
+            <!--Company Asset-->
+                    <div class="container text-center mt-5">
+                        <div class="row justify-content-center">
+
+                            <!-- Laptop Asset -->
+                            <div class="col-auto">
+                                <div class="circle light-green">
+                                    <img th:src="@{/img/Laptop.png}">
+                                </div>
+                                <div class="asset-number" th:text=" ${laptopCount}">Laptops: 15</div>
+                            </div>
+
+
+                            <!-- Printer Asset -->
+                            <div class="col-auto">
+                                <div class="circle light-green">
+                                    <img th:src="@{/img/Printer.png}">
+                                </div>
+                                <div class="asset-number" th:text="${printerCount}">Printer: -</div>
+                            </div>
+
+
+                            <!-- Phone Asset -->
+                            <div class="col-auto">
+                                <div class="circle light-green">
+                                    <img th:src="@{/img/SmartPhone.png}">
+                                </div>
+                                <div class="asset-number" th:text="${smartPhoneCount}">Phones: 20</div>
+                            </div>
+
+
+
+                            <!-- Monitor Asset -->
+                            <div class="col-auto">
+                                <div class="circle light-green">
+                                    <img th:src="@{/img/Monitor.png}">
+                                </div>
+                                <div class="asset-number" th:text="${monitorCount}">Monitor: 20</div>
+                            </div>
+
+
+                        </div>
+                    </div>
+            <!--Company Asset-->
         </div>
         <!--/basic info -->
 

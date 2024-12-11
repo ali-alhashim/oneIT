@@ -20,8 +20,8 @@ public class Document {
     @Column(nullable = false)
     private String fileType; // Type of document (e.g., ID, Certificate, Passport)
 
-    @Lob
-    private byte[] data; // Store file content in the database as a BLOB
+
+
 
     @Column(nullable = false)
     private String contentType; // MIME type (e.g., application/pdf)
@@ -61,13 +61,7 @@ public class Document {
         this.fileType = fileType;
     }
 
-    public byte[] getData() {
-        return data;
-    }
 
-    public void setData(byte[] data) {
-        this.data = data;
-    }
 
     public String getContentType() {
         return contentType;

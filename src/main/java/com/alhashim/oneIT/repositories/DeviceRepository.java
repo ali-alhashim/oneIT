@@ -15,6 +15,9 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
 
     Optional<Device> findBySerialNumber(String serialNumber);
 
+    @Query("SELECT COUNT(e) FROM Device e WHERE e.user = :employee AND e.category = :category")
+    int countByEmployeeAndCategory(@Param("employee") Employee employee, @Param("category") String category);
+
     @Query("SELECT e FROM Device e WHERE " +
             "LOWER(e.serialNumber) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(e.category) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +

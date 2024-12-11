@@ -54,6 +54,7 @@ public class AssetController {
     @GetMapping("/list")
     public String assetList(Model model, @RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size)
     {
+        System.out.println("GET Asset List");
         Page<Asset> assetPage;
 
         //---------
