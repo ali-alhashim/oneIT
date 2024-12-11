@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+  <title>Purchase Order</title>
+</head>
+<body class="bg-body-secondary">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container my-5">
+  <div class="row rounded border p-4 bg-light">
+    <!-- Add Form -->
+    <form method="post"  th:with="_csrfToken=${_csrf.token}">
+
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+
+
+      <!-- Fields for PurchaseOrder -->
+      <div class="mb-3">
+        <label for="vendorId" class="form-label">Vendor:</label>
+        <select name="vendorId" id="vendorId" class="form-select" required>
+          <option value="1">Apple</option>
+          <option value="2">Dell</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="deadLine">Deadline</label>
+        <input type="date" name="deadLine" id="deadLine" class="form-control">
+      </div>
+
+      <div class="mb-3">
+        <label for="documentRef">document Ref.</label>
+        <input type="text" name="documentRef" id="documentRef" class="form-control">
+      </div>
+
+
+      <div class="mb-3">
+        <label for="status" class="form-label">Status:</label>
+        <select name="status" id="status" class="form-select" required>
+          <option>Draft</option>
+          <option>Sent</option>
+          <option>Accepted</option>
+          <option>Delivered</option>
+          <option>Invoiced</option>
+          <option>Paid</option>
+          <option>Cancelled</option>
+          <option>Rejected</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="totalPriceWithVATAll" class="form-label">Total Price with VAT:</label>
+        <input type="number" step="0.01" name="totalPriceWithVAT" id="totalPriceWithVATAll"
+               class="form-control" readonly />
+      </div>
+
+      <!-- Dynamic Fields for PurchaseOrderLines -->
+      <table id="linesTable" class="table">
+        <thead>
+        <tr>
+          <th>#</th>
+          <th>Description</th>
+          <th>Quantity</th>
+          <th>Unit Price</th>
+          <th>VAT (%)</th>
+          <th>Total Price</th>
+          <th>Unit VAT</th>
+          <th>Total VAT</th>
+          <th>Total Price With VAT</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>1</td>
+          <td><input type="text" name="lines[0].description" required class="form-control"></td>
+          <td><input type="number" name="lines[0].quantity" value="1" required class="form-control"></td>
+          <td><input type="number" name="lines[0].unitPrice" step="0.01" required class="form-control"></td>
+          <td><input type="text" name="lines[0].percentageVAT" value="15%" required class="form-control"></td>
+          <td><input type="number" name="lines[0].totalPrice" step="0.01" readonly class="form-control"></td>
+          <td><input type="number" name="lines[0].unitVAT" step="0.01" readonly class="form-control"></td>
+          <td><input type="number" name="lines[0].totalVAT" step="0.01" readonly class="form-control"></td>
+          <td><input type="number" name="lines[0].totalPriceWithVAT" step="0.01"  class="form-control"></td>
+          <td><button type="button" onclick="removeRow(this)" class="btn btn-danger">X</button></td>
+        </tr>
+        </tbody>
+      </table>
+
+      <div class="row">
+          <div class="col">
+            <button type="button" onclick="addRow()" class="btn btn-success">Add Row</button>
+          </div>
+          <div class="col">
+             <button type="submit" class="btn btn-primary mt-3">Submit</button>
+          </div>
+      </div>
+    </form>
+    <!-- /Add Form -->
+  </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script>
+  let lineIndex = 1;
+
+ // Add a new row to the table
+ function addRow() {
+     const tableBody = document.querySelector("#linesTable tbody");
+     const newRow = `
+         <tr>
+             <td>${lineIndex + 1}</td>
+             <td><input type="text" name="lines[${lineIndex}].description" required class="form-control"></td>
+             <td><input type="number" name="lines[${lineIndex}].quantity" value="1" required class="form-control"></td>
+             <td><input type="number" name="lines[${lineIndex}].unitPrice" step="0.01" required class="form-control"></td>
+             <td><input type="text" name="lines[${lineIndex}].percentageVAT" value="15%" required class="form-control"></td>
+             <td><input type="number" name="lines[${lineIndex}].totalPrice" step="0.01" readonly class="form-control"></td>
+             <td><input type="number" name="lines[${lineIndex}].unitVAT" step="0.01" readonly class="form-control"></td>
+             <td><input type="number" name="lines[${lineIndex}].totalVAT" step="0.01" readonly class="form-control"></td>
+             <td><input type="number" name="lines[${lineIndex}].totalPriceWithVAT" step="0.01" required class="form-control"></td>
+             <td><button type="button" onclick="removeRow(this)" class="btn btn-danger">X</button></td>
+         </tr>`;
+     tableBody.insertAdjacentHTML("beforeend", newRow);
+     lineIndex++;
+ }
+
+ // Remove a specific row
+ function removeRow(button) {
+     button.closest("tr").remove();
+     calculateTotalPriceWithVATAll();
+ }
+
+ // Calculate dependent fields when input changes
+ document.addEventListener("input", function (event) {
+     const target = event.target;
+
+     if (target.matches('input[name$=".quantity"], input[name$=".unitPrice"]')) {
+         // Recalculate based on quantity and unit price
+         const row = target.closest("tr");
+         calculateRowFields(row);
+     } else if (target.matches('input[name$=".totalPriceWithVAT"]')) {
+         // Reverse calculate based on total price with VAT
+         const row = target.closest("tr");
+         reverseCalculateRowFields(row);
+     }
+
+     // Recalculate the aggregated total
+     calculateTotalPriceWithVATAll();
+ });
+
+ // Calculate fields in a row based on quantity and unit price
+ function calculateRowFields(row) {
+     const quantity = parseFloat(row.querySelector('input[name$=".quantity"]').value) || 0;
+     const unitPrice = parseFloat(row.querySelector('input[name$=".unitPrice"]').value) || 0;
+     const percentageVAT = parseFloat(row.querySelector('input[name$=".percentageVAT"]').value.replace('%', '')) || 0;
+
+     const totalPrice = quantity * unitPrice;
+     const unitVAT = (unitPrice * percentageVAT) / 100;
+     const totalVAT = unitVAT * quantity;
+     const totalPriceWithVAT = totalPrice + totalVAT;
+
+     row.querySelector('input[name$=".totalPrice"]').value = totalPrice.toFixed(2);
+     row.querySelector('input[name$=".unitVAT"]').value = unitVAT.toFixed(2);
+     row.querySelector('input[name$=".totalVAT"]').value = totalVAT.toFixed(2);
+     row.querySelector('input[name$=".totalPriceWithVAT"]').value = totalPriceWithVAT.toFixed(2);
+ }
+
+ // Reverse calculate fields in a row based on total price with VAT
+ function reverseCalculateRowFields(row) {
+     const totalPriceWithVAT = parseFloat(row.querySelector('input[name$=".totalPriceWithVAT"]').value) || 0;
+     const quantity = parseFloat(row.querySelector('input[name$=".quantity"]').value) || 1; // Default quantity to 1
+     const percentageVAT = parseFloat(row.querySelector('input[name$=".percentageVAT"]').value.replace('%', '')) || 0;
+
+     const totalVAT = totalPriceWithVAT * (percentageVAT / (100 + percentageVAT));
+     const totalPrice = totalPriceWithVAT - totalVAT;
+     const unitPrice = totalPrice / quantity;
+     const unitVAT = totalVAT / quantity;
+
+     row.querySelector('input[name$=".totalPrice"]').value = totalPrice.toFixed(2);
+     row.querySelector('input[name$=".unitPrice"]').value = unitPrice.toFixed(2);
+     row.querySelector('input[name$=".unitVAT"]').value = unitVAT.toFixed(2);
+     row.querySelector('input[name$=".totalVAT"]').value = totalVAT.toFixed(2);
+ }
+
+ // Calculate the aggregated total price with VAT
+ function calculateTotalPriceWithVATAll() {
+     const rows = document.querySelectorAll("#linesTable tbody tr");
+     let total = 0;
+
+     rows.forEach(row => {
+         const rowTotal = parseFloat(row.querySelector('input[name$=".totalPriceWithVAT"]').value) || 0;
+         total += rowTotal;
+     });
+
+     document.getElementById("totalPriceWithVATAll").value = total.toFixed(2);
+ }
+</script>
+
+</body>
+</html>
