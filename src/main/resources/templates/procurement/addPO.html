@@ -22,7 +22,7 @@
       <div class="mb-3">
         <label for="vendorId" class="form-label">Vendor:</label>
         <select name="vendorId" id="vendorId" class="form-select" required>
-          <option th:each="vendor: ${vendors}" th:value="vendor.id" th:text="${vendor.name}"></option>
+          <option th:each="vendor: ${vendors}" th:value="${vendor.id}" th:text="${vendor.name}"></option>
 
         </select>
       </div>

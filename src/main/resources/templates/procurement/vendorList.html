@@ -62,7 +62,7 @@
         <td th:text="${vendor.name}"></td>
         <td th:text="${vendor.arName}"></td>
         <td th:text="${vendor.registrationNumber}"></td>
-        <td th:text="${vendor.website}"></td>
+        <td><a th:href="${vendor.website}" th:text="${vendor.website}" target="_blank"></a></td>
 
       </tr>
 

@@ -2,6 +2,9 @@ package com.alhashim.oneIT.dto;
 
 public class VendorDto {
 
+
+    private Long id;
+
     private String name;
 
     private String arName;
@@ -78,5 +81,13 @@ public class VendorDto {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

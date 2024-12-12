@@ -60,8 +60,8 @@
 
                 <td th:text="${order.code}"></td>
                 <td th:text="${order.createdAt}"></td>
-                <td th:text="${order.vendor}"></td>
-                <td th:text="${order.amount}"></td>
+                <td th:text="${order.vendor.name}"></td>
+                <td th:text="${order.totalPriceWithVAT}"></td>
                 <td th:text="${order.status}"></td>
 
             </tr>

@@ -1,13 +1,8 @@
-package com.alhashim.oneIT.models;
+package com.alhashim.oneIT.dto;
 
-import jakarta.persistence.*;
+import org.springframework.web.multipart.MultipartFile;
 
-@Entity
-@Table(name = "contacts")
-public class Contact {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ContactDto {
 
     private Long id;
     private String name;
@@ -15,18 +10,9 @@ public class Contact {
     private String email;
     private String mobile;
     private String imageFileName;
+    private MultipartFile imageFile;
 
-    // company -> Customer or Vendor or Lead
-
-    // Relationship to Vendor
-    @ManyToOne
-    @JoinColumn(name = "vendor_id")
-    private Vendor vendor;
-
-    // Relationship to Customer
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
+    private Long vendorId;
 
 
     public Long getId() {
@@ -77,22 +63,21 @@ public class Contact {
         this.imageFileName = imageFileName;
     }
 
-    public Vendor getVendor() {
-        return vendor;
+    public MultipartFile getImageFile() {
+        return imageFile;
     }
 
-    public void setVendor(Vendor vendor) {
-        this.vendor = vendor;
+    public void setImageFile(MultipartFile imageFile) {
+        this.imageFile = imageFile;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public Long getVendorId() {
+        return vendorId;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setVendorId(Long vendorId) {
+        this.vendorId = vendorId;
     }
+
+
 }
-
-
-
