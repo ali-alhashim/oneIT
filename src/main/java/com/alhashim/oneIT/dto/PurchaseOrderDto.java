@@ -1,5 +1,7 @@
 package com.alhashim.oneIT.dto;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,6 +13,8 @@ public class PurchaseOrderDto {
     private BigDecimal totalVAT;
     private BigDecimal totalPriceWithVAT;
     private String status;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date deadLine;
     private String documentRef;
     private List<PurchaseOrderLineDto> lines = new ArrayList<>();

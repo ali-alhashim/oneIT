@@ -37,7 +37,7 @@ public class PurchaseOrder {
     @OneToMany(mappedBy = "purchaseOrder")
     private List<Invoice> invoices;
 
-    @OneToMany(mappedBy = "purchaseOrder")
+    @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PurchaseOrderLine> lines;
 
     private BigDecimal totalVAT;

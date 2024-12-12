@@ -10,6 +10,9 @@
 <div class="container my-5">
   <div class="row rounded border p-4 bg-light">
     <!-- Add Form -->
+    <div th:if="${errors !=null}">
+      <h3 th:text="${errors}"></h3>
+    </div>
     <form method="post"  th:with="_csrfToken=${_csrf.token}">
 
       <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
@@ -19,8 +22,8 @@
       <div class="mb-3">
         <label for="vendorId" class="form-label">Vendor:</label>
         <select name="vendorId" id="vendorId" class="form-select" required>
-          <option value="1">Apple</option>
-          <option value="2">Dell</option>
+          <option th:each="vendor: ${vendors}" th:value="vendor.id" th:text="${vendor.name}"></option>
+
         </select>
       </div>
 

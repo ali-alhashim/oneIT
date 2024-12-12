@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+
+
+</head>
+<body class="bg-body-secondary">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container bordered my-5 ">
+
+    <!--Add Form-->
+    <div class="row rounded border p-4 bg-light">
+        <form method="post" enctype="multipart/form-data" th:object="${vendorDto}"  th:with="_csrfToken=${_csrf.token}">
+
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+
+
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="name"  name="name" th:field="${vendorDto.name}">
+                <label for="name">Name</label>
+
+                <p th:if="${#fields.hasErrors('name')}" th:errorclass="text-danger" th:errors="${vendorDto.name}"></p>
+            </div>
+
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="arName"  name="arName" th:field="${vendorDto.arName}">
+                <label for="arName">Arabic Name</label>
+
+                <p th:if="${#fields.hasErrors('arName')}" th:errorclass="text-danger" th:errors="${vendorDto.arName}"></p>
+            </div>
+
+
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="registrationNumber"  name="registrationNumber" th:field="${vendorDto.registrationNumber}">
+                <label for="registrationNumber">Registration Number [CR.]</label>
+
+                <p th:if="${#fields.hasErrors('registrationNumber')}" th:errorclass="text-danger" th:errors="${vendorDto.registrationNumber}"></p>
+            </div>
+
+
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="website"  name="website" th:field="${vendorDto.website}">
+                <label for="website">Website</label>
+
+                <p th:if="${#fields.hasErrors('website')}" th:errorclass="text-danger" th:errors="${vendorDto.website}"></p>
+            </div>
+
+
+
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="taxNumber"  name="taxNumber" th:field="${vendorDto.taxNumber}">
+                <label for="taxNumber">TAX Number</label>
+
+                <p th:if="${#fields.hasErrors('taxNumber')}" th:errorclass="text-danger" th:errors="${vendorDto.taxNumber}"></p>
+            </div>
+
+
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="bankName"  name="taxNumber" th:field="${vendorDto.bankName}">
+                <label for="bankName">Bank Name</label>
+
+                <p th:if="${#fields.hasErrors('bankName')}" th:errorclass="text-danger" th:errors="${vendorDto.bankName}"></p>
+            </div>
+
+
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="iban"  name="iban" th:field="${vendorDto.iban}">
+                <label for="iban">IBAN</label>
+
+                <p th:if="${#fields.hasErrors('iban')}" th:errorclass="text-danger" th:errors="${vendorDto.iban}"></p>
+            </div>
+
+
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="address"  name="iban" th:field="${vendorDto.address}">
+                <label for="address">Address</label>
+
+                <p th:if="${#fields.hasErrors('address')}" th:errorclass="text-danger" th:errors="${vendorDto.address}"></p>
+            </div>
+
+
+
+
+            <hr>
+            <div class="row justify-content-between my-3">
+                <div class="col-sm-4 d-grid">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+                <div class="col-sm-4  d-grid">
+                    <a class="btn btn-outline-primary" href="/employee/list" role="button">Cancel</a>
+                </div>
+            </div>
+
+
+
+        </form>
+    </div>
+    <!--/Add Form -->
+
+</div>
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

@@ -21,6 +21,8 @@ public class Vendor {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
+    private String website;
+
     @OneToMany(mappedBy = "vendor")
     private List<Contact> representatives;
 
@@ -137,5 +139,11 @@ public class Vendor {
         this.address = address;
     }
 
+    public String getWebsite() {
+        return website;
+    }
 
+    public void setWebsite(String website) {
+        this.website = website;
+    }
 }
