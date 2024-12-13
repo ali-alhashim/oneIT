@@ -4,7 +4,9 @@ package com.alhashim.oneIT.models;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "purchase_invoices")
@@ -25,6 +27,20 @@ public class Invoice {
 
     @ManyToOne
     private PurchaseOrder purchaseOrder;
+
+    @ManyToOne
+    private Vendor vendor;
+
+    private Date invoiceDate;
+
+    private BigDecimal totalVAT;
+    private BigDecimal totalPriceWithVAT;
+
+    private String status;  // paid, cancelled, due, overdue, return
+
+    private String paymentMethod; //credit, cash, cash on delivery, advance
+
+    private String pdfFileName; // soft Copy of invoice pdf format
 
     public Long getId() {
         return id;
@@ -64,5 +80,61 @@ public class Invoice {
 
     public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
         this.purchaseOrder = purchaseOrder;
+    }
+
+    public Vendor getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(Vendor vendor) {
+        this.vendor = vendor;
+    }
+
+    public Date getInvoiceDate() {
+        return invoiceDate;
+    }
+
+    public void setInvoiceDate(Date invoiceDate) {
+        this.invoiceDate = invoiceDate;
+    }
+
+    public BigDecimal getTotalVAT() {
+        return totalVAT;
+    }
+
+    public void setTotalVAT(BigDecimal totalVAT) {
+        this.totalVAT = totalVAT;
+    }
+
+    public BigDecimal getTotalPriceWithVAT() {
+        return totalPriceWithVAT;
+    }
+
+    public void setTotalPriceWithVAT(BigDecimal totalPriceWithVAT) {
+        this.totalPriceWithVAT = totalPriceWithVAT;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public String getPdfFileName() {
+        return pdfFileName;
+    }
+
+    public void setPdfFileName(String pdfFileName) {
+        this.pdfFileName = pdfFileName;
     }
 }

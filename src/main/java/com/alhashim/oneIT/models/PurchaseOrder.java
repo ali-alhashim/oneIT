@@ -23,6 +23,12 @@ public class PurchaseOrder {
     private String code;
     private String documentRef;
 
+
+    private String paymentTerms; // 30 Days, ....
+
+
+    private String deliveryAddress;
+
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
@@ -33,6 +39,10 @@ public class PurchaseOrder {
     @ManyToOne
     @JoinColumn(name = "vendor_id", nullable = false)
     private Vendor vendor;
+
+    @ManyToOne
+    @JoinColumn(name = "contact_id", nullable = true)
+    private Contact contact;
 
     @OneToMany(mappedBy = "purchaseOrder")
     private List<Invoice> invoices;
@@ -149,5 +159,27 @@ public class PurchaseOrder {
         this.invoices = invoices;
     }
 
+    public String getDeliveryAddress() {
+        return deliveryAddress;
+    }
 
+    public void setDeliveryAddress(String deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
+    }
+
+    public String getPaymentTerms() {
+        return paymentTerms;
+    }
+
+    public void setPaymentTerms(String paymentTerms) {
+        this.paymentTerms = paymentTerms;
+    }
+
+    public Contact getContact() {
+        return contact;
+    }
+
+    public void setContact(Contact contact) {
+        this.contact = contact;
+    }
 }

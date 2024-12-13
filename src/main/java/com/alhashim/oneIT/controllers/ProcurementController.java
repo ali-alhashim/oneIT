@@ -2,6 +2,7 @@ package com.alhashim.oneIT.controllers;
 
 
 import com.alhashim.oneIT.dto.ContactDto;
+import com.alhashim.oneIT.dto.ContactNameIdDto;
 import com.alhashim.oneIT.dto.PurchaseOrderDto;
 import com.alhashim.oneIT.dto.VendorDto;
 import com.alhashim.oneIT.models.*;
@@ -12,6 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -81,6 +84,20 @@ public class ProcurementController {
         return "/procurement/orderList";
     } // po list
 
+
+    @GetMapping("/orderDetail")
+    public String orderDetail(@RequestParam Long id, Model model)
+    {
+        PurchaseOrder order = purchaseOrderRepository.findById(id).orElse(null);
+        if(order ==null)
+        {
+            return "/404";
+        }
+
+        model.addAttribute("order", order);
+        return "/procurement/orderDetail";
+    } // order detail----
+
     @GetMapping("/addPO")
     public String addPOPage(Model model)
     {
@@ -127,6 +144,11 @@ public class ProcurementController {
         purchaseOrder.setCreatedAt(LocalDateTime.now());
         purchaseOrder.setTotalPriceWithVAT(purchaseOrderDto.getTotalPriceWithVAT());
         purchaseOrder.setStatus(purchaseOrderDto.getStatus());
+        purchaseOrder.setDeadLine(purchaseOrderDto.getDeadLine());
+        purchaseOrder.setDocumentRef(purchaseOrderDto.getDocumentRef());
+        purchaseOrder.setDeliveryAddress(purchaseOrderDto.getDeliveryAddress());
+        purchaseOrder.setPaymentTerms(purchaseOrderDto.getPaymentTerms());
+
 
         // Find and set the Vendor
         Vendor vendor = vendorRepository.findById(purchaseOrderDto.getVendorId()).orElse(null);
@@ -134,6 +156,13 @@ public class ProcurementController {
             return "/404";
         }
         purchaseOrder.setVendor(vendor);
+
+        //find and set contact
+        Contact contact = contactRepository.findById(purchaseOrderDto.getContactId()).orElse(null);
+        if(contact !=null)
+        {
+            purchaseOrder.setContact(contact);
+        }
 
         // Process and save PurchaseOrderLines
         List<PurchaseOrderLine> orderLines = purchaseOrderDto.getLines().stream().map(lineDto -> {
@@ -344,6 +373,36 @@ public class ProcurementController {
         vendorRepository.save(vendor);
 
         return "redirect:/procurement/vendorDetail?id=" + contactDto.getVendorId();
+    } // add contact
+
+
+
+
+    @GetMapping("/getContactVendor")
+    public ResponseEntity<?> getContactVendor(@RequestParam Long id) {
+        Vendor vendor = vendorRepository.findById(id).orElse(null);
+        if (vendor == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vendor not found");
+        }
+
+        List<Contact> contacts = contactRepository.findByVendor(vendor);
+
+        // Map contacts to ContactNameIdDto
+        List<ContactNameIdDto> contactDTOs = contacts.stream()
+                .map(contact -> new ContactNameIdDto(contact.getId(), contact.getName()))
+                .toList();
+
+        return ResponseEntity.ok(contactDTOs); // Spring Boot automatically converts to JSON if Jackson is on the classpath
+    } // getContactVendor
+
+
+    @PostMapping("/addOrderInvoice")
+    public String addOrderInvoice()
+    {
+
+
+        return "redirect:/procurement/orderDetail?id=";
+
     }
 
 

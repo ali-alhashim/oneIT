@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main>
+
+  <div class="container bordered my-5 ">
+
+
+
+
+    <!--toolbar-->
+    <div class="row rounded border p-4 bg-light">
+      <div class="row my-3">
+
+
+        <div class="col-2">
+          <a class="btn btn-success" th:href="@{/procurement/editOrder(id=${order.id})}">Edit</a>
+        </div>
+
+        <div class="col-2">
+          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addInvoiceModal">Add Invoice</button>
+        </div>
+
+
+      </div>
+
+      <!-- -->
+
+
+    </div>
+    <!--/toolbar-->
+
+    <!--basic info -->
+    <div class="row rounded border p-4 bg-light">
+
+
+      <table class="table   border">
+
+        <tr>
+          <th>Created At </th> <td th:text="${order.createdAt}"></td>
+        </tr>
+
+        <tr>
+          <th>DeadLine</th> <td th:text="${order.deadLine}"></td>
+        </tr>
+
+
+
+        <tr>
+          <th>Id </th> <td th:text="${order.id}"></td>
+        </tr>
+
+        <tr>
+          <th>Updated At</th> <td th:text="${order.updatedAt}"></td>
+        </tr>
+
+        <tr>
+          <th>Code#</th> <td th:text="${order.code}"></td>
+        </tr>
+
+        <tr>
+          <th>Document Ref.#</th> <td th:text="${order.documentRef}"></td>
+        </tr>
+
+
+        <tr>
+          <th>Created By</th> <td th:text="${order.createdBy.name}"></td>
+        </tr>
+
+        <tr>
+          <th>vendor</th> <td th:text="${order.vendor.name}"></td>
+        </tr>
+
+        <tr>
+          <th>Delivery Address</th><td th:text="${order.deliveryAddress}"></td>
+        </tr>
+
+        <tr>
+          <th>Total Price With VAT</th> <td th:text="${order.totalPriceWithVAT}"></td>
+        </tr>
+
+        <tr>
+          <th>Status</th> <td th:text="${order.status}"></td>
+        </tr>
+
+
+        <tr>
+          <th>Invoices</th>
+          <td>
+            <ul>
+              <li th:each="invoice:${order.getInvoices()}">
+                  <a th:href="@{/procurement/invoiceDetail(id=${invoice.id})}" th:text="${invoice.invoiceNumber}"></a>
+              </li>
+            </ul>
+          </td>
+        </tr>
+
+
+
+
+
+
+
+      </table>
+
+    </div>
+    <!--/basic info -->
+
+
+
+
+
+
+
+
+
+
+
+    <hr/>
+    <div>
+      <table class="table">
+        <thead>
+        <tr>
+          <th>#</th>
+          <th>Description</th>
+          <th>Unit Price</th>
+          <th>Quantity</th>
+          <th>VAT%</th>
+          <th>Unit VAT</th>
+          <th>Total Price</th>
+          <th>Total VAT</th>
+          <th>Total Price With VAT</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="line:${order.getLines()}">
+          <td th:text="${line.id}"></td>
+          <td th:text="${line.description}"></td>
+          <td th:text="${line.unitPrice}"></td>
+          <td th:text="${line.quantity}"></td>
+          <td th:text="${line.percentageVAT}"></td>
+          <td th:text="${line.unitVAT}"></td>
+          <td th:text="${line.totalPrice}"></td>
+          <td th:text="${line.totalVAT}"></td>
+          <td th:text="${line.totalPriceWithVAT}"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr/>
+
+
+
+
+
+
+  </div><!--/Container -->
+
+
+
+  <!-- Modal -->
+  <div class="modal fade" id="addInvoiceModal" tabindex="-1" aria-labelledby="addInvoiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addInvoiceModalLabel">Add Order Invoice</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+          <form id="addInvoiceForm" method="POST" action="/procurement/addOrderInvoice"  th:with="_csrfToken=${_csrf.token}" enctype="multipart/form-data">
+
+
+
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+
+            <div class="mb-3">
+              <label for="invoiceNumber">Invoice#</label>
+              <input id="invoiceNumber" name="invoiceNumber" class="form-control">
+            </div>
+
+            <div class="mb-3">
+              <label for="invoiceDate">Invoice Date</label>
+              <input type="date" id="invoiceDate" name="invoiceDate" class="form-control">
+            </div>
+
+
+            <div class="mb-3">
+              <label for="purchaseOrder">Purchase Order#</label>
+              <input id="purchaseOrder" name="purchaseOrderId" class="form-control" th:value="${order.id}" readonly>
+            </div>
+
+            <div class="mb-3">
+              <label for="vendorId">Vendor</label>
+              <input id="vendorId" name="vendorId" class="form-control" th:value="${order.vendor.id}" readonly>
+            </div>
+
+
+
+
+
+
+            <div class="mb-3">
+              <label for="pdfFile">PDF</label>
+              <input type="file" id="pdfFile" name="pdfFile" class="form-control" >
+            </div>
+
+            <div class="mb-3">
+              <label for="pdfFile">Payment Method</label>
+              <input type="text" id="paymentMethod" name="paymentMethod" class="form-control" >
+            </div>
+
+
+
+            <div class="mb-3">
+              <label for="status">status</label>
+              <select id="status" name="status" class="form-select" >
+                <option>Received</option>
+                <option>Due</option>
+                <option>Overdue</option>
+                <option>Cancelled</option>
+                <option>Return</option>
+                <option>Paid</option>
+              </select>
+            </div>
+
+
+
+
+
+          </form>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="saveInvoiceButton">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $('#saveInvoiceButton').on('click', function ()
+    {
+       const form = $('#addInvoiceForm');
+
+         form.submit();
+      });
+  </script>
+  <!--/modal-->
+
+
+
+
+
+
+</main>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

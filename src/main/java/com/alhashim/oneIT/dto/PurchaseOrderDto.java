@@ -10,9 +10,13 @@ import java.util.List;
 public class PurchaseOrderDto {
 
     private Long vendorId;
+    private Long contactId;
     private BigDecimal totalVAT;
     private BigDecimal totalPriceWithVAT;
     private String status;
+
+    private String deliveryAddress;
+    private String paymentTerms;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date deadLine;
@@ -76,6 +80,30 @@ public class PurchaseOrderDto {
 
     public void setLines(List<PurchaseOrderLineDto> lines) {
         this.lines = lines;
+    }
+
+    public String getDeliveryAddress() {
+        return deliveryAddress;
+    }
+
+    public void setDeliveryAddress(String deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
+    }
+
+    public Long getContactId() {
+        return contactId;
+    }
+
+    public void setContactId(Long contactId) {
+        this.contactId = contactId;
+    }
+
+    public String getPaymentTerms() {
+        return paymentTerms;
+    }
+
+    public void setPaymentTerms(String paymentTerms) {
+        this.paymentTerms = paymentTerms;
     }
 }
 
