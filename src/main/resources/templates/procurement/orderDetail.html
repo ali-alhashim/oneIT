@@ -93,8 +93,8 @@
         <tr>
           <th>Invoices</th>
           <td>
-            <ul>
-              <li th:each="invoice:${order.getInvoices()}">
+            <ul class="list-group">
+              <li th:each="invoice:${order.getInvoices()}" class="list-group-item">
                   <a th:href="@{/procurement/invoiceDetail(id=${invoice.id})}" th:text="${invoice.invoiceNumber + ' [ ' + invoice.invoiceDate +' ]'}"></a>
               </li>
             </ul>
@@ -216,6 +216,12 @@
             <div class="mb-3">
               <label for="pdfFile">Payment Method</label>
               <input type="text" id="paymentMethod" name="paymentMethod" class="form-control" >
+            </div>
+
+            <div class="mb-3">
+              <label for="totalPriceWithVATAll" class="form-label">Total Price with VAT:</label>
+              <input type="number" th:value="${order.totalPriceWithVAT}" name="totalPriceWithVAT" id="totalPriceWithVATAll" class="form-control" readonly />
+
             </div>
 
 
@@ -341,95 +347,125 @@
     </div>
   </div>
 
-  <script>
-    $('#saveInvoiceButton').on('click', function ()
-    {
-       const form = $('#addInvoiceForm');
 
-         form.submit();
-      });
+
+
+
+  <script>
+
+    // Function to update the overall total of Total Price (with VAT) across all rows
+       function updateOverallTotal()
+       {
+           const totalPriceWithVATAllInput = document.getElementById("totalPriceWithVATAll");
+            const tableBody = document.querySelector('#addInvoiceModal tbody');
+           const totalPricesWithVAT = tableBody.querySelectorAll('input[name$=".totalPriceWithVAT"]');
+
+           let overallTotal = 0;
+           totalPricesWithVAT.forEach(input => {
+               overallTotal += parseFloat(input.value) || 0; // Sum up all total prices with VAT
+           });
+
+           // Update the overall total field
+           totalPriceWithVATAllInput.value = overallTotal.toFixed(2);
+       }
+
+
+   document.addEventListener('DOMContentLoaded', function () {
+       const tableBody = document.querySelector('#addInvoiceModal tbody');
+
+       tableBody.addEventListener('input', function (e) {
+           const target = e.target;
+
+           // Check if the input is from a relevant field (quantity, unit price, or VAT percentage)
+           if (target.matches('input[name$=".quantity"], input[name$=".unitPrice"], input[name$=".percentageVAT"]')) {
+               const row = target.closest('tr');
+
+               // Get the inputs for the current row
+               const quantityInput = row.querySelector('input[name$=".quantity"]');
+               const unitPriceInput = row.querySelector('input[name$=".unitPrice"]');
+               const vatPercentageInput = row.querySelector('input[name$=".percentageVAT"]');
+               const totalPriceInput = row.querySelector('input[name$=".totalPrice"]');
+               const unitVATInput = row.querySelector('input[name$=".unitVAT"]');
+               const totalVATInput = row.querySelector('input[name$=".totalVAT"]');
+               const totalPriceWithVATInput = row.querySelector('input[name$=".totalPriceWithVAT"]');
+
+               // Parse input values (default to 0 if invalid or empty)
+               const quantity = parseFloat(quantityInput.value) || 0;
+               const unitPrice = parseFloat(unitPriceInput.value) || 0;
+               const vatPercentage = parseFloat(vatPercentageInput.value) || 0;
+
+               // Calculate totals for the current row
+               const totalPrice = quantity * unitPrice;
+               const unitVAT = (unitPrice * vatPercentage) / 100;
+               const totalVAT = totalPrice * (vatPercentage / 100);
+               const totalPriceWithVAT = totalPrice + totalVAT;
+
+               // Update calculated fields in the row
+               totalPriceInput.value = totalPrice.toFixed(2);
+               unitVATInput.value = unitVAT.toFixed(2);
+               totalVATInput.value = totalVAT.toFixed(2);
+               totalPriceWithVATInput.value = totalPriceWithVAT.toFixed(2);
+
+               // Update the overall total
+               updateOverallTotal();
+           }
+       });
+
+
+   });
+
+
+
+
+
+       $('#saveInvoiceButton').on('click', function ()
+       {
+          const form = $('#addInvoiceForm');
+
+            form.submit();
+       });
 
 
 console.log("removeRow function loaded....");
 
 
-    function removeRow(button) {
-  console.log("Removing row...");
+   function removeRow(button) {
+ console.log("Removing row...");
 
-  const row = button.closest("tr");
-  if (row) {
-    row.remove();
-    console.log("Row removed successfully.");
+ const row = button.closest("tr");
+ if (row)
+ {
+   row.remove();
+   console.log("Row removed successfully.");
+   updateOverallTotal();
+   // More robust index recalculation
+   const tableBody = document.getElementById("lineTableBody");
+   if (tableBody)
+   {
+       const rows = tableBody.querySelectorAll("tr");
+       rows.forEach((row, index) =>
+       {
+         row.querySelectorAll("input, select, textarea").forEach(input =>
+         {
+           let name = input.getAttribute("name");
+           if (name)
+           {
+             // More flexible regex replacement to handle various name formats
+             let updatedName = name.replace(/\[(\d+)\]/, `[${index}]`);
+             input.setAttribute("name", updatedName);
+             console.log("Updated input name:", updatedName);
+           }
+         });
+       });
+   }
+ }
+ else
+ {
+   console.error("Failed to find the row to remove.");
+ }
 
-    // More robust index recalculation
-    const tableBody = document.getElementById("lineTableBody");
-    if (tableBody) {
-      const rows = tableBody.querySelectorAll("tr");
-      rows.forEach((row, index) => {
-        row.querySelectorAll("input, select, textarea").forEach(input => {
-          let name = input.getAttribute("name");
-          if (name) {
-            // More flexible regex replacement to handle various name formats
-            let updatedName = name.replace(/\[(\d+)\]/, `[${index}]`);
-            input.setAttribute("name", updatedName);
-            console.log("Updated input name:", updatedName);
-          }
-        });
-      });
-    }
-  } else {
-    console.error("Failed to find the row to remove.");
-  }
-
-  console.log("End removeRow() function");
+ console.log("End removeRow() function");
 }
-
-
-  </script>
-
-
-
-  <script>
-    // Add event listeners to quantity and unit price fields
-    document.addEventListener('DOMContentLoaded', function () {
-        const tableBody = document.querySelector('#addInvoiceModal tbody');
-
-        tableBody.addEventListener('input', function (e) {
-            const target = e.target;
-
-            // Check if the input is from a relevant field (quantity or unit price)
-            if (target.matches('input[name$=".quantity"], input[name$=".unitPrice"], input[name$=".percentageVAT"]')) {
-                const row = target.closest('tr');
-
-                // Get the inputs
-                const quantityInput = row.querySelector('input[name$=".quantity"]');
-                const unitPriceInput = row.querySelector('input[name$=".unitPrice"]');
-                const vatPercentageInput = row.querySelector('input[name$=".percentageVAT"]');
-                const totalPriceInput = row.querySelector('input[name$=".totalPrice"]');
-                const unitVATInput = row.querySelector('input[name$=".unitVAT"]');
-                const totalVATInput = row.querySelector('input[name$=".totalVAT"]');
-                const totalPriceWithVATInput = row.querySelector('input[name$=".totalPriceWithVAT"]');
-
-                // Parse values
-                const quantity = parseFloat(quantityInput.value) || 0;
-                const unitPrice = parseFloat(unitPriceInput.value) || 0;
-                const vatPercentage = parseFloat(vatPercentageInput.value) || 0;
-
-                // Calculate totals
-                const totalPrice = quantity * unitPrice;
-                const unitVAT = (unitPrice * vatPercentage) / 100;
-                const totalVAT = totalPrice * (vatPercentage / 100);
-                const totalPriceWithVAT = totalPrice + totalVAT;
-
-                // Update the fields
-                totalPriceInput.value = totalPrice.toFixed(2);
-                unitVATInput.value = unitVAT.toFixed(2);
-                totalVATInput.value = totalVAT.toFixed(2);
-                totalPriceWithVATInput.value = totalPriceWithVAT.toFixed(2);
-            }
-        });
-    });
-
 
   </script>
   <!--/modal-->

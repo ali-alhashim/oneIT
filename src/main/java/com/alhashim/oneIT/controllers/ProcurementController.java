@@ -454,6 +454,7 @@ public class ProcurementController {
 
         // Set the lines in the PurchaseOrder and save both
         invoice.setLines(invoiceLines);
+        invoice.setUpdatedAt(LocalDateTime.now());
 
 
         //---------------------------------------------------------
@@ -490,6 +491,36 @@ public class ProcurementController {
         return "redirect:/procurement/orderDetail?id="+addInvoiceToOrderDto.getPurchaseOrderId();
 
     } // addOrderInvoice
+
+
+
+    @GetMapping("/invoice")
+    public String invoiceList(Model model, @RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size)
+    {
+
+        Page<Invoice> invoicePage;
+
+        if(keyword !=null && !keyword.isEmpty())
+        {
+            // Implement a paginated search query in your repository
+            invoicePage = invoiceRepository.findByKeyword(keyword, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+        }
+        else
+        {
+            // Fetch all  with pagination
+            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+            invoicePage = invoiceRepository.findAll(pageable);
+        }
+
+
+        model.addAttribute("invoices", invoicePage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", invoicePage.getTotalPages());
+        model.addAttribute("pageSize", size);
+        model.addAttribute("totalItems", invoicePage.getTotalElements());
+        model.addAttribute("pageTitle","Invoice List");
+        return "/procurement/invoiceList";
+    }
 
 
 
