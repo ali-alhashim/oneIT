@@ -168,7 +168,7 @@
 
   <!-- Modal -->
   <div class="modal fade" id="addInvoiceModal" tabindex="-1" aria-labelledby="addInvoiceModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-xl">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="addInvoiceModalLabel">Add Order Invoice</h5>
@@ -231,6 +231,100 @@
                 <option>Paid</option>
               </select>
             </div>
+            <!--lines-->
+
+          <hr>
+
+            <div class="mb-3 table-responsive">
+
+              <table class="table">
+                <thead>
+                   <tr>
+                     <th>#</th>
+                     <th>Description</th>
+                     <th>Quantity</th>
+                     <th>Unit Price</th>
+                     <th>VAT%</th>
+                     <th>Total Price</th>
+                     <th>Unit VAT</th>
+                     <th>Total VAT</th>
+                     <th>Total Price With VAT </th>
+                    <th>Action</th>
+                   </tr>
+                </thead>
+
+
+                <tbody id="lineTableBody">
+                <tr th:each="line, iterStat : ${order.getLines()}">
+                  <td>
+                    <input type="text"
+                           th:attr="name=${'lines[' + iterStat.index + '].id'}"
+                           th:value="${line.id}"
+                           readonly
+                           class="form-control">
+                  </td>
+                  <td>
+                    <input type="text"
+                           th:attr="name=${'lines[' + iterStat.index + '].description'}"
+                           th:value="${line.description}"
+                           class="form-control">
+                  </td>
+                  <td>
+                    <input type="number"
+                           th:attr="name=${'lines[' + iterStat.index + '].quantity'}"
+                           th:value="${line.quantity}"
+                           class="form-control">
+                  </td>
+                  <td>
+                    <input type="number"
+                           th:attr="name=${'lines[' + iterStat.index + '].unitPrice'}"
+                           th:value="${line.unitPrice}"
+                           class="form-control">
+                  </td>
+                  <td>
+                    <input type="text"
+                           th:attr="name=${'lines[' + iterStat.index + '].percentageVAT'}"
+                           th:value="${line.percentageVAT}"
+                           class="form-control">
+                  </td>
+                  <td>
+                    <input type="number"
+                           th:attr="name=${'lines[' + iterStat.index + '].totalPrice'}"
+                           th:value="${line.totalPrice}"
+                           readonly
+                           class="form-control">
+                  </td>
+                  <td>
+                    <input type="number"
+                           th:attr="name=${'lines[' + iterStat.index + '].unitVAT'}"
+                           th:value="${line.unitVAT}"
+                           readonly
+                           class="form-control">
+                  </td>
+                  <td>
+                    <input type="number"
+                           th:attr="name=${'lines[' + iterStat.index + '].totalVAT'}"
+                           th:value="${line.totalVAT}"
+                           readonly
+                           class="form-control">
+                  </td>
+                  <td>
+                    <input type="number"
+                           th:attr="name=${'lines[' + iterStat.index + '].totalPriceWithVAT'}"
+                           th:value="${line.totalPriceWithVAT}"
+                           readonly
+                           class="form-control">
+                  </td>
+                  <td>
+                    <button type="button" onclick="removeRow(this)" class="btn btn-danger">X</button>
+                  </td>
+                </tr>
+                </tbody>
+
+
+              </table>
+            </div>
+            <hr>
 
 
 
@@ -254,6 +348,89 @@
 
          form.submit();
       });
+
+
+console.log("removeRow function loaded....");
+
+
+    function removeRow(button) {
+  console.log("Removing row...");
+
+  const row = button.closest("tr");
+  if (row) {
+    row.remove();
+    console.log("Row removed successfully.");
+
+    // More robust index recalculation
+    const tableBody = document.getElementById("lineTableBody");
+    if (tableBody) {
+      const rows = tableBody.querySelectorAll("tr");
+      rows.forEach((row, index) => {
+        row.querySelectorAll("input, select, textarea").forEach(input => {
+          let name = input.getAttribute("name");
+          if (name) {
+            // More flexible regex replacement to handle various name formats
+            let updatedName = name.replace(/\[(\d+)\]/, `[${index}]`);
+            input.setAttribute("name", updatedName);
+            console.log("Updated input name:", updatedName);
+          }
+        });
+      });
+    }
+  } else {
+    console.error("Failed to find the row to remove.");
+  }
+
+  console.log("End removeRow() function");
+}
+
+
+  </script>
+
+
+
+  <script>
+    // Add event listeners to quantity and unit price fields
+    document.addEventListener('DOMContentLoaded', function () {
+        const tableBody = document.querySelector('#addInvoiceModal tbody');
+
+        tableBody.addEventListener('input', function (e) {
+            const target = e.target;
+
+            // Check if the input is from a relevant field (quantity or unit price)
+            if (target.matches('input[name$=".quantity"], input[name$=".unitPrice"], input[name$=".percentageVAT"]')) {
+                const row = target.closest('tr');
+
+                // Get the inputs
+                const quantityInput = row.querySelector('input[name$=".quantity"]');
+                const unitPriceInput = row.querySelector('input[name$=".unitPrice"]');
+                const vatPercentageInput = row.querySelector('input[name$=".percentageVAT"]');
+                const totalPriceInput = row.querySelector('input[name$=".totalPrice"]');
+                const unitVATInput = row.querySelector('input[name$=".unitVAT"]');
+                const totalVATInput = row.querySelector('input[name$=".totalVAT"]');
+                const totalPriceWithVATInput = row.querySelector('input[name$=".totalPriceWithVAT"]');
+
+                // Parse values
+                const quantity = parseFloat(quantityInput.value) || 0;
+                const unitPrice = parseFloat(unitPriceInput.value) || 0;
+                const vatPercentage = parseFloat(vatPercentageInput.value) || 0;
+
+                // Calculate totals
+                const totalPrice = quantity * unitPrice;
+                const unitVAT = (unitPrice * vatPercentage) / 100;
+                const totalVAT = totalPrice * (vatPercentage / 100);
+                const totalPriceWithVAT = totalPrice + totalVAT;
+
+                // Update the fields
+                totalPriceInput.value = totalPrice.toFixed(2);
+                unitVATInput.value = unitVAT.toFixed(2);
+                totalVATInput.value = totalVAT.toFixed(2);
+                totalPriceWithVATInput.value = totalPriceWithVAT.toFixed(2);
+            }
+        });
+    });
+
+
   </script>
   <!--/modal-->
 

@@ -34,6 +34,7 @@ public class Invoice {
     private Date invoiceDate;
 
     private BigDecimal totalVAT;
+    private BigDecimal totalPrice;
     private BigDecimal totalPriceWithVAT;
 
     private String status;  // paid, cancelled, due, overdue, return
@@ -136,5 +137,13 @@ public class Invoice {
 
     public void setPdfFileName(String pdfFileName) {
         this.pdfFileName = pdfFileName;
+    }
+
+    public BigDecimal getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
     }
 }
