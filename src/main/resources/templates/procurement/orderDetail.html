@@ -95,7 +95,7 @@
           <td>
             <ul>
               <li th:each="invoice:${order.getInvoices()}">
-                  <a th:href="@{/procurement/invoiceDetail(id=${invoice.id})}" th:text="${invoice.invoiceNumber}"></a>
+                  <a th:href="@{/procurement/invoiceDetail(id=${invoice.id})}" th:text="${invoice.invoiceNumber + ' [ ' + invoice.invoiceDate +' ]'}"></a>
               </li>
             </ul>
           </td>

@@ -17,12 +17,20 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -428,21 +436,60 @@ public class ProcurementController {
         invoice.setTotalVAT(addInvoiceToOrderDto.getTotalVAT());
         invoice.setTotalPriceWithVAT(addInvoiceToOrderDto.getTotalPriceWithVAT());
 
-        //set all lines to invoice
-        invoice.setLines(addInvoiceToOrderDto.getLines());
+        //set all lines to invoice-------------------------------
+        // Process and save invoiceLines
+        List<InvoiceLine> invoiceLines = addInvoiceToOrderDto.getLines().stream().map(lineDto -> {
+            InvoiceLine line = new InvoiceLine();
+            line.setDescription(lineDto.getDescription());
+            line.setQuantity(lineDto.getQuantity());
+            line.setUnitPrice(lineDto.getUnitPrice());
+            line.setPercentageVAT(lineDto.getPercentageVAT());
+            line.setTotalPrice(lineDto.getTotalPrice());
+            line.setUnitVAT(lineDto.getUnitVAT());
+            line.setTotalVAT(lineDto.getTotalVAT());
+            line.setTotalPriceWithVAT(lineDto.getTotalPriceWithVAT());
+            line.setInvoice(invoice); // Set the parent PurchaseOrder
+            return line;
+        }).collect(Collectors.toList());
+
+        // Set the lines in the PurchaseOrder and save both
+        invoice.setLines(invoiceLines);
+
+
+        //---------------------------------------------------------
 
         if(!addInvoiceToOrderDto.getPdfFile().isEmpty())
         {
-            //user attached soft copy of invoice as pdf ! upload to
-            // /public/upload/invoice/{invoice.id}/fileName.pdf
-            // set filename for invoice.setPdfFileName(pdf file name);
+
+                    MultipartFile pdfFile = addInvoiceToOrderDto.getPdfFile();
+                    LocalDateTime createdAt = LocalDateTime.now();
+                    String storageFileName = createdAt.toEpochSecond(ZoneOffset.UTC) + "_" + pdfFile.getOriginalFilename();
+                    String uploadDir = "public/upload/invoice/" + invoiceRepository.count() + "/";
+                    Path uploadPath = Paths.get(uploadDir);
+
+                    try {
+                        if(!Files.exists(uploadPath)) {
+                            Files.createDirectories(uploadPath);
+                        }
+
+                        InputStream inputStream = pdfFile.getInputStream();
+                        Path filePath = Paths.get(uploadDir + storageFileName);
+                        Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                        // Set the stored filename in the invoice
+                        invoice.setPdfFileName(storageFileName);
+                    } catch (Exception e) {
+                        System.out.println("Saving PDF file exception: " + e.getMessage());
+                        result.addError(new FieldError("addInvoiceToOrderDto", "pdfFile", e.getMessage()));
+                        return "invoice/add";
+                    }
         }
 
         invoiceRepository.save(invoice);
 
         return "redirect:/procurement/orderDetail?id="+addInvoiceToOrderDto.getPurchaseOrderId();
 
-    }
+    } // addOrderInvoice
 
 
 

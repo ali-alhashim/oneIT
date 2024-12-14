@@ -30,7 +30,7 @@ public class AddInvoiceToOrderDto {
 
     private String status;
 
-    private List<InvoiceLine> lines = new ArrayList<>();
+    private List<InvoiceLineDto> lines = new ArrayList<>();
 
 
     public String getInvoiceNumber() {
@@ -115,11 +115,11 @@ public class AddInvoiceToOrderDto {
         this.totalPriceWithVAT = totalPriceWithVAT;
     }
 
-    public List<InvoiceLine> getLines() {
+    public List<InvoiceLineDto> getLines() {
         return lines;
     }
 
-    public void setLines(List<InvoiceLine> lines) {
+    public void setLines(List<InvoiceLineDto> lines) {
         this.lines = lines;
     }
 }
