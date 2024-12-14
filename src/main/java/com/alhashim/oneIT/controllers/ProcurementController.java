@@ -1,10 +1,7 @@
 package com.alhashim.oneIT.controllers;
 
 
-import com.alhashim.oneIT.dto.ContactDto;
-import com.alhashim.oneIT.dto.ContactNameIdDto;
-import com.alhashim.oneIT.dto.PurchaseOrderDto;
-import com.alhashim.oneIT.dto.VendorDto;
+import com.alhashim.oneIT.dto.*;
 import com.alhashim.oneIT.models.*;
 import com.alhashim.oneIT.repositories.*;
 import jakarta.validation.Valid;
@@ -49,6 +46,9 @@ public class ProcurementController {
 
     @Autowired
     ContactRepository contactRepository;
+
+    @Autowired
+    InvoiceRepository invoiceRepository;
 
     @GetMapping("/order")
     public String orderList(Model model, @RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size)
@@ -397,11 +397,50 @@ public class ProcurementController {
 
 
     @PostMapping("/addOrderInvoice")
-    public String addOrderInvoice()
+    public String addOrderInvoice(@Valid @ModelAttribute AddInvoiceToOrderDto addInvoiceToOrderDto, BindingResult result, Model model)
     {
+        if(result.hasErrors())
+        {
+            model.addAttribute("message", result.getAllErrors());
+        }
+        PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(addInvoiceToOrderDto.getPurchaseOrderId()).orElse(null);
+        if(purchaseOrder ==null)
+        {
+            return "/404";
+        }
 
+        Vendor vendor = vendorRepository.findById(addInvoiceToOrderDto.getVendorId()).orElse(null);
+        if(vendor ==null)
+        {
+            model.addAttribute("message", "vendor not found");
+            return "/404";
+        }
 
-        return "redirect:/procurement/orderDetail?id=";
+        Invoice invoice = new Invoice();
+        invoice.setInvoiceNumber(addInvoiceToOrderDto.getInvoiceNumber());
+        invoice.setVendor(vendor);
+        invoice.setCreatedAt(LocalDateTime.now());
+        invoice.setInvoiceDate(addInvoiceToOrderDto.getInvoiceDate());
+        invoice.setPurchaseOrder(purchaseOrder);
+        invoice.setPaymentMethod(addInvoiceToOrderDto.getPaymentMethod());
+        invoice.setStatus(addInvoiceToOrderDto.getStatus());
+        invoice.setTotalPrice(addInvoiceToOrderDto.getTotalPrice());
+        invoice.setTotalVAT(addInvoiceToOrderDto.getTotalVAT());
+        invoice.setTotalPriceWithVAT(addInvoiceToOrderDto.getTotalPriceWithVAT());
+
+        //set all lines to invoice
+        invoice.setLines(addInvoiceToOrderDto.getLines());
+
+        if(!addInvoiceToOrderDto.getPdfFile().isEmpty())
+        {
+            //user attached soft copy of invoice as pdf ! upload to
+            // /public/upload/invoice/{invoice.id}/fileName.pdf
+            // set filename for invoice.setPdfFileName(pdf file name);
+        }
+
+        invoiceRepository.save(invoice);
+
+        return "redirect:/procurement/orderDetail?id="+addInvoiceToOrderDto.getPurchaseOrderId();
 
     }
 

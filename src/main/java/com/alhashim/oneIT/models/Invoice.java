@@ -7,6 +7,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "purchase_invoices")
@@ -42,6 +43,10 @@ public class Invoice {
     private String paymentMethod; //credit, cash, cash on delivery, advance
 
     private String pdfFileName; // soft Copy of invoice pdf format
+
+
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InvoiceLine> lines;
 
     public Long getId() {
         return id;
@@ -145,5 +150,13 @@ public class Invoice {
 
     public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public List<InvoiceLine> getLines() {
+        return lines;
+    }
+
+    public void setLines(List<InvoiceLine> lines) {
+        this.lines = lines;
     }
 }

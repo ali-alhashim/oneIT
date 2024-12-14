@@ -1,8 +1,10 @@
 package com.alhashim.oneIT.dto;
 
+import com.alhashim.oneIT.models.InvoiceLine;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,11 +21,16 @@ public class AddInvoiceToOrderDto {
 
     private MultipartFile pdfFile;
 
+
+    private BigDecimal totalVAT;
+    private BigDecimal totalPrice;
+    private BigDecimal totalPriceWithVAT;
+
     private String paymentMethod;
 
     private String status;
 
-    private List<PurchaseOrderLineDto> lines = new ArrayList<>();
+    private List<InvoiceLine> lines = new ArrayList<>();
 
 
     public String getInvoiceNumber() {
@@ -82,11 +89,37 @@ public class AddInvoiceToOrderDto {
         this.status = status;
     }
 
-    public List<PurchaseOrderLineDto> getLines() {
+
+
+    public BigDecimal getTotalVAT() {
+        return totalVAT;
+    }
+
+    public void setTotalVAT(BigDecimal totalVAT) {
+        this.totalVAT = totalVAT;
+    }
+
+    public BigDecimal getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public BigDecimal getTotalPriceWithVAT() {
+        return totalPriceWithVAT;
+    }
+
+    public void setTotalPriceWithVAT(BigDecimal totalPriceWithVAT) {
+        this.totalPriceWithVAT = totalPriceWithVAT;
+    }
+
+    public List<InvoiceLine> getLines() {
         return lines;
     }
 
-    public void setLines(List<PurchaseOrderLineDto> lines) {
+    public void setLines(List<InvoiceLine> lines) {
         this.lines = lines;
     }
 }
