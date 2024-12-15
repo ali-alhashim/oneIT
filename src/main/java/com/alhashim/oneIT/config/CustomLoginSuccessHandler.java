@@ -29,10 +29,13 @@ public class CustomLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
     private final SystemLogRepository systemLogRepository;
     private final EmployeeRepository employeeRepository;
+
     private final RequestCache requestCache = new HttpSessionRequestCache();
+
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
-    public CustomLoginSuccessHandler(SystemLogRepository systemLogRepository, EmployeeRepository employeeRepository) {
+    public CustomLoginSuccessHandler(SystemLogRepository systemLogRepository, EmployeeRepository employeeRepository)
+    {
         this.systemLogRepository = systemLogRepository;
         this.employeeRepository = employeeRepository;
     }
@@ -45,6 +48,12 @@ public class CustomLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         Employee employee = employeeRepository.findByBadgeNumber(badgeNumber)
                 .orElseThrow(() -> new UsernameNotFoundException("Employee not found with badge number: " + badgeNumber));
 
+        System.out.println("DEBUG: Authentication Success for " + badgeNumber);
+        System.out.println("DEBUG: Request URL: " + request.getRequestURL());
+        System.out.println("DEBUG: Request URI: " + request.getRequestURI());
+        System.out.println("DEBUG: Query String: " + request.getQueryString());
+
+
         // Log the login action
         SystemLog systemLog = new SystemLog();
         systemLog.setCreatedAt(LocalDateTime.now());
@@ -53,8 +62,21 @@ public class CustomLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         systemLogRepository.save(systemLog);
 
         SavedRequest savedRequest = requestCache.getRequest(request, response);
-        String targetUrl = (savedRequest != null) ? savedRequest.getRedirectUrl() : "/";
-        System.out.println(employee.getBadgeNumber() +" want to open "+targetUrl);
+        String targetUrl = "/dashboard"; // Default fallback
+
+        if (savedRequest != null) {
+            // Get the full URL, including scheme, host, and path
+            targetUrl = savedRequest.getRedirectUrl();
+
+            // If still null or dashboard, try to get the request URL
+            if (targetUrl == null || targetUrl.isEmpty() || targetUrl.endsWith("/dashboard")) {
+                targetUrl = request.getRequestURL().toString();
+            }
+        }
+
+
+
+        System.out.println(employee.getBadgeNumber() +"***********>>>> Want to open "+targetUrl);
 
         if (employee.getOtpCode() == null) {
             // First-time login, generate secret key
@@ -74,7 +96,7 @@ public class CustomLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             request.getSession().setAttribute("targetUrl", targetUrl);
             redirectStrategy.sendRedirect(request, response, "/otp");
         } else {
-            // No OTP required, redirect to the original URL or default URL
+            // No OTP required, redirect to the original URL or dashboard
             redirectStrategy.sendRedirect(request, response, targetUrl);
         }
     }

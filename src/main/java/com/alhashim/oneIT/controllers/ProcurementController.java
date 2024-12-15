@@ -146,9 +146,25 @@ public class ProcurementController {
         System.out.println("PurchaseOrder : TotalPriceWithVAT: " + purchaseOrderDto.getTotalPriceWithVAT());
         System.out.println("Lines: " + purchaseOrderDto.getLines().size());
 
+        //get last PO Code number like P0000 + 1 the new = P0001
+        String theLastCodeNumber = purchaseOrderRepository.findLastCode();
+
+        if (theLastCodeNumber != null && !theLastCodeNumber.isEmpty()) {
+            int numericPart = Integer.parseInt(theLastCodeNumber.substring(1));
+            numericPart++;
+            theLastCodeNumber = "P" + String.format("%04d", numericPart);
+
+
+        }
+        else
+        {
+            theLastCodeNumber = "P0001";
+        }
+
         // Create and populate the PurchaseOrder entity
         PurchaseOrder purchaseOrder = new PurchaseOrder();
         purchaseOrder.setCreatedBy(currentUser);
+        purchaseOrder.setCode(theLastCodeNumber);
         purchaseOrder.setCreatedAt(LocalDateTime.now());
         purchaseOrder.setTotalPriceWithVAT(purchaseOrderDto.getTotalPriceWithVAT());
         purchaseOrder.setStatus(purchaseOrderDto.getStatus());
@@ -458,14 +474,14 @@ public class ProcurementController {
 
 
         //---------------------------------------------------------
-
+        invoiceRepository.save(invoice);
         if(!addInvoiceToOrderDto.getPdfFile().isEmpty())
         {
 
                     MultipartFile pdfFile = addInvoiceToOrderDto.getPdfFile();
                     LocalDateTime createdAt = LocalDateTime.now();
                     String storageFileName = createdAt.toEpochSecond(ZoneOffset.UTC) + "_" + pdfFile.getOriginalFilename();
-                    String uploadDir = "public/upload/invoice/" + invoiceRepository.count() + "/";
+                    String uploadDir = "public/upload/invoice/" + invoice.getId() + "/";
                     Path uploadPath = Paths.get(uploadDir);
 
                     try {
@@ -479,6 +495,7 @@ public class ProcurementController {
 
                         // Set the stored filename in the invoice
                         invoice.setPdfFileName(storageFileName);
+                        invoiceRepository.save(invoice);
                     } catch (Exception e) {
                         System.out.println("Saving PDF file exception: " + e.getMessage());
                         result.addError(new FieldError("addInvoiceToOrderDto", "pdfFile", e.getMessage()));
@@ -486,7 +503,7 @@ public class ProcurementController {
                     }
         }
 
-        invoiceRepository.save(invoice);
+
 
         return "redirect:/procurement/orderDetail?id="+addInvoiceToOrderDto.getPurchaseOrderId();
 
@@ -520,6 +537,35 @@ public class ProcurementController {
         model.addAttribute("totalItems", invoicePage.getTotalElements());
         model.addAttribute("pageTitle","Invoice List");
         return "/procurement/invoiceList";
+    }
+
+    @PostMapping("/updateOrderStatus")
+    public String updateOrderStatus(@RequestParam String orderStatus, @RequestParam Long orderId)
+    {
+        PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(orderId).orElse(null);
+        if(purchaseOrder ==null)
+        {
+            return "/404";
+        }
+
+        purchaseOrder.setStatus(orderStatus);
+        purchaseOrder.setUpdatedAt(LocalDateTime.now());
+        purchaseOrderRepository.save(purchaseOrder);
+        // Log the action
+        return "redirect:/procurement/orderDetail?id="+orderId;
+    } //updateOrderStatus
+
+
+    @GetMapping("/invoiceDetail")
+    public String invoiceDetail(@RequestParam Long id, Model model)
+    {
+        Invoice invoice = invoiceRepository.findById(id).orElse(null);
+        if(invoice ==null)
+        {
+            return "/404";
+        }
+        model.addAttribute("invoice", invoice);
+        return "/procurement/invoiceDetail";
     }
 
 

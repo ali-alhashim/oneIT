@@ -20,7 +20,9 @@ public class PurchaseOrder {
     private LocalDateTime createdAt;
     private Date deadLine;
 
+    @Column(unique = true, nullable = true)
     private String code;
+
     private String documentRef;
 
 

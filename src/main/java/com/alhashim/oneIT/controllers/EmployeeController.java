@@ -8,10 +8,7 @@ import com.alhashim.oneIT.models.Department;
 import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.models.Role;
 import com.alhashim.oneIT.models.SystemLog;
-import com.alhashim.oneIT.repositories.DepartmentRepository;
-import com.alhashim.oneIT.repositories.EmployeeRepository;
-import com.alhashim.oneIT.repositories.RoleRepository;
-import com.alhashim.oneIT.repositories.SystemLogRepository;
+import com.alhashim.oneIT.repositories.*;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +60,9 @@ public class EmployeeController {
 
     @Autowired
     DepartmentRepository departmentRepository;
+
+    @Autowired
+    DeviceRepository deviceRepository;
 
        //Employee list only with role of ROLE_ADMIN ROLE_HR, ROLE_SUPPORT
     @GetMapping("/list")
@@ -330,11 +330,28 @@ public class EmployeeController {
             model.addAttribute("officeLocation", employee.getOfficeLocation());
             model.addAttribute("status", employee.getStatus());
             model.addAttribute("roles", employee.getRoles());
+            model.addAttribute("birthDate", employee.getBirthDate());
 
             model.addAttribute("currentPage", page);
             model.addAttribute("totalPages", systemLogPage.getTotalPages());
             model.addAttribute("pageSize", size);
             model.addAttribute("totalItems", systemLogPage.getTotalElements());
+
+
+            int laptopCount = deviceRepository.countByEmployeeAndCategory(employee, "Laptop");
+            model.addAttribute("laptopCount",laptopCount);
+
+            int smartPhoneCount = deviceRepository.countByEmployeeAndCategory(employee, "SmartPhone");
+            model.addAttribute("smartPhoneCount",smartPhoneCount);
+
+            int monitorCount = deviceRepository.countByEmployeeAndCategory(employee, "Monitor");
+            model.addAttribute("monitorCount",monitorCount);
+
+            int printerCount = deviceRepository.countByEmployeeAndCategory(employee, "Printer");
+            model.addAttribute("printerCount",printerCount);
+
+
+
 
             //
             model.addAttribute("systemLogs",systemLogPage.getContent() );

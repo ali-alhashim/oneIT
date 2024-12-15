@@ -46,6 +46,7 @@
       <th>Vendor</th>
       <th>Amount</th>
       <th>Status</th>
+      <th>PDF</th>
 
       </thead>
 
@@ -67,6 +68,11 @@
         <td th:text="${invoice.vendor.name}"></td>
         <td th:text="${invoice.totalPriceWithVAT}"></td>
         <td th:text="${invoice.status}"></td>
+        <td>
+          <a target="_blank" th:href="${invoice.pdfFileName != null ? '/upload/invoice/' + invoice.id + '/' + invoice.pdfFileName : '#'}"
+             th:text="${invoice.pdfFileName != null ? invoice.pdfFileName : 'No PDF'}">
+          </a>
+        </td>
 
       </tr>
 

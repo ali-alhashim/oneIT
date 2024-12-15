@@ -10,6 +10,8 @@ import com.alhashim.oneIT.repositories.DeviceRepository;
 import com.alhashim.oneIT.repositories.EmployeeRepository;
 import com.alhashim.oneIT.repositories.NotificationRepository;
 import com.alhashim.oneIT.repositories.SystemLogRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.time.LocalDateTime;
 
@@ -217,8 +220,12 @@ public class MainController {
     }
 
     @PostMapping("/otp")
-    public String verifyOtp(@RequestParam Integer otp,HttpSession session,Principal principal, RedirectAttributes redirectAttributes )
-    {
+    public void verifyOtp(@RequestParam Integer otp,
+                          HttpServletRequest request,
+                          HttpServletResponse response,
+                          HttpSession session,
+                          Principal principal,
+                          RedirectAttributes redirectAttributes) throws IOException {
         Employee employee = employeeRepository.findByBadgeNumber(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("Employee not found"));
 
@@ -230,6 +237,9 @@ public class MainController {
             // OTP is valid
             String targetUrl = (String) session.getAttribute("targetUrl");
 
+            // Remove targetUrl from session to prevent reuse
+            session.removeAttribute("targetUrl");
+
             System.out.println("OTP is valid. Redirecting to: " + (targetUrl != null ? targetUrl : "/dashboard"));
 
             // Mark session as verified
@@ -240,16 +250,18 @@ public class MainController {
             SecurityContext securityContext = SecurityContextHolder.getContext();
             session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
 
-            // Clean up target URL from session
-            //session.removeAttribute("targetUrl");
-
-            return "redirect:" + (targetUrl != null ? targetUrl : "/dashboard");
+            // Use HttpServletResponse for more reliable redirection
+            if (targetUrl != null && !targetUrl.isEmpty()) {
+                response.sendRedirect(targetUrl);
+            } else {
+                response.sendRedirect(request.getContextPath() + "/dashboard");
+            }
         } else {
             // OTP is invalid
             System.out.println("Invalid OTP!");
             redirectAttributes.addFlashAttribute("error", "Invalid OTP. Please try again.");
-            return "redirect:/otp";
+            response.sendRedirect(request.getContextPath() + "/otp");
         }
-    } // post otp
+    }
 
 }

@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import com.alhashim.oneIT.config.CustomLoginSuccessHandler;
 import org.springframework.security.web.context.SecurityContextHolderFilter;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 
 @Configuration
 @EnableWebSecurity
@@ -35,6 +36,9 @@ public class SecurityConfig  {
 
         return http
 
+                .requestCache(cache -> cache
+                        .requestCache(new HttpSessionRequestCache())
+                )
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/otp", "/css/**", "/js/**").permitAll() // Allow public access to login and static resources
@@ -51,11 +55,13 @@ public class SecurityConfig  {
                         .loginPage("/login")
                         .usernameParameter("badgeNumber") // Custom username parameter
                         .passwordParameter("password") // Custom password parameter
-                        .defaultSuccessUrl("/dashboard") // Redirect to dashboard on successful login
+                       // .defaultSuccessUrl("/dashboard") // Redirect to dashboard on successful login
                         .failureUrl("/login?error=true") // Redirect back to login page on failure
                         .successHandler(customLoginSuccessHandler)
                         .permitAll()
                 )
+
+
 
                 .logout(logout -> logout
                         .logoutUrl("/logout") // Logout URL

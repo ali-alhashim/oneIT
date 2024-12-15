@@ -56,6 +56,16 @@ public class Employee {
 
     private String gender;
 
+    private String citizenship;
+
+    private String jobTitle;
+
+    private Date hireDate;
+
+    private String businessUnit;
+
+    private String maritalStatus; // M / D / V / C
+
 
     //for MFA with Google auth app or similar Microsoft auth
     private String otpCode;
