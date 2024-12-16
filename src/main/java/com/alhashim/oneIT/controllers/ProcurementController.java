@@ -595,11 +595,65 @@ public class ProcurementController {
         payment.setIban(paymentDto.getIban());
         payment.setBankName(paymentDto.getBankName());
         payment.setCreatedAt(LocalDateTime.now());
-
+        payment.setTtDocumentDate(paymentDto.getTtDocumentDate());
         paymentRepository.save(payment);
+        if(!paymentDto.getPdfFile().isEmpty())
+        {
+            MultipartFile pdfFile = paymentDto.getPdfFile();
+            LocalDateTime createdAt = LocalDateTime.now();
+            String storageFileName = createdAt.toEpochSecond(ZoneOffset.UTC) + "_" + pdfFile.getOriginalFilename();
+            String uploadDir = "public/upload/payment/" + payment.getId() + "/";
+            Path uploadPath = Paths.get(uploadDir);
+
+            try {
+                if(!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+
+                InputStream inputStream = pdfFile.getInputStream();
+                Path filePath = Paths.get(uploadDir + storageFileName);
+                Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+
+               payment.setPdfFileName(storageFileName);
+               paymentRepository.save(payment);
+            } catch (Exception e) {
+                model.addAttribute("message", e.getMessage());
+                return "/404";
+            }
+        }
+
+
 
         return "redirect:/procurement/invoiceDetail?id="+paymentDto.getInvoiceId();
-    }
+    } //Add Invoice Payment
+
+
+     @GetMapping("/payment")
+    public String paymentList(Model model, @RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size)
+     {
+         Page<Payment> paymentPage;
+
+         if(keyword !=null && !keyword.isEmpty())
+         {
+             // Implement a paginated search query in your repository
+             paymentPage = paymentRepository.findByKeyword(keyword, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+         }
+         else
+         {
+             // Fetch all  with pagination
+             Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+             paymentPage = paymentRepository.findAll(pageable);
+         }
+
+
+         model.addAttribute("payments", paymentPage.getContent());
+         model.addAttribute("currentPage", page);
+         model.addAttribute("totalPages", paymentPage.getTotalPages());
+         model.addAttribute("pageSize", size);
+         model.addAttribute("totalItems", paymentPage.getTotalElements());
+         model.addAttribute("pageTitle","Payment List");
+         return "/procurement/paymentList";
+     }
 
 
 
