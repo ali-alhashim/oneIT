@@ -49,6 +49,10 @@ public class Invoice {
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InvoiceLine> lines;
 
+
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Payment> payments;
+
     public Long getId() {
         return id;
     }
@@ -159,5 +163,13 @@ public class Invoice {
 
     public void setLines(List<InvoiceLine> lines) {
         this.lines = lines;
+    }
+
+    public List<Payment> getPayments() {
+        return payments;
+    }
+
+    public void setPayments(List<Payment> payments) {
+        this.payments = payments;
     }
 }

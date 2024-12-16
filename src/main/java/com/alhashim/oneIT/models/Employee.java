@@ -60,9 +60,19 @@ public class Employee {
 
     private String jobTitle;
 
+    private String arJobTitle;
+
+    private String sponsorName;
+
+    private Date terminationDate;
+
+    private String govId;
+
     private Date hireDate;
 
     private String businessUnit;
+
+    private int annualLeaveBalance;
 
     private String maritalStatus; // M / D / V / C
 
@@ -338,5 +348,90 @@ public class Employee {
 
     public void setPurchaseOrders(List<PurchaseOrder> purchaseOrders) {
         this.purchaseOrders = purchaseOrders;
+    }
+
+
+    public String getCitizenship() {
+        return citizenship;
+    }
+
+    public void setCitizenship(String citizenship) {
+        this.citizenship = citizenship;
+    }
+
+    public String getJobTitle() {
+        return jobTitle;
+    }
+
+    public void setJobTitle(String jobTitle) {
+        this.jobTitle = jobTitle;
+    }
+
+    public String getArJobTitle() {
+        return arJobTitle;
+    }
+
+    public void setArJobTitle(String arJobTitle) {
+        this.arJobTitle = arJobTitle;
+    }
+
+    public String getSponsorName() {
+        return sponsorName;
+    }
+
+    public void setSponsorName(String sponsorName) {
+        this.sponsorName = sponsorName;
+    }
+
+    public Date getTerminationDate() {
+        return terminationDate;
+    }
+
+    public void setTerminationDate(Date terminationDate) {
+        this.terminationDate = terminationDate;
+    }
+
+    public String getGovId() {
+        return govId;
+    }
+
+    public void setGovId(String govId) {
+        this.govId = govId;
+    }
+
+    public Date getHireDate() {
+        return hireDate;
+    }
+
+    public void setHireDate(Date hireDate) {
+        this.hireDate = hireDate;
+    }
+
+    public String getBusinessUnit() {
+        return businessUnit;
+    }
+
+    public void setBusinessUnit(String businessUnit) {
+        this.businessUnit = businessUnit;
+    }
+
+    public int getAnnualLeaveBalance() {
+        return annualLeaveBalance;
+    }
+
+    public void setAnnualLeaveBalance(int annualLeaveBalance) {
+        this.annualLeaveBalance = annualLeaveBalance;
+    }
+
+    public String getMaritalStatus() {
+        return maritalStatus;
+    }
+
+    public void setMaritalStatus(String maritalStatus) {
+        this.maritalStatus = maritalStatus;
+    }
+
+    public Boolean getOtpEnabled() {
+        return isOtpEnabled;
     }
 }
