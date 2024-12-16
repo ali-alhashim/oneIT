@@ -58,6 +58,9 @@ public class ProcurementController {
     @Autowired
     InvoiceRepository invoiceRepository;
 
+    @Autowired
+    PaymentRepository paymentRepository;
+
     @GetMapping("/order")
     public String orderList(Model model, @RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size)
     {
@@ -566,6 +569,36 @@ public class ProcurementController {
         }
         model.addAttribute("invoice", invoice);
         return "/procurement/invoiceDetail";
+    }
+
+
+
+
+
+    @PostMapping("/addInvoicePayment")
+    public String addInvoicePayment(@Valid @ModelAttribute PaymentDto paymentDto, Model model, BindingResult result)
+    {
+        if(result.hasErrors())
+        {
+            model.addAttribute("message", result.getAllErrors());
+            return "/404";
+        }
+        Invoice invoice = invoiceRepository.findById(paymentDto.getInvoiceId()).orElse(null);
+        if(invoice ==null)
+        {
+            return "/404";
+        }
+
+        Payment payment = new Payment();
+        payment.setInvoice(invoice);
+        payment.setAmount(paymentDto.getAmount());
+        payment.setIban(paymentDto.getIban());
+        payment.setBankName(paymentDto.getBankName());
+        payment.setCreatedAt(LocalDateTime.now());
+
+        paymentRepository.save(payment);
+
+        return "redirect:/procurement/invoiceDetail?id="+paymentDto.getInvoiceId();
     }
 
 

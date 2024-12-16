@@ -86,9 +86,14 @@ public class Employee {
 
 //-------- the Relationship filed-----------
 
+
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "department_id")
     private Department department;
+
+    @OneToOne
+    private Salary salary;
 
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -103,9 +108,15 @@ public class Employee {
     @OneToMany(mappedBy = "employee")
     private List<Notification> notifications;
 
+    @OneToMany(mappedBy = "employee")
+    private List<EmployeeCalendar> calendars;
+
 
     @OneToMany(mappedBy = "createdBy")
     private List<PurchaseOrder> purchaseOrders;
+
+    @OneToMany(mappedBy = "employee")
+    private List<EmployeeEducation> educations;
 
 
     @OneToMany(mappedBy = "user")
@@ -433,5 +444,29 @@ public class Employee {
 
     public Boolean getOtpEnabled() {
         return isOtpEnabled;
+    }
+
+    public Salary getSalary() {
+        return salary;
+    }
+
+    public void setSalary(Salary salary) {
+        this.salary = salary;
+    }
+
+    public List<EmployeeCalendar> getCalendars() {
+        return calendars;
+    }
+
+    public void setCalendars(List<EmployeeCalendar> calendars) {
+        this.calendars = calendars;
+    }
+
+    public List<EmployeeEducation> getEducations() {
+        return educations;
+    }
+
+    public void setEducations(List<EmployeeEducation> educations) {
+        this.educations = educations;
     }
 }

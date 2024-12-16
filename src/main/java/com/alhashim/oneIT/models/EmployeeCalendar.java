@@ -1,0 +1,106 @@
+package com.alhashim.oneIT.models;
+
+import jakarta.persistence.*;
+import org.springframework.data.annotation.LastModifiedDate;
+
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
+
+@Entity
+public class EmployeeCalendar {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(updatable = false, nullable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "employee_id", nullable = false)
+    private Employee employee;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "geolocation_id", nullable = false)
+    private Geolocation geolocation;
+
+    @Column(nullable = true)
+    private LocalTime checkIn;
+
+    @Column(nullable = true)
+    private LocalTime checkOut;
+
+    @Column(nullable = false)
+    private LocalDate dayDate;
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
+
+    public Geolocation getGeolocation() {
+        return geolocation;
+    }
+
+    public void setGeolocation(Geolocation geolocation) {
+        this.geolocation = geolocation;
+    }
+
+    public LocalTime getCheckIn() {
+        return checkIn;
+    }
+
+    public void setCheckIn(LocalTime checkIn) {
+        this.checkIn = checkIn;
+    }
+
+    public LocalTime getCheckOut() {
+        return checkOut;
+    }
+
+    public void setCheckOut(LocalTime checkOut) {
+        this.checkOut = checkOut;
+    }
+
+    public LocalDate getDayDate() {
+        return dayDate;
+    }
+
+    public void setDayDate(LocalDate dayDate) {
+        this.dayDate = dayDate;
+    }
+}
