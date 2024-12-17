@@ -29,9 +29,27 @@ public class EmployeeDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date birthDate;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date hireDate;
+
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date terminationDate;
+
+    private String govId;
+
     private String gender;
 
     private String status;
+
+    private String businessUnit;
+
+    private String maritalStatus;
+
+    private String sponsorName;
+    private String arJobTitle;
+    private String jobTitle;
+    private String citizenship;
 
 
     private String password;
@@ -205,5 +223,77 @@ public class EmployeeDto {
                 +"Name:" + this.getName() +","
                 +"ArName:" + this.getArName() +","
                 +"}";
+    }
+
+    public Date getHireDate() {
+        return hireDate;
+    }
+
+    public void setHireDate(Date hireDate) {
+        this.hireDate = hireDate;
+    }
+
+    public Date getTerminationDate() {
+        return terminationDate;
+    }
+
+    public void setTerminationDate(Date terminationDate) {
+        this.terminationDate = terminationDate;
+    }
+
+    public String getGovId() {
+        return govId;
+    }
+
+    public void setGovId(String govId) {
+        this.govId = govId;
+    }
+
+    public String getBusinessUnit() {
+        return businessUnit;
+    }
+
+    public void setBusinessUnit(String businessUnit) {
+        this.businessUnit = businessUnit;
+    }
+
+    public String getMaritalStatus() {
+        return maritalStatus;
+    }
+
+    public void setMaritalStatus(String maritalStatus) {
+        this.maritalStatus = maritalStatus;
+    }
+
+    public String getSponsorName() {
+        return sponsorName;
+    }
+
+    public void setSponsorName(String sponsorName) {
+        this.sponsorName = sponsorName;
+    }
+
+    public String getArJobTitle() {
+        return arJobTitle;
+    }
+
+    public void setArJobTitle(String arJobTitle) {
+        this.arJobTitle = arJobTitle;
+    }
+
+    public String getJobTitle() {
+        return jobTitle;
+    }
+
+    public void setJobTitle(String jobTitle) {
+        this.jobTitle = jobTitle;
+    }
+
+    public String getCitizenship() {
+        return citizenship;
+    }
+
+    public void setCitizenship(String citizenship) {
+        this.citizenship = citizenship;
     }
 }

@@ -39,6 +39,8 @@ public class EmployeeCalendar {
     @Column(nullable = true)
     private LocalTime checkOut;
 
+    private int totalMinutes;
+
     @Column(nullable = false)
     private LocalDate dayDate;
 
@@ -121,5 +123,13 @@ public class EmployeeCalendar {
 
     public void setMobileModel(String mobileModel) {
         this.mobileModel = mobileModel;
+    }
+
+    public int getTotalMinutes() {
+        return totalMinutes;
+    }
+
+    public void setTotalMinutes(int totalMinutes) {
+        this.totalMinutes = totalMinutes;
     }
 }

@@ -4,6 +4,7 @@ package com.alhashim.oneIT.models;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -24,35 +25,47 @@ public class EmployeeClearance {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
+    private String employeeSignatureFileName;
 
     private LocalDate lastDay;
 
-    private String status;
+    private String articleNumber;
+    private int totalDays;
+
+    private BigDecimal rewardAmount;
+
+    private String status; //waiting clearances from departments, processing the payment, Done
 
     @OneToOne
     private Employee directManager;
     private Boolean  directManagerOk;
+    private String managerSignatureFileName;
 
 
     @OneToOne
     private Employee hr;
     private Boolean hrOk;
+    private String hrSignatureFileName;
 
     @OneToOne
     private Employee it;
     private Boolean itOk;
+    private String itSignatureFileName;
 
     @OneToOne
     private Employee medical;
     private Boolean medicalOk;
+    private String medicalSignatureFileName;
 
     @OneToOne
     private Employee vehicle;
     private Boolean vehicleOk;
+    private String vehicleSignatureFileName;
 
     @OneToOne
     private Employee finance;
     private Boolean financeOk;
+    private String financeSignatureFileName;
 
     private String note;
 
@@ -206,5 +219,85 @@ public class EmployeeClearance {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public String getEmployeeSignatureFileName() {
+        return employeeSignatureFileName;
+    }
+
+    public void setEmployeeSignatureFileName(String employeeSignatureFileName) {
+        this.employeeSignatureFileName = employeeSignatureFileName;
+    }
+
+    public String getArticleNumber() {
+        return articleNumber;
+    }
+
+    public void setArticleNumber(String articleNumber) {
+        this.articleNumber = articleNumber;
+    }
+
+    public int getTotalDays() {
+        return totalDays;
+    }
+
+    public void setTotalDays(int totalDays) {
+        this.totalDays = totalDays;
+    }
+
+    public BigDecimal getRewardAmount() {
+        return rewardAmount;
+    }
+
+    public void setRewardAmount(BigDecimal rewardAmount) {
+        this.rewardAmount = rewardAmount;
+    }
+
+    public String getManagerSignatureFileName() {
+        return managerSignatureFileName;
+    }
+
+    public void setManagerSignatureFileName(String managerSignatureFileName) {
+        this.managerSignatureFileName = managerSignatureFileName;
+    }
+
+    public String getHrSignatureFileName() {
+        return hrSignatureFileName;
+    }
+
+    public void setHrSignatureFileName(String hrSignatureFileName) {
+        this.hrSignatureFileName = hrSignatureFileName;
+    }
+
+    public String getItSignatureFileName() {
+        return itSignatureFileName;
+    }
+
+    public void setItSignatureFileName(String itSignatureFileName) {
+        this.itSignatureFileName = itSignatureFileName;
+    }
+
+    public String getMedicalSignatureFileName() {
+        return medicalSignatureFileName;
+    }
+
+    public void setMedicalSignatureFileName(String medicalSignatureFileName) {
+        this.medicalSignatureFileName = medicalSignatureFileName;
+    }
+
+    public String getVehicleSignatureFileName() {
+        return vehicleSignatureFileName;
+    }
+
+    public void setVehicleSignatureFileName(String vehicleSignatureFileName) {
+        this.vehicleSignatureFileName = vehicleSignatureFileName;
+    }
+
+    public String getFinanceSignatureFileName() {
+        return financeSignatureFileName;
+    }
+
+    public void setFinanceSignatureFileName(String financeSignatureFileName) {
+        this.financeSignatureFileName = financeSignatureFileName;
     }
 }

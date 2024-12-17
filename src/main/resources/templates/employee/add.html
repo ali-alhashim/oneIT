@@ -65,6 +65,77 @@
               <label for="officeLocation">Office Location</label>
           </div>
 
+          <!--************-->
+          <div class="form-floating my-1">
+              <input type="text" class="form-control" id="sponsorName"  name="sponsorName" th:field="${employeeDto.sponsorName}">
+              <label for="sponsorName">sponsor Name</label>
+          </div>
+
+
+
+          <div class="form-floating my-1">
+              <input type="date" class="form-control" id="hireDate"  name="hireDate" th:field="${employeeDto.hireDate}">
+              <label for="hireDate">Hire Date</label>
+          </div>
+
+          <div class="form-floating my-1">
+              <input type="date" class="form-control" id="terminationDate"  name="terminationDate" th:field="${employeeDto.terminationDate}">
+              <label for="terminationDate">Termination Date</label>
+          </div>
+
+
+
+          <div class="form-floating my-1">
+              <input type="text" class="form-control" id="govId"  name="govId" th:field="${employeeDto.govId}">
+              <label for="govId">GOV. Id</label>
+          </div>
+
+
+
+          <div class="form-floating my-1">
+              <input type="text" class="form-control" id="businessUnit"  name="govId" th:field="${employeeDto.businessUnit}">
+              <label for="businessUnit">Business Unit</label>
+          </div>
+
+
+          <div class="form-floating my-1">
+              <select class="form-select" id="maritalStatus"  name="maritalStatus" th:field="${employeeDto.maritalStatus}">
+                  <option value="Single">Single</option>
+                  <option value="Married">Married</option>
+                  <option value="Divorce">Divorce</option>
+                  <option value="Widow">Widow</option>
+                  <option value="Others">Others</option>
+              </select>
+              <label for="maritalStatus">Marital Status</label>
+          </div>
+
+
+
+          <div class="form-floating my-1">
+              <input type="text" class="form-control" id="arJobTitle"  name="arJobTitle" th:field="${employeeDto.arJobTitle}">
+              <label for="arJobTitle">AR. Job Title</label>
+          </div>
+
+
+
+          <div class="form-floating my-1">
+              <input type="text" class="form-control" id="jobTitle"  name="jobTitle" th:field="${employeeDto.jobTitle}">
+              <label for="jobTitle">Job Title</label>
+          </div>
+
+          <div class="form-floating my-1">
+              <input type="text" class="form-control" id="citizenship"  name="citizenship" th:field="${employeeDto.citizenship}">
+              <label for="citizenship">Citizenship</label>
+          </div>
+
+
+
+
+
+          <!---->
+
+
+
           <hr/>
           <div class="row">
               <div class="col-2">

@@ -1,15 +1,15 @@
 package com.alhashim.oneIT.models;
 
-
 import jakarta.persistence.*;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Entity
-public class Salary {
+public class Payslip {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +24,9 @@ public class Salary {
     @ManyToOne
     private Employee employee;
 
-    private Boolean isActive;
+    private Date periodStart;
+    private Date periodEnd;
+    private String codeName; //Month-Year like 01-2024
 
     private BigDecimal grossEarning;
 
@@ -32,9 +34,10 @@ public class Salary {
 
     private BigDecimal netPay;
 
-    @OneToMany(mappedBy = "salary", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SalaryLine> lines;
+    private String note;
 
+    @OneToMany(mappedBy = "payslip")
+    private List<PayslipLine> lines;
 
     public Long getId() {
         return id;
@@ -68,6 +71,30 @@ public class Salary {
         this.employee = employee;
     }
 
+    public Date getPeriodStart() {
+        return periodStart;
+    }
+
+    public void setPeriodStart(Date periodStart) {
+        this.periodStart = periodStart;
+    }
+
+    public Date getPeriodEnd() {
+        return periodEnd;
+    }
+
+    public void setPeriodEnd(Date periodEnd) {
+        this.periodEnd = periodEnd;
+    }
+
+    public String getCodeName() {
+        return codeName;
+    }
+
+    public void setCodeName(String codeName) {
+        this.codeName = codeName;
+    }
+
     public BigDecimal getGrossEarning() {
         return grossEarning;
     }
@@ -92,19 +119,19 @@ public class Salary {
         this.netPay = netPay;
     }
 
-    public List<SalaryLine> getLines() {
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public List<PayslipLine> getLines() {
         return lines;
     }
 
-    public void setLines(List<SalaryLine> lines) {
+    public void setLines(List<PayslipLine> lines) {
         this.lines = lines;
-    }
-
-    public Boolean getActive() {
-        return this.isActive;
-    }
-
-    public void setActive(Boolean active) {
-        this.isActive = active;
     }
 }

@@ -21,6 +21,10 @@ public interface  EmployeeRepository  extends JpaRepository<Employee, Long> {
     String findLastBadgeNumber();
 
 
+    @Query("SELECT e.badgeNumber FROM Employee e WHERE e.badgeNumber LIKE 'A%' ORDER BY e.badgeNumber DESC LIMIT 1")
+    String findLastBadgeNumberForCompany();
+
+
 
 
     List<Employee> findByRoles_RoleName(String roleName);

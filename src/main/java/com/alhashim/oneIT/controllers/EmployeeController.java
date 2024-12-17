@@ -4,6 +4,7 @@ package com.alhashim.oneIT.controllers;
 import com.alhashim.oneIT.dto.EmployeeDto;
 import com.alhashim.oneIT.dto.ImportEmployeeDto;
 import com.alhashim.oneIT.dto.RestPasswordDto;
+import com.alhashim.oneIT.dto.TerminationDto;
 import com.alhashim.oneIT.models.Department;
 import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.models.Role;
@@ -143,7 +144,7 @@ public class EmployeeController {
             System.out.println("Badge Number is Empty generate auto badgeNumber");
                 //generate auto badgeNumber
                 //get last employee badge number like A0000 + 1 the new = A0001
-               String theLastBadgeNumber = employeeRepository.findLastBadgeNumber();
+               String theLastBadgeNumber = employeeRepository.findLastBadgeNumberForCompany();
 
                System.out.println("the last badge number was : "+theLastBadgeNumber);
 
@@ -212,6 +213,18 @@ public class EmployeeController {
            employee.setPassword(passwordEncoder.encode(employeeDto.getPassword()));
 
            employee.setBirthDate(employeeDto.getBirthDate());
+
+           //-
+           employee.setArJobTitle(employeeDto.getArJobTitle());
+           employee.setJobTitle(employeeDto.getJobTitle());
+           employee.setBusinessUnit(employeeDto.getBusinessUnit());
+           employee.setHireDate(employeeDto.getHireDate());
+           employee.setCitizenship(employeeDto.getCitizenship());
+           employee.setTerminationDate(employeeDto.getTerminationDate());
+           employee.setGovId(employeeDto.getGovId());
+           employee.setMaritalStatus(employeeDto.getMaritalStatus());
+           employee.setSponsorName(employeeDto.getSponsorName());
+           //-
 
            employee.setGender(employeeDto.getGender());
            employee.setImageFileName(storageFileName);
@@ -316,22 +329,33 @@ public class EmployeeController {
             systemLogPage = systemLogRepository.findByEmployeeId(employee.getId(), PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
 
             RestPasswordDto restPasswordDto = new RestPasswordDto();
+            TerminationDto terminationDto = new TerminationDto();
+
             restPasswordDto.setBadgeNumber(badgeNumber);
             model.addAttribute("restPasswordDto",restPasswordDto);
+            model.addAttribute("terminationDto", terminationDto);
             model.addAttribute("pageTitle","Employee Detail");
             model.addAttribute("badgeNumber", badgeNumber);
             model.addAttribute("userName", employee.getName());
             model.addAttribute("userArName", employee.getArName());
+            model.addAttribute("govId", employee.getGovId());
             model.addAttribute("imageFileName", employee.getImageFileName());
             model.addAttribute("workEmail", employee.getWorkEmail());
             model.addAttribute("workMobile",employee.getWorkMobile());
             model.addAttribute("personalEmail", employee.getPersonalEmail());
             model.addAttribute("personalMobile", employee.getPersonalMobile());
             model.addAttribute("officeLocation", employee.getOfficeLocation());
+            model.addAttribute("businessUnit", employee.getBusinessUnit());
+            model.addAttribute("maritalStatus", employee.getMaritalStatus());
             model.addAttribute("status", employee.getStatus());
+            model.addAttribute("sponsorName", employee.getSponsorName());
+            model.addAttribute("arJobTitle", employee.getArJobTitle());
+            model.addAttribute("jobTitle", employee.getJobTitle());
+            model.addAttribute("citizenship", employee.getCitizenship());
             model.addAttribute("roles", employee.getRoles());
             model.addAttribute("birthDate", employee.getBirthDate());
-
+            model.addAttribute("hireDate", employee.getHireDate());
+            model.addAttribute("terminationDate", employee.getTerminationDate());
             model.addAttribute("currentPage", page);
             model.addAttribute("totalPages", systemLogPage.getTotalPages());
             model.addAttribute("pageSize", size);
@@ -539,6 +563,18 @@ public class EmployeeController {
             employeeDto.setPersonalMobile(employee.getPersonalMobile());
             employeeDto.setStatus(employee.getStatus());
 
+            //-
+            employeeDto.setArJobTitle(employee.getArJobTitle());
+            employeeDto.setJobTitle(employee.getJobTitle());
+            employeeDto.setBusinessUnit(employee.getBusinessUnit());
+            employeeDto.setHireDate(employee.getHireDate());
+            employeeDto.setCitizenship(employee.getCitizenship());
+            employeeDto.setTerminationDate(employee.getTerminationDate());
+            employeeDto.setGovId(employee.getGovId());
+            employeeDto.setMaritalStatus(employee.getMaritalStatus());
+            employeeDto.setSponsorName(employee.getSponsorName());
+            //-
+
             if(employee.getRoles().stream().anyMatch(role -> "USER".equals(role.getRoleName())))
             {
                 employeeDto.setIs_USER(true);
@@ -611,6 +647,18 @@ public class EmployeeController {
             employee.setWorkEmail(employeeDto.getWorkEmail());
             employee.setName(employeeDto.getName());
             employee.setArName(employee.getArName());
+
+            //-
+            employee.setArJobTitle(employeeDto.getArJobTitle());
+            employee.setJobTitle(employeeDto.getJobTitle());
+            employee.setBusinessUnit(employeeDto.getBusinessUnit());
+            employee.setHireDate(employeeDto.getHireDate());
+            employee.setCitizenship(employeeDto.getCitizenship());
+            employee.setTerminationDate(employeeDto.getTerminationDate());
+            employee.setGovId(employeeDto.getGovId());
+            employee.setMaritalStatus(employeeDto.getMaritalStatus());
+            employee.setSponsorName(employeeDto.getSponsorName());
+            //-
 
             employee.setPersonalEmail(employeeDto.getPersonalEmail());
 

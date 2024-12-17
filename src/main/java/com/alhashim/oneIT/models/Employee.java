@@ -92,8 +92,8 @@ public class Employee {
     @JoinColumn(name = "department_id")
     private Department department;
 
-    @OneToOne
-    private Salary salary;
+    @OneToMany(mappedBy = "employee")
+    private List<Salary> salaries;
 
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -107,6 +107,9 @@ public class Employee {
 
     @OneToMany(mappedBy = "employee")
     private List<Notification> notifications;
+
+    @OneToMany(mappedBy = "employee")
+    private List<Payslip> payslips;
 
     @OneToMany(mappedBy = "employee")
     private List<EmployeeCalendar> calendars;
@@ -446,12 +449,12 @@ public class Employee {
         return isOtpEnabled;
     }
 
-    public Salary getSalary() {
-        return salary;
+    public List<Salary> getSalaries() {
+        return salaries;
     }
 
-    public void setSalary(Salary salary) {
-        this.salary = salary;
+    public void setSalaries(List<Salary> salaries) {
+        this.salaries = salaries;
     }
 
     public List<EmployeeCalendar> getCalendars() {
@@ -468,5 +471,14 @@ public class Employee {
 
     public void setEducations(List<EmployeeEducation> educations) {
         this.educations = educations;
+    }
+
+
+    public List<Payslip> getPayslips() {
+        return payslips;
+    }
+
+    public void setPayslips(List<Payslip> payslips) {
+        this.payslips = payslips;
     }
 }
