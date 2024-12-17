@@ -30,6 +30,9 @@ public class EmployeeCalendar {
     @JoinColumn(name = "geolocation_id", nullable = false)
     private Geolocation geolocation;
 
+    private String mobileOS; // android or IOS
+    private String mobileModel; //iphone15 iphone16 samsung galaxy 24 ...
+
     @Column(nullable = true)
     private LocalTime checkIn;
 
@@ -102,5 +105,21 @@ public class EmployeeCalendar {
 
     public void setDayDate(LocalDate dayDate) {
         this.dayDate = dayDate;
+    }
+
+    public String getMobileOS() {
+        return mobileOS;
+    }
+
+    public void setMobileOS(String mobileOS) {
+        this.mobileOS = mobileOS;
+    }
+
+    public String getMobileModel() {
+        return mobileModel;
+    }
+
+    public void setMobileModel(String mobileModel) {
+        this.mobileModel = mobileModel;
     }
 }

@@ -655,6 +655,19 @@ public class ProcurementController {
          return "/procurement/paymentList";
      }
 
+     @GetMapping("/paymentDetail")
+    public String paymentDetail(@RequestParam Long id, Model model)
+     {
+         Payment payment = paymentRepository.findById(id).orElse(null);
+         if(payment ==null)
+         {
+             return "/404";
+         }
+
+         model.addAttribute("payment", payment);
+         return "/procurement/paymentDetail";
+     }
+
 
 
 

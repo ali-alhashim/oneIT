@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+
+</head>
+<body class="bg-body-secondary">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+
+
+<div class="container bordered my-5">
+    <hr/>
+
+    <hr/>
+
+
+    <div class="row rounded border p-4 bg-light">
+        <table class="table">
+            <tr>
+                <td>Payment Id</td><td th:text="${payment.id}">
+            </tr>
+
+            <tr>
+                <td>Created At</td><td th:text="${payment.createdAt}">
+            </tr>
+
+            <tr>
+                <td>Amount</td><td th:text="${payment.amount}">
+            </tr>
+
+            <tr>
+                <td>Bank Name</td><td th:text="${payment.bankName}">
+            </tr>
+
+            <tr>
+                <td>IBAN</td><td th:text="${payment.iban}">
+            </tr>
+
+            <tr>
+                <td>TT Document Date</td><td th:text="${payment.ttDocumentDate}">
+            </tr>
+
+            <tr>
+                <td>Payment Method</td><td th:text="${payment.paymentMethod}">
+            </tr>
+            <tr>
+                <td>PDF</td>
+                <td>
+                    <a target="_blank" th:href="${payment.pdfFileName != null ? '/upload/payment/' + payment.id + '/' + payment.pdfFileName : '#'}"
+                       th:text="${payment.pdfFileName != null ? payment.pdfFileName : 'No PDF'}">
+                    </a>
+                </td>
+            </tr>
+
+
+
+        </table>
+    </div>
+
+
+
+
+
+
+</div>
+
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
