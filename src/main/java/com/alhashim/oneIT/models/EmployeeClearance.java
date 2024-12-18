@@ -7,6 +7,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 public class EmployeeClearance {
@@ -28,9 +29,14 @@ public class EmployeeClearance {
     private String employeeSignatureFileName;
 
     private LocalDate lastDay;
+    private LocalDate hireDate;
 
     private String articleNumber;
     private int totalDays;
+
+    private BigDecimal actualWage;
+
+    private String contractType;
 
     private BigDecimal rewardAmount;
 
@@ -66,6 +72,10 @@ public class EmployeeClearance {
     private Employee finance;
     private Boolean financeOk;
     private String financeSignatureFileName;
+
+
+    @OneToMany(mappedBy = "employeeClearance")
+    private List<EmployeeClearanceLine> lines;
 
     private String note;
 
@@ -299,5 +309,37 @@ public class EmployeeClearance {
 
     public void setFinanceSignatureFileName(String financeSignatureFileName) {
         this.financeSignatureFileName = financeSignatureFileName;
+    }
+
+    public LocalDate getHireDate() {
+        return hireDate;
+    }
+
+    public void setHireDate(LocalDate hireDate) {
+        this.hireDate = hireDate;
+    }
+
+    public List<EmployeeClearanceLine> getLines() {
+        return lines;
+    }
+
+    public void setLines(List<EmployeeClearanceLine> lines) {
+        this.lines = lines;
+    }
+
+    public BigDecimal getActualWage() {
+        return actualWage;
+    }
+
+    public void setActualWage(BigDecimal actualWage) {
+        this.actualWage = actualWage;
+    }
+
+    public String getContractType() {
+        return contractType;
+    }
+
+    public void setContractType(String contractType) {
+        this.contractType = contractType;
     }
 }

@@ -5,10 +5,7 @@ import com.alhashim.oneIT.dto.EmployeeDto;
 import com.alhashim.oneIT.dto.ImportEmployeeDto;
 import com.alhashim.oneIT.dto.RestPasswordDto;
 import com.alhashim.oneIT.dto.TerminationDto;
-import com.alhashim.oneIT.models.Department;
-import com.alhashim.oneIT.models.Employee;
-import com.alhashim.oneIT.models.Role;
-import com.alhashim.oneIT.models.SystemLog;
+import com.alhashim.oneIT.models.*;
 import com.alhashim.oneIT.repositories.*;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -39,6 +36,7 @@ import java.text.SimpleDateFormat;
 
 import java.time.LocalDateTime;
 
+import java.time.ZoneId;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -64,6 +62,9 @@ public class EmployeeController {
 
     @Autowired
     DeviceRepository deviceRepository;
+
+    @Autowired
+    SalaryRepository salaryRepository;
 
        //Employee list only with role of ROLE_ADMIN ROLE_HR, ROLE_SUPPORT
     @GetMapping("/list")
@@ -331,7 +332,10 @@ public class EmployeeController {
             RestPasswordDto restPasswordDto = new RestPasswordDto();
             TerminationDto terminationDto = new TerminationDto();
 
+            List<Salary> salaries = salaryRepository.findByEmployee(employee);
+
             restPasswordDto.setBadgeNumber(badgeNumber);
+            model.addAttribute("salaries", salaries);
             model.addAttribute("restPasswordDto",restPasswordDto);
             model.addAttribute("terminationDto", terminationDto);
             model.addAttribute("pageTitle","Employee Detail");
@@ -963,6 +967,18 @@ public class EmployeeController {
         // Redirect to employee list
         model.addAttribute("message", "Photos imported successfully.");
         return "redirect:/employee/list";
+    }
+
+
+
+
+    @PostMapping("/termination")
+    public String termination(@Valid @ModelAttribute TerminationDto terminationDto)
+    {
+        //https://www.hrsd.gov.sa/ministry-services/services/end-service-benefit-calculator
+
+        EmployeeClearance employeeClearance = new EmployeeClearance();
+        return "redirect:/clearance/list";
     }
 
 

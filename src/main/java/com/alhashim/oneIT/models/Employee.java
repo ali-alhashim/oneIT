@@ -41,6 +41,9 @@ public class Employee {
 
     private String status;
 
+    private String iban;
+    private String bankName;
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
@@ -480,5 +483,21 @@ public class Employee {
 
     public void setPayslips(List<Payslip> payslips) {
         this.payslips = payslips;
+    }
+
+    public String getIban() {
+        return iban;
+    }
+
+    public void setIban(String iban) {
+        this.iban = iban;
+    }
+
+    public String getBankName() {
+        return bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
     }
 }

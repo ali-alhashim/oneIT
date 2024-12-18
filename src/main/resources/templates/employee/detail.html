@@ -146,7 +146,7 @@
                     </tr>
 
                     <tr>
-                        <th>Hire Date</th> <td th:text="${hireDate}"></td><th>تاريخ التوظيف</th>
+                        <th>Hire Date</th> <td th:text="${#dates.format(hireDate, 'yyyy-MM-dd')}"></td><th>تاريخ التوظيف</th>
                     </tr>
 
                     <tr>
@@ -218,6 +218,65 @@
 
         </div>
         <!--/basic info -->
+
+        <hr/>
+        <!--Salaries -->
+        <div class="row rounded border p-4 bg-light">
+            <div class="row my-3">
+                <div class="col">
+                    <h5>Salaries</h5>
+                </div>
+
+                <div class="col text-end">
+                    <button class="btn btn-success" >Add Salary</button>
+                </div>
+
+                <hr/>
+            </div>
+
+            <!--Salary #0 table -->
+            <div class="table-response" th:each="salary: ${salaries}">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                             <th>Created Date</th> <td th:value="${salary.createdAt}"></td>
+                        </tr>
+                        <tr>
+                            <th>Gross Earning</th> <td th:value="${salary.grossEarning}"></td>
+                        </tr>
+                        <tr>
+                            <th>Gross Deduction</th> <td th:value="${salary.grossDeduction}"></td>
+                        </tr>
+                        <tr>
+                            <th>Net Pay</th> <td th:value="${salary.netPay}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <hr/>
+
+                <table class="table">
+                    <thead>
+                       <tr>
+                           <th>Pay Description</th>
+                           <th>To Pay</th>
+                           <th>To Deduct</th>
+                       </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="line: ${salary.getLines()}">
+                            <td th:value="${line.payDescription}"></td>
+                            <td th:value="${line.toPay}"></td>
+                            <td th:value="${line.toDeduct}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+            <!--/Salary #0 table -->
+
+
+        </div>
+        <!--/Salaries -->
 
         <hr/>
 
@@ -346,7 +405,7 @@
 
         <!-- terminationModal -->
         <div class="modal fade" id="terminationModal" tabindex="-1" aria-labelledby="terminationLabel" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="terminationLabel">Termination</h5>
@@ -356,21 +415,49 @@
 
                         <form id="terminationForm" method="post" action="/employee/termination" th:object="${terminationDto}" th:with="_csrfToken=${_csrf.token}">
 
-                            <input type="hidden" name="badgeNumber"  th:field="${terminationDto.badgeNumber}" th:value="${badgeNumber}"/>
+
 
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
 
                             <div class="form-floating my-1">
                                 <select  class="form-select" id="articleNumber"  name="articleNumber" required th:field="${terminationDto.articleNumber}">
-                                    <option value="80">فصل الموظف على المادة 80</option>
-                                    <option value="77">فصل الموظف على المادة 77</option>
-                                    <option value="75">فصل الموظف على المادة 75</option>
-                                    <option value="81">فصل الموظف على المادة 81</option>
+                                    <option value="إنتهاء مدة العقد">إنتهاء مدة العقد</option>
+                                    <option value="فسخ العقد من قبل صاحب العمل / العامل لسبب غير مشروع">فسخ العقد من قبل صاحب العمل / العامل لسبب غير مشروع</option>
+                                    <option value="فسخ العقد بموجب المادة 80">فسخ العقد بموجب المادة 80</option>
+                                    <option value="إنهاء العقد بسبب القوة القاهرة">إنهاء العقد بسبب القوة القاهرة</option>
+                                    <option value="إنهاء المرأة العاملة العقد خلال ثلاث أشهر من الوضع">إنهاء المرأة العاملة العقد خلال ثلاث أشهر من الوضع</option>
+                                    <option value="إنهاء المرأة العاملة العقد خلال ستة أشهر من عقد القران">إنهاء المرأة العاملة العقد خلال ستة أشهر من عقد القران</option>
+                                    <option value="فسخ العقد بموجب المادة 81">فسخ العقد بموجب المادة 81</option>
+                                    <option value="الإستقالة">الإستقالة</option>
+                                    <option value="الإتفاق على إنهاءه">الإتفاق على إنهاءه</option>
+                                    <option value="عجز العامل">عجز العامل</option>
+                                    <option value="وفاة صاحب العمل">وفاة صاحب العمل</option>
+                                    <option value="وفاة العامل">وفاة العامل</option>
+                                    <option value="إنتقال المنشآت الفردية إلى مالك جديد">إنتقال المنشآت الفردية إلى مالك جديد</option>
+                                    <option value="بلوغ سن التقاعد">بلوغ سن التقاعد</option>
+                                    <option value="إشعار إنهاء خدمات وفق المادة 75">إشعار إنهاء خدمات وفق المادة 75</option>
+                                    <option value="فسخ خلال فترة التجربة">فسخ خلال فترة التجربة</option>
                                 </select>
-                                <label for="articleNumber">Article Number</label>
+                                <label for="articleNumber">Article Number - سبب انتهاء العلاقة العمالية ؟</label>
+
                                 <p th:if="${#fields.hasErrors('articleNumber')}" th:errorclass="text-danger" th:errors="${terminationDto.articleNumber}"></p>
                             </div>
 
+
+
+
+                            <div class="form-floating my-1">
+                                <input type="text" class="form-control" id="badgeNumber"  name="badgeNumber" required readonly  th:value="${badgeNumber}">
+                                <label for="badgeNumber">Badge Number</label>
+                                <p th:if="${#fields.hasErrors('badgeNumber')}" th:errorclass="text-danger" th:errors="${terminationDto.badgeNumber}"></p>
+                            </div>
+
+
+                            <div class="form-floating my-1">
+                                <input type="date" class="form-control" id="hireDate"  name="hireDate" required  th:value="${hireDate != null ? #dates.format(hireDate, 'yyyy-MM-dd') : ''}">
+                                <label for="hireDate">Hire Date</label>
+                                <p th:if="${#fields.hasErrors('hireDate')}" th:errorclass="text-danger" th:errors="${terminationDto.hireDate}"></p>
+                            </div>
 
 
 
@@ -379,6 +466,46 @@
                                 <label for="lastDay">Last Day</label>
                                 <p th:if="${#fields.hasErrors('lastDay')}" th:errorclass="text-danger" th:errors="${terminationDto.lastDay}"></p>
                             </div>
+
+
+                            <div class="form-floating my-1">
+                                <input type="number" class="form-control" id="totalDays"  name="totalDays" required th:field="${terminationDto.totalDays}">
+                                <label for="totalDays">Total Days</label> <p id="totalYears">Year/s :</p>  <p id="totalMonths">Month/s:</p>
+                                <p th:if="${#fields.hasErrors('totalDays')}" th:errorclass="text-danger" th:errors="${terminationDto.totalDays}"></p>
+                            </div>
+
+                            <div class="form-floating my-1">
+                                <input type="text" class="form-control" id="actualWage"  name="actualWage" required th:field="${terminationDto.actualWage}">
+                                <label for="actualWage">Actual Wage - الأجر الفعلي</label>
+                                <p th:if="${#fields.hasErrors('actualWage')}" th:errorclass="text-danger" th:errors="${terminationDto.actualWage}"></p>
+                            </div>
+
+                            <div class="form-floating my-1">
+                                <select class="form-select" id="contractType"  name="contractType" required th:field="${terminationDto.contractType}">
+                                    <option value="محدد المدة">محدد المدة</option>
+                                    <option value="غير محدد المدة">غير محدد المدة</option>
+                                </select>
+                                <label for="contractType">Contract Type -  نوع العقد</label>
+                                <p th:if="${#fields.hasErrors('contractType')}" th:errorclass="text-danger" th:errors="${terminationDto.contractType}"></p>
+                            </div>
+
+
+
+                            <div class="form-floating my-1">
+                                <input type="text" class="form-control" id="rewardAmount"  name="rewardAmount" required th:field="${terminationDto.rewardAmount}">
+                                <label for="rewardAmount">Reward Amount -  نهاية مستحقات الخدمة</label>
+                                <p th:if="${#fields.hasErrors('rewardAmount')}" th:errorclass="text-danger" th:errors="${terminationDto.rewardAmount}"></p>
+                            </div>
+
+
+
+
+
+
+
+
+
+
 
                         </form>
 
@@ -401,24 +528,47 @@
 
     <script>
         // For Reset Password Modal
-        document.getElementById('resetPasswordButton').addEventListener('click', function() {
-            console.log("Reset Password Modal Click");
-            const passwordInput = document.getElementById('password');
-            const form = document.getElementById('restPasswordForm');
+            document.getElementById('resetPasswordButton').addEventListener('click', function() {
+                console.log("Reset Password Modal Click");
+                const passwordInput = document.getElementById('password');
+                const form = document.getElementById('restPasswordForm');
 
-            if (passwordInput.value.trim()) {
-                form.submit();
-            } else {
-                alert('Please enter password.');
-            }
-        });
+                if (passwordInput.value.trim()) {
+                    form.submit();
+                } else {
+                    alert('Please enter password.');
+                }
+            });
 
     // For Termination Modal
-    document.getElementById('terminationSubmitButton').addEventListener('click', function() {
-        console.log("termination Modal Click");
-        const form = document.getElementById('terminationForm');
-        form.submit();
-    });
+        document.getElementById('terminationSubmitButton').addEventListener('click', function() {
+            console.log("termination Modal Click");
+            const form = document.getElementById('terminationForm');
+            form.submit();
+        });
+
+
+       //calculate the difference between lastDay and hireDate automatically and update totalDays.
+        document.getElementById('lastDay').addEventListener('change', calculateDays);
+        document.getElementById('hireDate').addEventListener('change', calculateDays);
+
+        function calculateDays() {
+            const hireDate = new Date(document.getElementById('hireDate').value);
+            const lastDay = new Date(document.getElementById('lastDay').value);
+
+            if (hireDate && lastDay && hireDate <= lastDay)
+            {
+                const totalDays = Math.ceil((lastDay - hireDate) / (1000 * 60 * 60 * 24));
+
+                document.getElementById('totalDays').value = totalDays;
+                document.getElementById('totalYears').innerText = `Year/s: ${(totalDays / 365).toFixed(2)}`;
+                document.getElementById('totalMonths').innerText= `Month/s: ${(totalDays / 30).toFixed(2)}`;
+            }
+            else
+            {
+                document.getElementById('totalYears').innerText = "Year/s:";
+            }
+        }
     </script>
 
 

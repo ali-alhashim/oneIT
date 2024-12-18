@@ -6,6 +6,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -25,6 +26,8 @@ public class Salary {
     private Employee employee;
 
     private Boolean isActive;
+
+    private Date endDate;
 
     private BigDecimal grossEarning;
 
@@ -106,5 +109,13 @@ public class Salary {
 
     public void setActive(Boolean active) {
         this.isActive = active;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 }
