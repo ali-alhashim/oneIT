@@ -228,7 +228,7 @@
                 </div>
 
                 <div class="col text-end">
-                    <button class="btn btn-success" >Add Salary</button>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addSalaryModal">Add Salary</button>
                 </div>
 
                 <hr/>
@@ -239,16 +239,16 @@
                 <table class="table">
                     <tbody>
                         <tr>
-                             <th>Created Date</th> <td th:value="${salary.createdAt}"></td>
+                             <th>Created Date</th> <td th:text="${salary.createdAt}"></td>
                         </tr>
                         <tr>
-                            <th>Gross Earning</th> <td th:value="${salary.grossEarning}"></td>
+                            <th>Gross Earning</th> <td th:text="${salary.grossEarning}"></td>
                         </tr>
                         <tr>
-                            <th>Gross Deduction</th> <td th:value="${salary.grossDeduction}"></td>
+                            <th>Gross Deduction</th> <td th:text="${salary.grossDeduction}"></td>
                         </tr>
                         <tr>
-                            <th>Net Pay</th> <td th:value="${salary.netPay}"></td>
+                            <th>Net Pay</th> <td th:text="${salary.netPay}"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -264,9 +264,9 @@
                     </thead>
                     <tbody>
                         <tr th:each="line: ${salary.getLines()}">
-                            <td th:value="${line.payDescription}"></td>
-                            <td th:value="${line.toPay}"></td>
-                            <td th:value="${line.toDeduct}"></td>
+                            <td th:text="${line.payDescription}"></td>
+                            <td th:text="${line.toPay}"></td>
+                            <td th:text="${line.toDeduct}"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -326,6 +326,8 @@
             </table>
         </div>
         <!--/log  -->
+
+
         <!--Page navigation -->
         <nav aria-label="Page navigation">
             <ul class="pagination justify-content-center">
@@ -499,14 +501,6 @@
 
 
 
-
-
-
-
-
-
-
-
                         </form>
 
 
@@ -523,10 +517,181 @@
         <!-- / terminationModal -->
 
 
+        <!-- addSalaryModal -->
+        <div class="modal fade" id="addSalaryModal" tabindex="-1" aria-labelledby="addSalaryLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addSalaryLabel">Add Salary</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <form id="addSalaryForm" method="post" action="/salaries/addSalary" th:object="${salaryDto}" th:with="_csrfToken=${_csrf.token}">
+
+                            <input type="hidden" name="badgeNumber"  th:value="${badgeNumber}"/>
+
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+
+                            <div class="form-floating my-1">
+                                <input type="text" class="form-control" id="grossEarning" readonly  name="grossEarning" required th:field="${salaryDto.grossEarning}">
+                                <label for="grossEarning">Gross Earning</label>
+                                <p th:if="${#fields.hasErrors('grossEarning')}" th:errorclass="text-danger" th:errors="${salaryDto.grossEarning}"></p>
+                            </div>
+
+
+                            <div class="form-floating my-1">
+                                <input type="text" class="form-control" id="grossDeduction" readonly  name="grossDeduction" required th:field="${salaryDto.grossDeduction}">
+                                <label for="grossDeduction">Gross Deduction</label>
+                                <p th:if="${#fields.hasErrors('grossDeduction')}" th:errorclass="text-danger" th:errors="${salaryDto.grossDeduction}"></p>
+                            </div>
+
+                            <div class="form-floating my-1">
+                                <input type="text" class="form-control" id="netPay" readonly  name="netPay" required th:field="${salaryDto.netPay}">
+                                <label for="netPay">Net Pay </label>
+                                <p th:if="${#fields.hasErrors('netPay')}" th:errorclass="text-danger" th:errors="${salaryDto.netPay}"></p>
+                            </div>
+
+                            <hr/>
+                            <div class="table-response">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>Pay Description</th>
+                                        <th>To Pay</th>
+                                        <th>To Deduct</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="tbodySalaryLines">
+                                      <tr>
+                                          <td>
+                                              <input type="text" name="lines[0].payDescription" value="Basic Salary"/>
+                                          </td>
+                                          <td>
+                                              <input type="text" name="lines[0].toPay" value="0" />
+                                          </td>
+
+                                          <td>
+                                              <input type="text" name="lines[0].toDeduct" value="0" />
+                                          </td>
+                                          <td><button type="button" onclick="removeSalaryRow(this)" class="btn btn-danger">X</button></td>
+                                      </tr>
+
+                                      <tr>
+                                          <td>
+                                              <input type="text" name="lines[1].payDescription" value="Housing Allowance"/>
+                                          </td>
+                                          <td>
+                                              <input type="text" name="lines[1].toPay" value="0" />
+                                          </td>
+
+                                          <td>
+                                              <input type="text" name="lines[1].toDeduct" value="0" />
+                                          </td>
+                                          <td><button type="button" onclick="removeSalaryRow(this)" class="btn btn-danger">X</button></td>
+                                      </tr>
+
+
+                                    </tbody>
+                                </table>
+                                <hr>
+                                  <button type="button"  class="btn btn-success" id="addSalaryLineButton">Add line</button>
+                                <hr>
+                            </div>
+
+
+
+                        </form>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="addSalaryButton">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--/addSalaryModal-->
+
+
     </div><!--/Container -->
 
 
     <script>
+        //for Add Salary Modal
+        document.getElementById('addSalaryButton').addEventListener('click', function ()
+        {
+           document.getElementById('addSalaryForm').submit();
+        });
+        //------------------------------
+        document.getElementById('addSalaryLineButton').addEventListener('click', function ()
+        {
+
+
+            const tbody = document.getElementById('tbodySalaryLines');
+            const rowCount = tbody.getElementsByTagName('tr').length;
+
+            // Create a new row
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>
+                    <input type="text" name="lines[${rowCount}].payDescription" value="" placeholder="Description" />
+                </td>
+                <td>
+                    <input type="text" name="lines[${rowCount}].toPay" value="0" />
+                </td>
+                <td>
+                    <input type="text" name="lines[${rowCount}].toDeduct" value="0" />
+                </td>
+                <td><button type="button" onclick="removeSalaryRow(this)" class="btn btn-danger">X</button></td>
+            `;
+            tbody.appendChild(newRow);
+        });
+
+function removeSalaryRow(button)
+{
+    const row = button.closest('tr');
+    row.remove();
+     // Reindex the remaining rows
+    const tbody = document.getElementById('tbodySalaryLines');
+    const rows = tbody.getElementsByTagName('tr');
+    Array.from(rows).forEach((row, index) =>
+    {
+        // Update input names for each row
+        row.querySelector('[name$=".payDescription"]').name = `lines[${index}].payDescription`;
+        row.querySelector('[name$=".toPay"]').name = `lines[${index}].toPay`;
+        row.querySelector('[name$=".toDeduct"]').name = `lines[${index}].toDeduct`;
+    });
+}
+
+
+function calculateTotals() {
+    const tbody = document.getElementById('tbodySalaryLines');
+    const rows = tbody.getElementsByTagName('tr');
+    let grossEarning = 0, grossDeduction = 0;
+
+    for (const row of rows) {
+        const toPay = parseFloat(row.querySelector('[name$=".toPay"]').value) || 0;
+        const toDeduct = parseFloat(row.querySelector('[name$=".toDeduct"]').value) || 0;
+
+        grossEarning += toPay;
+        grossDeduction += toDeduct;
+    }
+
+    // Update the readonly fields
+    document.getElementById('grossEarning').value = grossEarning.toFixed(2);
+    document.getElementById('grossDeduction').value = grossDeduction.toFixed(2);
+    document.getElementById('netPay').value = (grossEarning - grossDeduction).toFixed(2);
+}
+
+// Attach event listeners for inputs
+document.getElementById('tbodySalaryLines').addEventListener('input', calculateTotals);
+
+
+
+        //--------------------------------
         // For Reset Password Modal
             document.getElementById('resetPasswordButton').addEventListener('click', function() {
                 console.log("Reset Password Modal Click");

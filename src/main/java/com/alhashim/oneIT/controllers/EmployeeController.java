@@ -1,10 +1,7 @@
 package com.alhashim.oneIT.controllers;
 
 
-import com.alhashim.oneIT.dto.EmployeeDto;
-import com.alhashim.oneIT.dto.ImportEmployeeDto;
-import com.alhashim.oneIT.dto.RestPasswordDto;
-import com.alhashim.oneIT.dto.TerminationDto;
+import com.alhashim.oneIT.dto.*;
 import com.alhashim.oneIT.models.*;
 import com.alhashim.oneIT.repositories.*;
 import jakarta.servlet.http.HttpServletResponse;
@@ -331,11 +328,18 @@ public class EmployeeController {
 
             RestPasswordDto restPasswordDto = new RestPasswordDto();
             TerminationDto terminationDto = new TerminationDto();
+            SalaryDto salaryDto = new SalaryDto();
 
             List<Salary> salaries = salaryRepository.findByEmployee(employee);
+            if(salaries.isEmpty())
+            {
+                System.out.println("there are no salaries for this employee !!!");
+            }
+            System.out.println("This Employee has : "+ salaries.size() +" Salaries..............");
 
             restPasswordDto.setBadgeNumber(badgeNumber);
             model.addAttribute("salaries", salaries);
+            model.addAttribute("salaryDto", salaryDto);
             model.addAttribute("restPasswordDto",restPasswordDto);
             model.addAttribute("terminationDto", terminationDto);
             model.addAttribute("pageTitle","Employee Detail");
