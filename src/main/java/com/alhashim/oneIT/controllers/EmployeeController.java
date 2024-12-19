@@ -338,7 +338,7 @@ public class EmployeeController {
             System.out.println("This Employee has : "+ salaries.size() +" Salaries..............");
 
             restPasswordDto.setBadgeNumber(badgeNumber);
-            model.addAttribute("salaries", salaries);
+            model.addAttribute("salaries", salaries.reversed());
             model.addAttribute("salaryDto", salaryDto);
             model.addAttribute("restPasswordDto",restPasswordDto);
             model.addAttribute("terminationDto", terminationDto);

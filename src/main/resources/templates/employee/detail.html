@@ -221,7 +221,7 @@
 
         <hr/>
         <!--Salaries -->
-        <div class="row rounded border p-4 bg-light">
+        <div class="row rounded border p-4 ">
             <div class="row my-3">
                 <div class="col">
                     <h5>Salaries</h5>
@@ -235,7 +235,8 @@
             </div>
 
             <!--Salary #0 table -->
-            <div class="table-response" th:each="salary: ${salaries}">
+            <div class="table-response m-2 rounded border bg-light p-1" th:each="salary, rowNumber: ${salaries}">
+                <h4 th:text="${salary.id}"></h4>
                 <table class="table">
                     <tbody>
                         <tr>
@@ -249,6 +250,9 @@
                         </tr>
                         <tr>
                             <th>Net Pay</th> <td th:text="${salary.netPay}"></td>
+
+                            <input type="hidden" th:attr="name=${'lines[' + rowNumber.index + '].salaryNetPay'}" th:value="${salary.grossEarning}">
+
                         </tr>
                     </tbody>
                 </table>
@@ -423,22 +427,22 @@
 
                             <div class="form-floating my-1">
                                 <select  class="form-select" id="articleNumber"  name="articleNumber" required th:field="${terminationDto.articleNumber}">
-                                    <option value="إنتهاء مدة العقد">إنتهاء مدة العقد</option>
-                                    <option value="فسخ العقد من قبل صاحب العمل / العامل لسبب غير مشروع">فسخ العقد من قبل صاحب العمل / العامل لسبب غير مشروع</option>
-                                    <option value="فسخ العقد بموجب المادة 80">فسخ العقد بموجب المادة 80</option>
-                                    <option value="إنهاء العقد بسبب القوة القاهرة">إنهاء العقد بسبب القوة القاهرة</option>
-                                    <option value="إنهاء المرأة العاملة العقد خلال ثلاث أشهر من الوضع">إنهاء المرأة العاملة العقد خلال ثلاث أشهر من الوضع</option>
-                                    <option value="إنهاء المرأة العاملة العقد خلال ستة أشهر من عقد القران">إنهاء المرأة العاملة العقد خلال ستة أشهر من عقد القران</option>
-                                    <option value="فسخ العقد بموجب المادة 81">فسخ العقد بموجب المادة 81</option>
-                                    <option value="الإستقالة">الإستقالة</option>
-                                    <option value="الإتفاق على إنهاءه">الإتفاق على إنهاءه</option>
-                                    <option value="عجز العامل">عجز العامل</option>
-                                    <option value="وفاة صاحب العمل">وفاة صاحب العمل</option>
-                                    <option value="وفاة العامل">وفاة العامل</option>
-                                    <option value="إنتقال المنشآت الفردية إلى مالك جديد">إنتقال المنشآت الفردية إلى مالك جديد</option>
-                                    <option value="بلوغ سن التقاعد">بلوغ سن التقاعد</option>
-                                    <option value="إشعار إنهاء خدمات وفق المادة 75">إشعار إنهاء خدمات وفق المادة 75</option>
-                                    <option value="فسخ خلال فترة التجربة">فسخ خلال فترة التجربة</option>
+                                    <option code="1"  value="إنتهاء مدة العقد">إنتهاء مدة العقد</option>
+                                    <option code="2"  value="فسخ العقد من قبل صاحب العمل / العامل لسبب غير مشروع">فسخ العقد من قبل صاحب العمل / العامل لسبب غير مشروع</option>
+                                    <option code="3"  value="فسخ العقد بموجب المادة 80">فسخ العقد بموجب المادة 80</option>
+                                    <option code="4"  value="إنهاء العقد بسبب القوة القاهرة">إنهاء العقد بسبب القوة القاهرة</option>
+                                    <option code="5"  value="إنهاء المرأة العاملة العقد خلال ثلاث أشهر من الوضع">إنهاء المرأة العاملة العقد خلال ثلاث أشهر من الوضع</option>
+                                    <option code="6"  value="إنهاء المرأة العاملة العقد خلال ستة أشهر من عقد القران">إنهاء المرأة العاملة العقد خلال ستة أشهر من عقد القران</option>
+                                    <option code="7"  value="فسخ العقد بموجب المادة 81">فسخ العقد بموجب المادة 81</option>
+                                    <option code="8"  value="الإستقالة">الإستقالة</option>
+                                    <option code="9"  value="الإتفاق على إنهاءه">الإتفاق على إنهاءه</option>
+                                    <option code="10" value="عجز العامل">عجز العامل</option>
+                                    <option code="11" value="وفاة صاحب العمل">وفاة صاحب العمل</option>
+                                    <option code="12" value="وفاة العامل">وفاة العامل</option>
+                                    <option code="13" value="إنتقال المنشآت الفردية إلى مالك جديد">إنتقال المنشآت الفردية إلى مالك جديد</option>
+                                    <option code="14" value="بلوغ سن التقاعد">بلوغ سن التقاعد</option>
+                                    <option code="15" value="إشعار إنهاء خدمات وفق المادة 75">إشعار إنهاء خدمات وفق المادة 75</option>
+                                    <option code="16" value="فسخ خلال فترة التجربة">فسخ خلال فترة التجربة</option>
                                 </select>
                                 <label for="articleNumber">Article Number - سبب انتهاء العلاقة العمالية ؟</label>
 

@@ -23,6 +23,7 @@ public class Salary {
     private LocalDateTime updatedAt;
 
     @ManyToOne
+    @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 
     private Boolean isActive;
