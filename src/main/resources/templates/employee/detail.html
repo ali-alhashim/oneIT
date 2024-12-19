@@ -235,7 +235,11 @@
             </div>
 
             <!--Salary #0 table -->
-            <div class="table-response m-2 rounded border bg-light p-1" th:each="salary, rowNumber: ${salaries}">
+            <div class="table-response salary-table m-2 rounded border bg-light p-1"
+                 th:each="salary, rowNumber: ${salaries}"
+                 th:attr="data-salary-gross=${salary.grossEarning}, data-created-at=${salary.createdAt}">
+
+
                 <h4 th:text="${salary.id}"></h4>
                 <table class="table">
                     <tbody>
@@ -251,7 +255,7 @@
                         <tr>
                             <th>Net Pay</th> <td th:text="${salary.netPay}"></td>
 
-                            <input type="hidden" th:attr="name=${'lines[' + rowNumber.index + '].salaryNetPay'}" th:value="${salary.grossEarning}">
+
 
                         </tr>
                     </tbody>
@@ -426,7 +430,8 @@
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
 
                             <div class="form-floating my-1">
-                                <select  class="form-select" id="articleNumber"  name="articleNumber" required th:field="${terminationDto.articleNumber}">
+                                <select  class="form-select" id="articleNumber"  name="articleNumber" required th:field="${terminationDto.articleNumber}" onchange="rewardAmountCal()">
+                                    <option code="0" value="none">Select...</option>
                                     <option code="1"  value="إنتهاء مدة العقد">إنتهاء مدة العقد</option>
                                     <option code="2"  value="فسخ العقد من قبل صاحب العمل / العامل لسبب غير مشروع">فسخ العقد من قبل صاحب العمل / العامل لسبب غير مشروع</option>
                                     <option code="3"  value="فسخ العقد بموجب المادة 80">فسخ العقد بموجب المادة 80</option>
@@ -736,6 +741,85 @@ document.getElementById('tbodySalaryLines').addEventListener('input', calculateT
             else
             {
                 document.getElementById('totalYears').innerText = "Year/s:";
+            }
+        }
+
+        //----------------------------------------------
+        // Get all salary containers
+        const salaryContainers = document.querySelectorAll('.salary-table');
+
+        // Initialize variables to track the latest salary
+        let latestSalaryContainer = null;
+        let latestDate = null;
+
+        // Iterate through salary containers to find the latest date
+        salaryContainers.forEach(container => {
+            const createdAt = container.getAttribute('data-created-at');
+            const date = new Date(createdAt);
+
+            if (!latestDate || date > latestDate) {
+                latestDate = date;
+                latestSalaryContainer = container;
+            }
+        });
+
+        // Log or manipulate the latest salary container
+        if (latestSalaryContainer) {
+
+                const grossEarning = latestSalaryContainer.getAttribute('data-salary-gross');
+                console.log("Latest Gross Earning:", grossEarning);
+
+                document.getElementById('actualWage').value = grossEarning;
+        }
+
+        //-------------
+       function rewardAmountCal()
+       {
+            const articleNumber = document.getElementById('articleNumber');
+            const selectedOption = articleNumber.options[articleNumber.selectedIndex];
+            const code = selectedOption.getAttribute('code');
+            const hireDate = new Date(document.getElementById('hireDate').value);
+            const lastDay = new Date(document.getElementById('lastDay').value);
+            const actualWage = parseFloat(document.getElementById('actualWage').value || 0); // Ensure it's a valid number
+            const rewardAmount = document.getElementById('rewardAmount');
+
+            // Validate inputs
+            if (code === "0") {
+                alert("Please select a valid article number.");
+                return;
+            }
+            if (isNaN(actualWage) || actualWage <= 0) {
+                alert("Please enter a valid actual wage.");
+                return;
+            }
+
+            // Calculate total days, months, and years worked
+            const totalDays = Math.ceil((lastDay - hireDate) / (1000 * 60 * 60 * 24));
+            const totalYears = (totalDays / 365).toFixed(2);
+
+            // Logic based on Saudi labor laws and article code
+            switch (code) {
+                case "3": // فسخ العقد بموجب المادة 80
+                    rewardAmount.value = 0; // No reward for this case
+                    break;
+                case "1": // إنتهاء مدة العقد
+                    rewardAmount.value = (totalYears * 0.5 * actualWage).toFixed(2); // Half a month's wage per year worked
+                    break;
+                case "4": // إنهاء العقد بسبب القوة القاهرة
+                    rewardAmount.value = (totalYears * actualWage).toFixed(2); // Full wage per year worked
+                    break;
+                case "8": // الإستقالة
+                    if (totalYears < 2) {
+                        rewardAmount.value = 0; // No reward if less than 2 years
+                    } else if (totalYears < 5) {
+                        rewardAmount.value = (totalYears * 0.333 * actualWage).toFixed(2); // One-third wage per year
+                    } else {
+                        rewardAmount.value = (totalYears * 0.5 * actualWage).toFixed(2); // Half wage per year
+                    }
+                    break;
+                default:
+                    rewardAmount.value = (totalYears * actualWage).toFixed(2); // Default: Full wage per year worked
+                    break;
             }
         }
     </script>
