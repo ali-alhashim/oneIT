@@ -74,6 +74,8 @@ public class GeolocationController {
 
         geolocation.setLongitudeA(geolocationDto.getLongitudeA());
         geolocation.setLongitudeB(geolocationDto.getLongitudeB());
+        geolocation.setLongitudeC(geolocationDto.getLongitudeC());
+        geolocation.setLongitudeD(geolocationDto.getLongitudeD());
 
         geolocationRepository.save(geolocation);
         return "redirect:/geolocation/list";
