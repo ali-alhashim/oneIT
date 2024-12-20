@@ -1,5 +1,7 @@
 package com.alhashim.oneIT.dto;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -9,7 +11,10 @@ public class TerminationDto {
 
     private String articleNumber;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate lastDay;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate hireDate;
 
     private BigDecimal actualWage;
@@ -17,6 +22,7 @@ public class TerminationDto {
     private BigDecimal rewardAmount;
 
     private String contractType;
+
     private int totalDays;
 
     public String getBadgeNumber() {

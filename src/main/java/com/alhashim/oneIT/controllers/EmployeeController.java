@@ -63,6 +63,9 @@ public class EmployeeController {
     @Autowired
     SalaryRepository salaryRepository;
 
+    @Autowired
+    EmployeeClearanceRepository employeeClearanceRepository; ;
+
        //Employee list only with role of ROLE_ADMIN ROLE_HR, ROLE_SUPPORT
     @GetMapping("/list")
     public String employeeList(Model model, @RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size )
@@ -980,8 +983,27 @@ public class EmployeeController {
     public String termination(@Valid @ModelAttribute TerminationDto terminationDto)
     {
         //https://www.hrsd.gov.sa/ministry-services/services/end-service-benefit-calculator
-
+        Employee employee = employeeRepository.findByBadgeNumber(terminationDto.getBadgeNumber()).orElse(null);
+        if(employee == null)
+        {
+            return "/404";
+        }
         EmployeeClearance employeeClearance = new EmployeeClearance();
+
+        employeeClearance.setEmployee(employee);
+        employeeClearance.setActualWage(terminationDto.getActualWage());
+        employeeClearance.setLastDay(terminationDto.getLastDay());
+        employeeClearance.setArticleNumber(terminationDto.getArticleNumber());
+        employeeClearance.setHireDate(terminationDto.getHireDate());
+        employeeClearance.setTotalDays(terminationDto.getTotalDays());
+        employeeClearance.setContractType(terminationDto.getContractType());
+        employeeClearance.setCreatedAt(LocalDateTime.now());
+        employeeClearance.setRewardAmount(terminationDto.getRewardAmount());
+
+        employee.setStatus("terminated");
+        employeeRepository.save(employee);
+
+        employeeClearanceRepository.save(employeeClearance);
         return "redirect:/clearance/list";
     }
 
