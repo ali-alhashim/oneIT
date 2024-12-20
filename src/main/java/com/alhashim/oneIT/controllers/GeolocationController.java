@@ -79,5 +79,19 @@ public class GeolocationController {
 
         geolocationRepository.save(geolocation);
         return "redirect:/geolocation/list";
+    } // Add Geolocation
+
+
+    @GetMapping("/geolocationDetail")
+    public String geolocationDetail(@RequestParam Long id, Model model)
+    {
+        Geolocation geolocation = geolocationRepository.findById(id).orElse(null);
+        if(geolocation ==null)
+        {
+            return "/404";
+        }
+
+        model.addAttribute("geolocation", geolocation);
+        return "/geolocation/detail";
     }
 }

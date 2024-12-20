@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+</head>
+
+<link rel="stylesheet" th:href="@{/leaflet/leaflet.css}" />
+<script th:src="@{/leaflet/leaflet.js}"></script>
+<link rel="stylesheet" th:href="@{/leaflet/leaflet.draw.css}" />
+<script th:src="@{/leaflet/leaflet.draw.js}"></script>
+
+<body class="bg-body-secondary">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+
+
+<div class="container bordered my-5">
+
+
+
+
+  <div class="row rounded border p-4 bg-light">
+
+
+
+
+      <div id="map" style="height: 400px; margin-bottom: 20px;"></div>
+
+
+
+
+      <h4 th:text="${geolocation.areaName}"></h4>
+
+      <table class="table">
+        <thead>
+        <tr>
+          <th>#</th>
+          <th>A</th>
+          <th>B</th>
+          <th>C</th>
+          <th>D</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tr>
+          <td>latitude</td>
+          <td th:text="${geolocation.latitudeA}"></td>
+          <td th:text="${geolocation.latitudeB}"></td>
+          <td th:text="${geolocation.latitudeC}"></td>
+          <td th:text="${geolocation.latitudeD}"></td>
+
+        </tr>
+
+        <tr>
+          <td>longitude</td>
+          <td th:text="${geolocation.longitudeA}"></td>
+          <td th:text="${geolocation.longitudeB}"></td>
+          <td th:text="${geolocation.longitudeC}"></td>
+          <td th:text="${geolocation.longitudeD}"></td>
+
+        </tr>
+
+        </tbody>
+      </table>
+      <hr>
+
+
+
+  </div>
+
+
+
+
+
+
+</div>
+
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+
+<script>
+  // Initialize the map
+    const map = L.map('map').setView([24.7136, 46.6753], 10); // Default view (Riyadh)
+
+    // Add a tile layer (e.g., OpenStreetMap)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Fetch geolocation coordinates from Thymeleaf variables
+    const latitudeA = parseFloat([[${geolocation.latitudeA}]]);
+    const longitudeA = parseFloat([[${geolocation.longitudeA}]]);
+    const latitudeB = parseFloat([[${geolocation.latitudeB}]]);
+    const longitudeB = parseFloat([[${geolocation.longitudeB}]]);
+    const latitudeC = parseFloat([[${geolocation.latitudeC}]]);
+    const longitudeC = parseFloat([[${geolocation.longitudeC}]]);
+    const latitudeD = parseFloat([[${geolocation.latitudeD}]]);
+    const longitudeD = parseFloat([[${geolocation.longitudeD}]]);
+
+    // Define rectangle corners
+    const bounds = [
+        [latitudeA, longitudeA], // Point A
+        [latitudeB, longitudeB], // Point B
+        [latitudeC, longitudeC], // Point C
+        [latitudeD, longitudeD]  // Point D
+    ];
+
+    // Add rectangle to the map
+    const rectangle = L.polygon(bounds, { color: 'blue', weight: 2 });
+    rectangle.addTo(map);
+
+    // Adjust map view to fit the rectangle
+    map.fitBounds(rectangle.getBounds());
+</script>
+</body>
+</html>

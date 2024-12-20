@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/header :: head}">
-
 </head>
+
+<link rel="stylesheet" th:href="@{/leaflet/leaflet.css}" />
+<script th:src="@{/leaflet/leaflet.js}"></script>
+<link rel="stylesheet" th:href="@{/leaflet/leaflet.draw.css}" />
+<script th:src="@{/leaflet/leaflet.draw.js}"></script>
+
 <body class="bg-body-secondary">
 
 <div th:replace="~{fragments/header :: header}"></div>
@@ -17,6 +22,10 @@
   <div class="row rounded border p-4 bg-light">
      <form method="post" th:object="${geolocationDto}" th:with="_csrfToken=${_csrf.token}">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+
+
+        <div id="map" style="height: 400px; margin-bottom: 20px;"></div>
+
 
 
        <div class="form-floating my-1">
@@ -56,6 +65,8 @@
          </tbody>
        </table>
        <hr>
+
+       <input type="submit" value="save" class="btn btn-success">
      </form>
   </div>
 
@@ -69,5 +80,48 @@
 
 
 <div th:replace="~{fragments/footer :: footer}"></div>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      var map = L.map('map').setView([24.7136, 46.6753], 10);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '© OpenStreetMap'
+      }).addTo(map);
+
+      var drawnItems = new L.FeatureGroup();
+      map.addLayer(drawnItems);
+
+      var drawControl = new L.Control.Draw({
+          draw: { rectangle: true },
+          edit: { featureGroup: drawnItems }
+      });
+      map.addControl(drawControl);
+
+      map.on(L.Draw.Event.CREATED, function (event) {
+          var layer = event.layer;
+          var bounds = layer.getBounds();
+          var northEast = bounds.getNorthEast();
+          var southWest = bounds.getSouthWest();
+
+          document.getElementById('latitudeA').value = northEast.lat;
+          document.getElementById('longitudeA').value = northEast.lng;
+
+          document.getElementById('latitudeB').value = northEast.lat;
+          document.getElementById('longitudeB').value = southWest.lng;
+
+          document.getElementById('latitudeC').value = southWest.lat;
+          document.getElementById('longitudeC').value = southWest.lng;
+
+          document.getElementById('latitudeD').value = southWest.lat;
+          document.getElementById('longitudeD').value = northEast.lng;
+
+          drawnItems.clearLayers();
+          drawnItems.addLayer(layer);
+      });
+  });
+</script>
 </body>
 </html>
