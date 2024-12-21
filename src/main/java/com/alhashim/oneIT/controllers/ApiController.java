@@ -50,7 +50,7 @@ public class ApiController {
                     .body(Map.of("message", "Login successful", "badgeNumber", badgeNumber));
         } else {
             // Invalid credentials
-            return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
+            return ResponseEntity.status(401).body(Map.of("message", "Invalid credentials"));
         }
     }
 
@@ -58,18 +58,18 @@ public class ApiController {
     public ResponseEntity<?> verifyTotp(@RequestBody int otp, HttpServletRequest request) {
         HttpSession session = request.getSession(false); // Retrieve the existing session
         if (session == null) {
-            return ResponseEntity.status(401).body(Map.of("error", "Session expired. Please log in."));
+            return ResponseEntity.status(401).body(Map.of("message", "Session expired. Please log in."));
         }
 
         String badgeNumber = (String) session.getAttribute("badgeNumber");
         if (badgeNumber == null) {
-            return ResponseEntity.status(401).body(Map.of("error", "Session expired. Please log in."));
+            return ResponseEntity.status(401).body(Map.of("message", "Session expired. Please log in."));
         }
 
         // Find employee by badge number
         Employee employee = employeeRepository.findByBadgeNumber(badgeNumber).orElse(null);
         if (employee == null) {
-            return ResponseEntity.status(401).body(Map.of("error", "Invalid session. Please log in again."));
+            return ResponseEntity.status(401).body(Map.of("message", "Invalid session. Please log in again."));
         }
 
         // Verify the TOTP code using your OtpValidator
@@ -83,7 +83,7 @@ public class ApiController {
                     .body(Map.of("message", "OTP verified successfully", "badgeNumber", badgeNumber));
         } else {
             // Invalid TOTP code
-            return ResponseEntity.status(403).body(Map.of("error", "Invalid TOTP code"));
+            return ResponseEntity.status(403).body(Map.of("message", "Invalid TOTP code"));
         }
     }
 }
