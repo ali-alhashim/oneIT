@@ -28,6 +28,7 @@ public class ApiController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody ApiLoginRequestDto loginRequest, HttpServletRequest request) {
+        System.out.println("************* Api login request *****************************");
         // Extract badgeNumber and password from the request
         String badgeNumber = loginRequest.getBadgeNumber();
         String password = loginRequest.getPassword();
@@ -55,7 +56,8 @@ public class ApiController {
     }
 
     @PostMapping("/verify-totp")
-    public ResponseEntity<?> verifyTotp(@RequestBody int otp, HttpServletRequest request) {
+    public ResponseEntity<?> verifyTotp(@RequestBody int totpCode,  HttpServletRequest request) {
+        System.out.println("***** api verify-totp*******");
         HttpSession session = request.getSession(false); // Retrieve the existing session
         if (session == null) {
             return ResponseEntity.status(401).body(Map.of("message", "Session expired. Please log in."));
@@ -73,7 +75,7 @@ public class ApiController {
         }
 
         // Verify the TOTP code using your OtpValidator
-        if (OtpValidator.validateOtp(employee.getOtpCode(), otp)) {
+        if (OtpValidator.validateOtp(employee.getOtpCode(), totpCode)) {
             // TOTP is valid, set otpVerified in the session
             session.setAttribute("otpVerified", true);
 

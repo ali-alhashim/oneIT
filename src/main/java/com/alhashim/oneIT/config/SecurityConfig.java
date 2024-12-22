@@ -9,7 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import com.alhashim.oneIT.config.CustomLoginSuccessHandler;
+
 import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 
@@ -41,12 +41,17 @@ public class SecurityConfig  {
                 )
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/otp", "/css/**", "/js/**", "/api/login").permitAll() // Allow public access to login and static resources
+                        .requestMatchers("/login", "/otp", "/css/**", "/js/**", "/api/login", "/api/verify-totp").permitAll() // Allow public access to login and static resources
                         .requestMatchers("/employee/list").hasAnyRole("ADMIN","HR","SUPPORT")
                         .requestMatchers("/department/list").hasAnyRole("ADMIN","HR","SUPPORT")
                         .anyRequest().authenticated()
 
                 )
+
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/**")  // Disable CSRF for APIs
+                )
+
                 .exceptionHandling(exception -> exception
                         .accessDeniedPage("/403") // Custom 403 Forbidden page
                 )

@@ -61,6 +61,13 @@ public class CustomLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         systemLog.setDescription("Login");
         systemLogRepository.save(systemLog);
 
+        // Determine if this is an API request
+        boolean isApiRequest = request.getRequestURI().startsWith("/api/");
+        if (isApiRequest)
+        {
+           return;
+        }
+
         SavedRequest savedRequest = requestCache.getRequest(request, response);
         String targetUrl = "/dashboard"; // Default fallback
 

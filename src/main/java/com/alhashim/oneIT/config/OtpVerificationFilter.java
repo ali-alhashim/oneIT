@@ -81,6 +81,7 @@ public class OtpVerificationFilter implements Filter {
                 uri.startsWith(contextPath + "/otp") ||
                 uri.startsWith(contextPath + "/otp-setup") ||
                 uri.startsWith(contextPath + "/public/") || // Any other public endpoints
+                uri.startsWith(contextPath + "/api/verify-totp") ||
                 uri.startsWith(contextPath+ "/api/login");
     }
 }
