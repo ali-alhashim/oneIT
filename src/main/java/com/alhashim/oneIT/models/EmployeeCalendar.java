@@ -30,8 +30,16 @@ public class EmployeeCalendar {
     @JoinColumn(name = "geolocation_id", nullable = false)
     private Geolocation geolocation;
 
+
     private String mobileOS; // android or IOS
     private String mobileModel; //iphone15 iphone16 samsung galaxy 24 ...
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = true)
+    @JoinColumn(name = "geolocationOUT_id", nullable = true)
+    private Geolocation geolocationOUT;
+
+    private String mobileOSOUT; // android or IOS
+    private String mobileModelOUT; //iphone15 iphone16 samsung galaxy 24 ...
 
     @Column(nullable = true)
     private LocalTime checkIn;
@@ -131,5 +139,29 @@ public class EmployeeCalendar {
 
     public void setTotalMinutes(int totalMinutes) {
         this.totalMinutes = totalMinutes;
+    }
+
+    public Geolocation getGeolocationOUT() {
+        return geolocationOUT;
+    }
+
+    public void setGeolocationOUT(Geolocation geolocationOUT) {
+        this.geolocationOUT = geolocationOUT;
+    }
+
+    public String getMobileOSOUT() {
+        return mobileOSOUT;
+    }
+
+    public void setMobileOSOUT(String mobileOSOUT) {
+        this.mobileOSOUT = mobileOSOUT;
+    }
+
+    public String getMobileModelOUT() {
+        return mobileModelOUT;
+    }
+
+    public void setMobileModelOUT(String mobileModelOUT) {
+        this.mobileModelOUT = mobileModelOUT;
     }
 }

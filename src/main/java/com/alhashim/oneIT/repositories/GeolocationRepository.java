@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface GeolocationRepository extends JpaRepository<Geolocation, Long> {
 
     Geolocation findByAreaName(String areaName);
@@ -20,7 +22,7 @@ public interface GeolocationRepository extends JpaRepository<Geolocation, Long> 
           AND :longitude BETWEEN LEAST(g.longitudeA, g.longitudeB, g.longitudeC, g.longitudeD)
                            AND GREATEST(g.longitudeA, g.longitudeB, g.longitudeC, g.longitudeD)
     """)
-    String findAreaNameByCoordinates(@Param("latitude") Double latitude, @Param("longitude") Double longitude);
+    Optional<Geolocation> findAreaNameByCoordinates(@Param("latitude") Double latitude, @Param("longitude") Double longitude);
 
 
     @Query("SELECT e FROM Geolocation e WHERE " +
