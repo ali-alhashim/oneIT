@@ -42,33 +42,33 @@ public class EmployeeClearance {
 
     private String status; //waiting clearances from departments, processing the payment, Done
 
-    @OneToOne
+    @ManyToOne
     private Employee directManager;
     private Boolean  directManagerOk;
     private String managerSignatureFileName;
 
 
-    @OneToOne
+    @ManyToOne
     private Employee hr;
     private Boolean hrOk;
     private String hrSignatureFileName;
 
-    @OneToOne
+    @ManyToOne
     private Employee it;
     private Boolean itOk;
     private String itSignatureFileName;
 
-    @OneToOne
+    @ManyToOne
     private Employee medical;
     private Boolean medicalOk;
     private String medicalSignatureFileName;
 
-    @OneToOne
+    @ManyToOne
     private Employee vehicle;
     private Boolean vehicleOk;
     private String vehicleSignatureFileName;
 
-    @OneToOne
+    @ManyToOne
     private Employee finance;
     private Boolean financeOk;
     private String financeSignatureFileName;

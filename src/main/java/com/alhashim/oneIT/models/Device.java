@@ -30,12 +30,12 @@ public class Device {
 
     private BigDecimal purchasePrice;
 
-    @OneToOne
-    @JoinColumn(name = "invoice_id") // Maps the foreign key column
+    @ManyToOne
+    @JoinColumn(name = "invoice_id",  referencedColumnName = "id") // Maps the foreign key column
     private Invoice invoice;
 
-    @OneToOne
-    @JoinColumn(name = "purchase_order_id")
+    @ManyToOne
+    @JoinColumn(name = "purchase_order_id",  referencedColumnName = "id")
     private PurchaseOrder purchaseOrder;
 
     private Date acquisitionDate;

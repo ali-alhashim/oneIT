@@ -26,16 +26,16 @@ public class EmployeeCalendar {
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "geolocation_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "geolocation_id", referencedColumnName = "id")
     private Geolocation geolocation;
 
 
     private String mobileOS; // android or IOS
     private String mobileModel; //iphone15 iphone16 samsung galaxy 24 ...
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = true)
-    @JoinColumn(name = "geolocationOUT_id", nullable = true)
+    @ManyToOne
+    @JoinColumn(name = "geolocationOUT_id", referencedColumnName = "id")
     private Geolocation geolocationOUT;
 
     private String mobileOSOUT; // android or IOS

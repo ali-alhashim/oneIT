@@ -340,6 +340,16 @@ public class EmployeeController {
             }
             System.out.println("This Employee has : "+ salaries.size() +" Salaries..............");
 
+            String MFA = "...";
+            if(employee.getOtpCode() == null)
+            {
+                 MFA = "not yet";
+            }
+            else
+            {
+                MFA = "Active";
+            }
+
             restPasswordDto.setBadgeNumber(badgeNumber);
             model.addAttribute("salaries", salaries.reversed());
             model.addAttribute("salaryDto", salaryDto);
@@ -350,6 +360,7 @@ public class EmployeeController {
             model.addAttribute("userName", employee.getName());
             model.addAttribute("userArName", employee.getArName());
             model.addAttribute("govId", employee.getGovId());
+            model.addAttribute("MFA", MFA);
             model.addAttribute("imageFileName", employee.getImageFileName());
             model.addAttribute("workEmail", employee.getWorkEmail());
             model.addAttribute("workMobile",employee.getWorkMobile());

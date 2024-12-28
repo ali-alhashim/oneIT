@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+
+</head>
+<body class="bg-body-secondary">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container bordered my-5">
+
+  <div class="row" id="toolbar">
+
+
+
+      <form method="get">
+
+        <div class="row">
+
+          <div class="col-4">
+            <label for="startDate">Start Date</label>
+            <input type="date" name="startDate" class="form-control" id="startDate" />
+          </div>
+
+          <div class="col-4">
+            <label for="endDate">End Date</label>
+            <input type="date" name="endDate" class="form-control" id="endDate" />
+          </div>
+
+          <div class="col-4">
+            <input type="submit" class="btn btn-dark my-3" value="Filter">
+          </div>
+
+
+        </div>
+         <input type="hidden" name="id" th:value="${employeeId}">
+      </form>
+
+  </div>
+  <hr/>
+  <!-- list  -->
+  <div class="table-responsive">
+    <table class="table border">
+      <thead>
+      <td><input type="checkbox" name="all"/> </td>
+      <th>#</th>
+      <th>Badge#</th>
+      <th>Name</th>
+      <th>Area Name</th>
+      <th>Date</th>
+      <th>Check-In</th>
+      <th>Check-OUT</th>
+      <th>Minutes</th>
+      </thead>
+
+      <tbody>
+      <tr th:each="timesheet: ${timesheets}">
+        <td>
+          <input type="checkbox" name="id" th:value="${timesheet.id}"/>
+        </td>
+
+        <td>
+          <a class="btn btn-info" th:text="${timesheet.id}" th:href="@{/timesheet/detail(id=${timesheet.id})}"></a>
+        </td>
+        <td th:text="${timesheet.employee.badgeNumber}"></td>
+        <td th:text="${timesheet.employee.name}"></td>
+        <td><p th:text="${timesheet.geolocation !=null ? timesheet.geolocation.areaName : ''}"></p> <p th:text="${timesheet.geolocationOUT !=null ? timesheet.geolocationOUT.areaName : ''}"></p></td>
+        <td th:text="${timesheet.dayDate}"></td>
+        <td th:text="${#temporals.format(timesheet.checkIn, 'hh:mm a')}"></td>
+        <td th:text="${#temporals.format(timesheet.checkOut, 'hh:mm a')}"></td>
+        <td th:text="${timesheet.totalMinutes}"></td>
+
+      </tr>
+
+      </tbody>
+    </table>
+  </div>
+  <!--/ list -->
+  <!--Page navigation -->
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+      <!-- Previous Button -->
+      <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+        <a class="page-link" th:href="@{/timesheet/list(page=${currentPage - 1}, size=${pageSize})}" tabindex="-1">Previous</a>
+      </li>
+
+      <!-- Start of Pagination Numbers -->
+      <li class="page-item" th:if="${currentPage > 2}">
+        <a class="page-link" th:href="@{/timesheet/list(page=0, size=${pageSize})}">1</a>
+      </li>
+      <li class="page-item disabled" th:if="${currentPage > 2}">
+        <a class="page-link">...</a>
+      </li>
+
+      <!-- Dynamic Page Numbers -->
+      <li class="page-item" th:each="i : ${#numbers.sequence(currentPage - 2 > 0 ? currentPage - 2 : 0, currentPage + 2 < totalPages - 1 ? currentPage + 2 : totalPages - 1)}"
+          th:classappend="${i == currentPage} ? 'active'">
+        <a class="page-link" th:href="@{/timesheet/list(page=${i}, size=${pageSize})}" th:text="${i + 1}"></a>
+      </li>
+
+      <!-- End of Pagination Numbers -->
+      <li class="page-item disabled" th:if="${currentPage < totalPages - 3}">
+        <a class="page-link">...</a>
+      </li>
+      <li class="page-item" th:if="${currentPage < totalPages - 3}">
+        <a class="page-link" th:href="@{/timesheet/list(page=${totalPages - 1}, size=${pageSize})}" th:text="${totalPages}"></a>
+      </li>
+
+      <!-- Next Button -->
+      <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+        <a class="page-link" th:href="@{/timesheet/list(page=${currentPage + 1}, size=${pageSize})}">Next</a>
+      </li>
+    </ul>
+  </nav>
+
+  <!--/page navigation-->
+
+</div>
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

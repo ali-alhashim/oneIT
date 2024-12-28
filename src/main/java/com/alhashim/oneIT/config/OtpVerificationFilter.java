@@ -34,6 +34,8 @@ public class OtpVerificationFilter implements Filter {
         String requestURI = httpRequest.getRequestURI();
         String contextPath = httpRequest.getContextPath();
 
+        System.out.println("You Request to URl: "+requestURI);
+
         // Check if the requested resource is public
         if (isPublicResource(requestURI, contextPath)) {
             System.out.println("Allow access to public resources");
@@ -42,14 +44,15 @@ public class OtpVerificationFilter implements Filter {
         }
 
         // Check if the user is authenticated
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-         System.out.println("Check if the user is authenticated:" +authentication);
-        if (authentication == null || !authentication.isAuthenticated()) {
-            // Redirect unauthenticated users to the login page
-            System.out.println("Not authenticated....!");
-            httpResponse.sendRedirect(contextPath + "/login");
-            return;
-        }
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            System.out.println("Check if the user is authenticated:" +authentication);
+            System.out.println("session :="+ ((HttpServletRequest) request).getSession().getId());
+            if (authentication == null || !authentication.isAuthenticated()) {
+                // Redirect unauthenticated users to the login page
+                System.out.println("Not authenticated....!");
+                httpResponse.sendRedirect(contextPath + "/login");
+                return;
+            }
 
 
 

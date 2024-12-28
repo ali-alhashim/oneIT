@@ -65,7 +65,8 @@ public class CustomLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         boolean isApiRequest = request.getRequestURI().startsWith("/api/");
         if (isApiRequest)
         {
-           return;
+            System.out.println("request from api url");
+            return;
         }
 
         SavedRequest savedRequest = requestCache.getRequest(request, response);

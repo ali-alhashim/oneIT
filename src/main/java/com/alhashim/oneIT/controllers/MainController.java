@@ -81,6 +81,7 @@ public class MainController {
            model.addAttribute("changePasswordDto",changePasswordDto);
 
             model.addAttribute("badgeNumber", badgeNumber);
+            model.addAttribute("employeeId", employee.getId());
             model.addAttribute("userName", employee.getName());
             model.addAttribute("userArName", employee.getArName());
             model.addAttribute("imageFileName", employee.getImageFileName());

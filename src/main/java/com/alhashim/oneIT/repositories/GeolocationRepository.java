@@ -15,14 +15,14 @@ public interface GeolocationRepository extends JpaRepository<Geolocation, Long> 
     Geolocation findByAreaName(String areaName);
 
     @Query("""
-        SELECT g.areaName
+        SELECT g
         FROM Geolocation g
         WHERE :latitude BETWEEN LEAST(g.latitudeA, g.latitudeB, g.latitudeC, g.latitudeD)
                           AND GREATEST(g.latitudeA, g.latitudeB, g.latitudeC, g.latitudeD)
           AND :longitude BETWEEN LEAST(g.longitudeA, g.longitudeB, g.longitudeC, g.longitudeD)
                            AND GREATEST(g.longitudeA, g.longitudeB, g.longitudeC, g.longitudeD)
     """)
-    Optional<Geolocation> findAreaNameByCoordinates(@Param("latitude") Double latitude, @Param("longitude") Double longitude);
+    Optional<Geolocation> findByCoordinates(@Param("latitude") Double latitude, @Param("longitude") Double longitude);
 
 
     @Query("SELECT e FROM Geolocation e WHERE " +

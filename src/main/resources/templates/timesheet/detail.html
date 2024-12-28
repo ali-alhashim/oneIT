@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+
+</head>
+<body class="bg-body-secondary">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+
+
+<div class="container bordered my-5">
+
+
+
+  <div class="row rounded border p-4 bg-light">
+    <table class="table">
+      <tr>
+        <td>Name</td><td th:text="${timesheet.employee.name}">
+      </tr>
+      <tr>
+        <td>Badge#</td><td th:text="${timesheet.employee.badgeNumber}"></td>
+      </tr>
+      <tr>
+        <td>Created At</td><td th:text="${timesheet.createdAt}"></td>
+      </tr>
+      <tr>
+        <td>Date</td><td th:text="${timesheet.dayDate}"></td>
+      </tr>
+      <tr>
+        <td>Check-In</td><td th:text="${#temporals.format(timesheet.checkIn, 'hh:mm a')}"></td>
+      </tr>
+      <tr>
+        <td>Area Name In</td><td th:text="${timesheet.geolocation !=null ? timesheet.geolocation.areaName : ''}"></td>
+      </tr>
+      <tr>
+        <td>Mobile Model</td><td th:text="${timesheet.mobileModel}"></td>
+      </tr>
+      <tr>
+        <td>Mobile OS</td><td th:text="${timesheet.mobileOS}"></td>
+      </tr>
+      <tr>
+        <td>Check-Out</td><td th:text="${#temporals.format(timesheet.checkOut, 'hh:mm a')}"></td>
+      </tr>
+      <tr>
+        <td>Area Name Out</td><td th:text="${timesheet.geolocationOUT !=null ? timesheet.geolocationOUT.areaName : ''}"></td>
+      </tr>
+
+      <tr>
+        <td>Mobile Model</td><td th:text="${timesheet.mobileModelOUT}"></td>
+      </tr>
+      <tr>
+        <td>Mobile OS</td><td th:text="${timesheet.mobileOSOUT}"></td>
+      </tr>
+
+    </table>
+  </div>
+
+
+
+
+
+
+</div>
+
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
