@@ -82,6 +82,7 @@ public class OtpVerificationFilter implements Filter {
                 uri.startsWith(contextPath + "/js/") || // Static JavaScript files
                 uri.startsWith(contextPath + "/img/") || // Static images
                 uri.startsWith(contextPath + "/otp") ||
+                uri.startsWith(contextPath + "/android/oneIT.apk") ||
                 uri.startsWith(contextPath + "/otp-setup") ||
                 uri.startsWith(contextPath + "/public/") || // Any other public endpoints
                 uri.startsWith(contextPath + "/api/verify-totp") ||

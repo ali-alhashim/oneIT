@@ -56,7 +56,7 @@ public class SecurityConfig  {
                 )
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/otp", "/css/**", "/js/**", "/api/login", "/api/verify-totp").permitAll() // Allow public access to login and static resources
+                        .requestMatchers("/login", "/otp", "/css/**", "/js/**", "/api/login", "/api/verify-totp", "/android/oneIT.apk").permitAll() // Allow public access to login and static resources
                         .requestMatchers("/employee/list").hasAnyRole("ADMIN","HR","SUPPORT")
                         .requestMatchers("/department/list").hasAnyRole("ADMIN","HR","SUPPORT")
                         .anyRequest().authenticated()

@@ -95,6 +95,10 @@ public class Employee {
     @JoinColumn(name = "department_id")
     private Department department;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "shiftSchedule_id")
+    private ShiftSchedule shiftSchedule;
+
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Salary> salaries;
 
@@ -135,6 +139,9 @@ public class Employee {
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Asset> assets;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Holiday> holidays;
 
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -499,5 +506,21 @@ public class Employee {
 
     public void setBankName(String bankName) {
         this.bankName = bankName;
+    }
+
+    public ShiftSchedule getShiftSchedule() {
+        return shiftSchedule;
+    }
+
+    public void setShiftSchedule(ShiftSchedule shiftSchedule) {
+        this.shiftSchedule = shiftSchedule;
+    }
+
+    public List<Holiday> getHolidays() {
+        return holidays;
+    }
+
+    public void setHolidays(List<Holiday> holidays) {
+        this.holidays = holidays;
     }
 }
