@@ -17,7 +17,7 @@
         </div>
 
         <div class="col-4">
-            <button class="btn btn-success">Add Department</button>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addDepartmentModal">Add Department</button>
         </div>
 
     </div>
@@ -157,7 +157,7 @@
         </div>
     </div>
 </div>
-<!--/modal-->
+
 
 <script>
 
@@ -187,6 +187,84 @@
        });
 
 </script>
+<!--/modal-->
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="addDepartmentModal" tabindex="-1" aria-labelledby="addDepartmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addDepartmentModalLabel">Add Employee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <form id="addDepartmentForm" method="post" action="/shiftSchedule/add-department"  th:with="_csrfToken=${_csrf.token}">
+
+                    <input type="hidden" name="shiftScheduleId"  th:value="${shiftSchedule.id}"/>
+
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+
+                    <div class="mb-3">
+                        <label for="selectDepartment" class="form-label">Select Department</label>
+                        <select id="selectDepartment" class="form-select" style="width: 100%;" name="departmentId">
+                            <option
+                                    th:each="department: ${departments}"
+                                    th:value="${department.id}"
+                                    th:text="${department.name} +'-'+ ${department.arName}">
+
+                            </option>
+                        </select>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveDepartmentButton">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    $(document).ready(function() {
+                   $('#selectDepartment').select2(
+                   {
+                     placeholder: "Select Department",
+                     allowClear: true,
+                     dropdownParent: $('#addDepartmentModal')
+                   }
+                   );
+                 });
+
+
+
+     $('#saveDepartmentButton').on('click', function ()
+     {
+        const form = $('#addDepartmentForm');
+        if ($('#selectDepartment').val())
+        {
+          form.submit(); // Submit the form if a value is selected
+        }
+        else
+        {
+          alert('Please select an Department.');
+        }
+       });
+
+</script>
+<!--/modal-->
+
+
+
+
+
 
 
 

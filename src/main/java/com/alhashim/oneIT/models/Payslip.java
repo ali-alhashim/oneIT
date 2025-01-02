@@ -24,6 +24,8 @@ public class Payslip {
     @ManyToOne
     private Employee employee;
 
+    private String status;
+
     private Date periodStart;
     private Date periodEnd;
     private String codeName; //Month-Year like 01-2024
@@ -133,5 +135,13 @@ public class Payslip {
 
     public void setLines(List<PayslipLine> lines) {
         this.lines = lines;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

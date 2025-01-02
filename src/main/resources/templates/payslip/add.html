@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+
+
+</head>
+<body class="bg-body-secondary">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class=" bordered my-5 ">
+
+  <!--Add Form-->
+  <div class="row rounded border p-4 bg-light">
+    <form method="post" enctype="multipart/form-data" th:object="${payslipDto}" th:with="_csrfToken=${_csrf.token}">
+
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+
+
+      <div class="form-floating my-1">
+        <input type="text" class="form-control" id="codeName"  name="codeName" th:field="${payslipDto.codeName}">
+        <label for="codeName">Code Name</label>
+        <p th:if="${#fields.hasErrors('codeName')}" th:errorclass="text-danger" th:errors="${payslipDto.codeName}"></p>
+      </div>
+
+      <div class="form-floating my-1">
+        <input type="date" class="form-control" id="periodStart"  name="periodStart" th:field="${payslipDto.periodStart}">
+        <label for="periodStart">Period Start</label>
+        <p th:if="${#fields.hasErrors('periodStart')}" th:errorclass="text-danger" th:errors="${payslipDto.periodStart}"></p>
+      </div>
+
+      <div class="form-floating my-1">
+        <input type="date" class="form-control" id="periodEnd"  name="periodEnd" th:field="${payslipDto.periodEnd}">
+        <label for="periodEnd">Period End</label>
+        <p th:if="${#fields.hasErrors('periodEnd')}" th:errorclass="text-danger" th:errors="${payslipDto.periodEnd}"></p>
+      </div>
+
+
+
+      <div class="form-floating my-1">
+        <select class="form-select" id="departmentId"  name="departmentId" th:field="${payslipDto.departmentId}">
+          <option value="0">Select Department...</option>
+          <option th:each="department: ${departments}" th:value="${department.id}" th:text="${department.name}"></option>
+        </select>
+        <label for="departmentId">Department</label>
+        <p th:if="${#fields.hasErrors('departmentId')}" th:errorclass="text-danger" th:errors="${payslipDto.departmentId}"></p>
+      </div>
+
+
+
+
+
+
+
+      <div class="row justify-content-between my-3">
+        <div class="col-sm-4 d-grid">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+        <div class="col-sm-4  d-grid">
+          <a class="btn btn-outline-primary" href="/payslip/list" role="button">Cancel</a>
+        </div>
+      </div>
+
+
+
+    </form>
+  </div>
+  <!--/Add Form -->
+
+</div>
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

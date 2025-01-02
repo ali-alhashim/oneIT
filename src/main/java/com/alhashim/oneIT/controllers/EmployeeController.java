@@ -361,6 +361,7 @@ public class EmployeeController {
             model.addAttribute("userArName", employee.getArName());
             model.addAttribute("govId", employee.getGovId());
             model.addAttribute("MFA", MFA);
+            model.addAttribute("employeeId", employee.getId());
             model.addAttribute("imageFileName", employee.getImageFileName());
             model.addAttribute("workEmail", employee.getWorkEmail());
             model.addAttribute("workMobile",employee.getWorkMobile());

@@ -19,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -133,6 +134,31 @@ public String shiftScheduleList(Model model, @RequestParam(required = false) Str
 
         employee.setShiftSchedule(shiftSchedule);
         employeeRepository.save(employee);
+        return "redirect:/shiftSchedule/shiftScheduleDetail?id="+shiftScheduleId;
+    }
+
+
+    @PostMapping("/add-department")
+    public String addDepartment(@RequestParam Long shiftScheduleId, @RequestParam Long departmentId)
+    {
+        ShiftSchedule shiftSchedule = shiftScheduleRepository.findById(shiftScheduleId).orElse(null);
+        if(shiftSchedule ==null)
+        {
+            return "/404";
+        }
+
+        Department department  = departmentRepository.findById(departmentId).orElse(null);
+        if(department ==null)
+        {
+            return "/404";
+        }
+
+        List<Employee> employees = new ArrayList<>(department.getEmployees());
+        employees.forEach(employee -> {
+            employee.setShiftSchedule(shiftSchedule);
+            employeeRepository.save(employee);
+        });
+
         return "redirect:/shiftSchedule/shiftScheduleDetail?id="+shiftScheduleId;
     }
 

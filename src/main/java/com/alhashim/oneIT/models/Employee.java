@@ -85,6 +85,8 @@ public class Employee {
 
     private Boolean isOtpEnabled;
 
+    private Boolean isActive;
+
 
 
 //-------- the Relationship filed-----------
@@ -522,5 +524,13 @@ public class Employee {
 
     public void setHolidays(List<Holiday> holidays) {
         this.holidays = holidays;
+    }
+
+    public Boolean getActive() {
+        return this.isActive;
+    }
+
+    public void setActive(Boolean active) {
+        this.isActive = active;
     }
 }
