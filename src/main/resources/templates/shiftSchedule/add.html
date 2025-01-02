@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+
+
+</head>
+<body class="bg-body-secondary">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container bordered my-5 ">
+
+  <!--Add Form-->
+  <div class="row rounded border p-4 bg-light">
+    <form method="post" enctype="multipart/form-data" th:object="${shiftScheduleDto}" th:with="_csrfToken=${_csrf.token}">
+
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+
+
+      <div class="form-floating my-1">
+        <input type="text" class="form-control" id="name"  name="name" th:field="${shiftScheduleDto.name}">
+        <label for="name">Name</label>
+        <p th:if="${#fields.hasErrors('name')}" th:errorclass="text-danger" th:errors="${shiftScheduleDto.name}"></p>
+      </div>
+
+      <div class="form-floating my-1">
+        <input type="time" class="form-control" id="startTime"  name="startTime" th:field="${shiftScheduleDto.startTime}">
+        <label for="name">Start Time</label>
+        <p th:if="${#fields.hasErrors('startTime')}" th:errorclass="text-danger" th:errors="${shiftScheduleDto.startTime}"></p>
+      </div>
+
+      <div class="form-floating my-1">
+        <input type="time" class="form-control" id="endTime"  name="endTime" th:field="${shiftScheduleDto.endTime}">
+        <label for="name">End Time</label>
+        <p th:if="${#fields.hasErrors('endTime')}" th:errorclass="text-danger" th:errors="${shiftScheduleDto.endTime}"></p>
+      </div>
+
+
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="sundayWork"  value="true" th:field="${shiftScheduleDto.sundayWork}">
+        <label class="form-check-label" for="sundayWork">Sunday</label>
+      </div>
+
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="mondayWork"  value="true" th:field="${shiftScheduleDto.mondayWork}">
+        <label class="form-check-label" for="mondayWork">Monday</label>
+      </div>
+
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="tuesdayWork"  value="true" th:field="${shiftScheduleDto.tuesdayWork}">
+        <label class="form-check-label" for="tuesdayWork">Tuesday</label>
+      </div>
+
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="wednesdayWork"  value="true" th:field="${shiftScheduleDto.wednesdayWork}">
+        <label class="form-check-label" for="wednesdayWork">Wednesday</label>
+      </div>
+
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="thursdayWork"  value="true" th:field="${shiftScheduleDto.thursdayWork}">
+        <label class="form-check-label" for="thursdayWork">Thursday</label>
+      </div>
+
+
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="fridayWork"  value="true" th:field="${shiftScheduleDto.fridayWork}">
+        <label class="form-check-label" for="fridayWork">Friday</label>
+      </div>
+
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="saturdayWork"  value="true" th:field="${shiftScheduleDto.saturdayWork}">
+        <label class="form-check-label" for="saturdayWork">Saturday</label>
+      </div>
+
+
+      <div class="row justify-content-between my-3">
+        <div class="col-sm-4 d-grid">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+        <div class="col-sm-4  d-grid">
+          <a class="btn btn-outline-primary" href="/shiftSchedule/list" role="button">Cancel</a>
+        </div>
+      </div>
+
+
+
+    </form>
+  </div>
+  <!--/Add Form -->
+
+</div>
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

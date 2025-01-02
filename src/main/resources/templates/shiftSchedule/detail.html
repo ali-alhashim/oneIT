@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+
+</head>
+<body class="bg-body-secondary">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+
+
+<div class="container bordered my-5">
+    <hr/>
+    <div class="row" id="toolbar">
+        <div class="col-4">
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">Add Employee</button>
+        </div>
+
+        <div class="col-4">
+            <button class="btn btn-success">Add Department</button>
+        </div>
+
+    </div>
+    <hr/>
+
+
+    <div class="row rounded border p-4 bg-light">
+        <table class="table">
+            <tr>
+                <td>Name</td><td th:text="${shiftSchedule.name}">
+            </tr>
+            <tr>
+                <td>Start Time</td><td th:text="${shiftSchedule.startTime}"></td>
+            </tr>
+            <tr>
+                <td>End Time</td><td th:text="${shiftSchedule.endTime}"></td>
+            </tr>
+
+            <tr>
+                <td>Sunday Work</td><td th:text="${shiftSchedule.sundayWork}"></td>
+            </tr>
+
+            <tr>
+                <td>Monday Work</td><td th:text="${shiftSchedule.mondayWork}"></td>
+            </tr>
+
+            <tr>
+                <td>Tuesday Work</td><td th:text="${shiftSchedule.tuesdayWork}"></td>
+            </tr>
+
+            <tr>
+                <td>Wednesday Work</td><td th:text="${shiftSchedule.wednesdayWork}"></td>
+            </tr>
+
+            <tr>
+                <td>Thursday Work</td><td th:text="${shiftSchedule.thursdayWork}"></td>
+            </tr>
+
+            <tr>
+                <td>Friday Work</td><td th:text="${shiftSchedule.fridayWork}"></td>
+            </tr>
+
+            <tr>
+                <td>Saturday Work</td><td th:text="${shiftSchedule.saturdayWork}"></td>
+            </tr>
+        </table>
+    </div>
+
+
+
+
+
+
+
+<hr>
+
+
+
+    <!-- Employee list  -->
+    <div class="table-responsive">
+        <table class="table border">
+            <thead>
+            <th>#</th>
+            <th>Photo</th>
+            <th style="white-space: nowrap;">Badge Number</th>
+            <th>Name</th>
+
+            <th style="white-space: nowrap;">Work Mobile</th>
+            <th>Email</th>
+            <th>Created At</th>
+            </thead>
+
+            <tbody>
+            <tr th:each="employee: ${shiftSchedule.getEmployees()}">
+                <td>
+                    <input type="checkbox" name="badgeNumber" th:value="${employee.badgeNumber}"/>
+                </td>
+                <td>
+                    <img th:src="@{'/images/'+${employee.badgeNumber}+'/'+${employee.imageFileName}}" alt="..." width="100"/>
+                </td>
+                <td>
+                    <a class="btn btn-info" th:text="${employee.badgeNumber}" th:href="@{/employee/detail(badgeNumber=${employee.badgeNumber})}"></a>
+                </td>
+                <td>
+                    <p th:text="${employee.name}"></p><br/><p th:text="${employee.arName}"></p>
+                </td>
+
+                <td th:text="${employee.workMobile}"></td>
+                <td th:text="${employee.workEmail}"></td>
+                <td th:text="${employee.createdAt}"></td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+    <!--/Employee list -->
+
+</div>
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addEmployeeModalLabel">Add Employee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <form id="addEmployeeForm" method="post" action="/shiftSchedule/add-employee"  th:with="_csrfToken=${_csrf.token}">
+
+                    <input type="hidden" name="shiftScheduleId"  th:value="${shiftSchedule.id}"/>
+
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+
+                    <div class="mb-3">
+                        <label for="selectEmployee" class="form-label">Select Employee</label>
+                        <select id="selectEmployee" class="form-select" style="width: 100%;" name="badgeNumber">
+                            <option
+                                    th:each="employee: ${employees}"
+                                    th:value="${employee.badgeNumber}"
+                                    th:text="${employee.name} +'-'+ ${employee.arName}">
+
+                            </option>
+                        </select>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveEmployeeButton">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/modal-->
+
+<script>
+
+    $(document).ready(function() {
+                   $('#selectEmployee').select2(
+                   {
+                     placeholder: "Select an employee",
+                     allowClear: true,
+                     dropdownParent: $('#addEmployeeModal')
+                   }
+                   );
+                 });
+
+
+
+     $('#saveEmployeeButton').on('click', function ()
+     {
+        const form = $('#addEmployeeForm');
+        if ($('#selectEmployee').val())
+        {
+          form.submit(); // Submit the form if a value is selected
+        }
+        else
+        {
+          alert('Please select an employee.');
+        }
+       });
+
+</script>
+
+
+
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

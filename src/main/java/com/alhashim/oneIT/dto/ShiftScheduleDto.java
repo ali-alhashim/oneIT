@@ -1,26 +1,8 @@
-package com.alhashim.oneIT.models;
+package com.alhashim.oneIT.dto;
 
-
-import jakarta.persistence.*;
-import org.springframework.data.annotation.LastModifiedDate;
-
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashSet;
-import java.util.Set;
 
-@Entity
-public class ShiftSchedule {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
+public class ShiftScheduleDto {
 
     private String name;
 
@@ -34,35 +16,6 @@ public class ShiftSchedule {
     private Boolean thursdayWork;
     private Boolean fridayWork;
     private Boolean saturdayWork;
-
-    @OneToMany(mappedBy = "shiftSchedule")
-    private Set<Employee> employees = new HashSet<>();
-
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 
     public String getName() {
         return name;
@@ -134,14 +87,6 @@ public class ShiftSchedule {
 
     public void setFridayWork(Boolean fridayWork) {
         this.fridayWork = fridayWork;
-    }
-
-    public Set<Employee> getEmployees() {
-        return employees;
-    }
-
-    public void setEmployees(Set<Employee> employees) {
-        this.employees = employees;
     }
 
     public Boolean getSaturdayWork() {
