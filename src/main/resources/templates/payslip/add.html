@@ -38,7 +38,7 @@
 
 
       <div class="form-floating my-1">
-        <select class="form-select" id="departmentId"  name="departmentId" th:field="${payslipDto.departmentId}">
+        <select class="form-select" id="departmentId"  name="departmentId" th:field="${payslipDto.departmentId}" onchange="fetchDepartmentEmployees(this)">
           <option value="0">Select Department...</option>
           <option th:each="department: ${departments}" th:value="${department.id}" th:text="${department.name}"></option>
         </select>
@@ -47,7 +47,24 @@
       </div>
 
 
+       <hr>
+        <table class="table">
+          <thead>
+             <tr>
+               <th>Badge#</th>
+               <th>Name</th>
+               <th>Bank Name</th>
+               <th>IBAN</th>
+               <th>Salary Package</th>
+               <th>Payslip</th>
+               <th>Action</th>
+             </tr>
+          </thead>
+          <tbody id="tBody">
 
+          </tbody>
+        </table>
+       <hr>
 
 
 
@@ -69,6 +86,55 @@
 
 </div>
 
+<script>
+  function fetchDepartmentEmployees(selectInput) {
+    const departmentId = selectInput.value;
+    const url = `/payslip/getDepartmentEmployees?departmentId=${departmentId}`;
+    const tBody = document.getElementById("tBody");
+
+    // Clear the table body before populating it
+    tBody.innerHTML = '';
+
+    // Only fetch if a valid department is selected
+    if (departmentId !== "0") {
+      fetch(url)
+        .then(response => {
+          if (!response.ok) {
+            alert('Department not found');
+            throw new Error('Department not found');
+          }
+          return response.json(); // returns the parsed JSON data
+        })
+        .then(data => {
+          data.forEach(employee => {
+            console.log(employee);
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td>${employee.badgeNumber}</td>
+                <td>${employee.name}</td>
+                <td>${employee.bankName || 'N/A'}</td>
+                <td>${employee.iban || 'N/A'}</td>
+                <td>${employee.basicSalary ? employee.basicSalary : 'N/A'}</td>
+                <td>
+                    <input type="file" name="payslip_${employee.id}" accept=".pdf"/>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger" onclick="CalculateMinutes(this)">Calculate and deduct missing minutes</button>
+                </td>
+            `;
+
+            // Append the row to the table body
+            tBody.appendChild(row);
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching employees:', error);
+          alert("Failed to load employees. Please try again.");
+        });
+    }
+  }
+</script>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
 </body>

@@ -533,4 +533,12 @@ public class Employee {
     public void setActive(Boolean active) {
         this.isActive = active;
     }
+
+
+    public Salary getCurrentSalary() {
+        return salaries.stream()
+                .sorted((s1, s2) -> s2.getCreatedAt().compareTo(s1.getCreatedAt()))  // Sort by createdAt DESC
+                .findFirst()
+                .orElse(null);  // Return the most recent or null if no salary exists
+    }
 }
