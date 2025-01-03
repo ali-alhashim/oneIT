@@ -55,8 +55,10 @@
                <th>Name</th>
                <th>Bank Name</th>
                <th>IBAN</th>
-               <th>Salary Package</th>
-               <th>Payslip</th>
+               <th>Basic Salary</th>
+               <th>Benefits</th>
+               <th>After Deduct M.M [Basic Salary]</th>
+               <th>Total MM</th>
                <th>Action</th>
              </tr>
           </thead>
@@ -73,9 +75,18 @@
         <div class="col-sm-4 d-grid">
           <button type="submit" class="btn btn-primary">Submit</button>
         </div>
+
+
+        <div class="col-sm-4  d-grid">
+          <button type="button" class="btn btn-danger" onclick="CalculateMinutesAll()">Calculate and deduct missing minutes All</button>
+        </div>
+
+
         <div class="col-sm-4  d-grid">
           <a class="btn btn-outline-primary" href="/payslip/list" role="button">Cancel</a>
         </div>
+
+
       </div>
 
 
@@ -110,6 +121,7 @@
             console.log(employee);
             const row = document.createElement('tr');
 
+            // Basic employee info
             row.innerHTML = `
                 <td>${employee.badgeNumber}</td>
                 <td>${employee.name}</td>
@@ -117,15 +129,45 @@
                 <td>${employee.iban || 'N/A'}</td>
                 <td>${employee.basicSalary ? employee.basicSalary : 'N/A'}</td>
                 <td>
-                    <input type="file" name="payslip_${employee.id}" accept=".pdf"/>
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Pay Description</th>
+                        <th>To Pay</th>
+                        <th>To Deduct</th>
+                      </tr>
+                    </thead>
+                    <tbody id="benefits-${employee.id}">
+                      <!-- Benefits will be inserted here -->
+                    </tbody>
+                  </table>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-danger" onclick="CalculateMinutes(this)">Calculate and deduct missing minutes</button>
+                    <input type="text" name="DeductedBasicSalary_${employee.badgeNumber}" value="${employee.basicSalary}"/>
+                </td>
+                 <td>
+                    <input type="text" name="TotalMM_${employee.badgeNumber}"/>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger" onclick="CalculateMinutes(${employee.badgeNumber})">Calculate and deduct missing minutes</button>
                 </td>
             `;
 
             // Append the row to the table body
             tBody.appendChild(row);
+
+            // Handle benefits
+            const benefitsTBody = document.getElementById(`benefits-${employee.id}`);
+            employee.benefits.forEach(benefit => {
+              const benefitRow = document.createElement('tr');
+              benefitRow.innerHTML = `
+                <td>${benefit.payDescription}</td>
+                <td>${benefit.toPay}</td>
+                <td>${benefit.toDeduct}</td>
+              `;
+              benefitsTBody.appendChild(benefitRow);
+            });
+
           });
         })
         .catch(error => {
@@ -134,6 +176,33 @@
         });
     }
   }
+
+
+
+  function CalculateMinutes(badgeNumber)
+  {
+     const periodStart = document.getElementById("periodStart").value;
+     const periodEnd   = document.getElementById("periodEnd").value;
+     // send ajax http get request to /payslip/CalculateMinutes
+     // with badgeNumber, periodStart, periodEnd
+     // response server is the [DeductedBasicSalary, TotalMM]
+  }
+
+
+
+
+  function CalculateMinutesAll()
+  {
+   const periodStart  = document.getElementById("periodStart").value;
+   const periodEnd    = document.getElementById("periodEnd").value;
+   const departmentId = document.getElementById("departmentId").value;
+
+    // send ajax http get request to /payslip/CalculateMinutesAll
+    // with departmentId, periodStart, periodEnd
+    // response server is the list of [DeductedBasicSalary, TotalMM]
+  }
+
+
 </script>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
