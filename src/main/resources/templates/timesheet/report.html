@@ -14,6 +14,8 @@
       <th>Badge#</th>
       <th>Name</th>
       <th>Date</th>
+      <th>isWorkingDay</th>
+      <th>Day</th>
       <th>Check-In</th>
       <th>Shift Time Start</th>
       <th>Late Minutes</th>
@@ -33,6 +35,8 @@
       <td th:text="${record['badgeNumber']}"></td>
       <td th:text="${record['name']}"></td>
       <td th:text="${record['date']}"></td>
+      <td th:text="${record['isWorkingDay']}"  th:class="${ !record['isWorkingDay'] ? 'bg-secondary' : null}"></td>
+      <td class="dayName" th:attr="data-date=${record['date']}"></td>
       <td th:text="${record['checkIn']}"></td>
       <td th:text="${record['shiftTimeStart']}"></td>
       <td th:text="${record['lateMinutes']}"></td>
@@ -41,20 +45,30 @@
       <td th:text="${record['shiftTimeEnd']}"></td>
       <td th:text="${record['earlyMinutes']}"></td>
       <td th:text="${record['areaOut']}"></td>
-      <td th:text="${record['totalMinutes']}"></td>
-      <td th:text="${record['totalMissingMinutes']}"></td>
+      <td th:text="${record['totalMinutes']}" th:attr="data-isWorking=${record['isWorkingDay']}" class="totalM"></td>
+      <td class="totalMM" th:text="${record['totalMissingMinutes']}" th:attr="data-isWorking=${record['isWorkingDay']}"></td>
     </tr>
     </tbody>
 
     <tfoot>
     <tr>
-      <td colspan="12">
+      <td colspan="14">
         <strong>Total Missing Minutes: </strong>
       </td>
       <td>
         <span id="totalMissingMinutes">0</span>
       </td>
     </tr>
+
+    <tr>
+      <td colspan="14">
+        <strong>Total Overtime Minutes: </strong>
+      </td>
+      <td>
+        <span id="totalOvertimeMinutes">0</span>
+      </td>
+    </tr>
+
     </tfoot>
   </table>
 
@@ -62,18 +76,54 @@
 
 <script>
   // Initialize total missing minutes counter
-  let totalMissingMinutes = 0;
+ let totalMissingMinutes = 0;
+ let totalOvertimeMinutes = 0;  // Initialize overtime minutes counter
 
-  // Get the timesheet data passed from the backend into a JavaScript array
-  const timesheetRecords = /*[[${timesheet}]]*/ [];
+ // Get all elements with the class 'totalMM' for missing minutes
+ const timesheetRecordsMissing = document.querySelectorAll(".totalMM");
 
-  // Iterate over each record in the timesheet to calculate the total missing minutes
-  timesheetRecords.forEach(record => {
-    totalMissingMinutes += parseInt(record['totalMissingMinutes']) || 0; // Handle null/undefined values by defaulting to 0
-  });
+ // Get all elements with the class 'totalM' for overtime minutes
+ const timesheetRecordsOvertime = document.querySelectorAll(".totalM");
 
-  // Display the total missing minutes in the corresponding element
-  document.getElementById('totalMissingMinutes').textContent = totalMissingMinutes;
+ // Iterate over each record in 'totalMM' for missing minutes
+ timesheetRecordsMissing.forEach(record => {
+     const isWorking = record.getAttribute('data-isWorking') === 'true';  // Check if it's a working day
+     const totalMinutes = parseInt(record.textContent) || 0;  // Get total minutes
+
+     if (isWorking) {
+         totalMissingMinutes += totalMinutes;  // Sum missing minutes for working days
+     }
+ });
+
+ // Display the total missing minutes in the corresponding element
+ document.getElementById('totalMissingMinutes').textContent = totalMissingMinutes;
+
+ // Iterate over each record in 'totalM' for overtime minutes
+ timesheetRecordsOvertime.forEach(record => {
+     const isWorking = record.getAttribute('data-isWorking') === 'false';  // Check if it's NOT a working day (non-working day)
+     const totalMinutes = parseInt(record.textContent) || 0;  // Get total minutes
+
+     if (isWorking) {
+         totalOvertimeMinutes += totalMinutes;  // Sum overtime minutes for non-working days
+     }
+ });
+
+ // Display the total overtime minutes in the corresponding element
+ document.getElementById('totalOvertimeMinutes').textContent = totalOvertimeMinutes;
+
+ // Function to get the day name from a date
+ function getDayName(dateString) {
+     const date = new Date(dateString);
+     const options = { weekday: 'long' };
+     return date.toLocaleDateString('en-US', options);
+ }
+
+ // Populate day names dynamically
+ document.querySelectorAll('.dayName').forEach(cell => {
+     const date = cell.getAttribute('data-date');
+     cell.textContent = getDayName(date);
+ });
+
 </script>
 
 <div th:replace="~{fragments/footer :: footer}"></div>

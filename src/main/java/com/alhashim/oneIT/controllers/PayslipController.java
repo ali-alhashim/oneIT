@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.time.DayOfWeek;
@@ -29,6 +30,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -223,6 +225,50 @@ public class PayslipController {
     }
 
     // ------calculateLatenessAndEarlyLeave
+
+
+    @PostMapping("/add")
+    public String addPayslip(@RequestParam Map<String, String> formData) {
+        // To store the results of employee data extraction
+        System.out.println("******** addPayslip ***************** ");
+        Map<String, Object> employeeData = new HashMap<>();
+
+        // Extract CSRF token and other static fields first
+        String csrfToken = formData.get("_csrf");
+        String codeName = formData.get("codeName");
+        String periodStart = formData.get("periodStart");
+        String periodEnd = formData.get("periodEnd");
+        String departmentId = formData.get("departmentId");
+
+        // Store static data
+        employeeData.put("csrfToken", csrfToken);
+        employeeData.put("codeName", codeName);
+        employeeData.put("periodStart", periodStart);
+        employeeData.put("periodEnd", periodEnd);
+        employeeData.put("departmentId", departmentId);
+
+        // Now dynamically extract data for each employee by badge number
+        for (String key : formData.keySet()) {
+            if (key.startsWith("DeductedBasicSalary_")) {
+                String badgeNumber = key.split("_")[1]; // Extract badge number (e.g. A1095)
+                String deductedSalary = formData.get(key);
+                String totalMM = formData.get("TotalMM_" + badgeNumber);
+
+                // Store each employee's data by badge number
+                Map<String, String> employee = new HashMap<>();
+                employee.put("badgeNumber", badgeNumber);
+                employee.put("deductedBasicSalary", deductedSalary);
+                employee.put("totalMM", totalMM);
+
+                employeeData.put("employee_" + badgeNumber, employee);
+            }
+        }
+
+        // For testing purposes, printing out the collected data
+        System.out.println(employeeData);
+
+        return "redirect:/payslip/list";
+    }
 
 
 }

@@ -180,6 +180,7 @@ public class TimesheetController {
     private Map<String, Object> createRecord(EmployeeCalendar calendarRecord, ShiftSchedule shiftSchedule) {
         Map<String, Object> record = new HashMap<>();
         record.put("date", calendarRecord.getDayDate());
+        record.put("isWorkingDay", shiftSchedule.isWorkDay(calendarRecord.getDayDate().getDayOfWeek()));
         record.put("checkIn", calendarRecord.getCheckIn());
         record.put("checkOut", calendarRecord.getCheckOut());
         record.put("badgeNumber", calendarRecord.getEmployee().getBadgeNumber());
@@ -207,8 +208,10 @@ public class TimesheetController {
     private int calculateLateMinutes(EmployeeCalendar calendarRecord, ShiftSchedule shiftSchedule) {
         if (calendarRecord.getCheckIn() != null && shiftSchedule.getStartTime() != null) {
             LocalTime checkInTime = LocalTime.parse(calendarRecord.getCheckIn().toString());
-            if (checkInTime.isAfter(shiftSchedule.getStartTime())) {
-                return (int) java.time.Duration.between(shiftSchedule.getStartTime(), checkInTime).toMinutes();
+            LocalTime shiftStartBuffer = shiftSchedule.getStartTime().plusMinutes(15);  // 15 min grace period
+
+            if (checkInTime.isAfter(shiftStartBuffer)) {
+                return (int) java.time.Duration.between(shiftStartBuffer, checkInTime).toMinutes();
             }
         }
         return 0;
@@ -217,8 +220,10 @@ public class TimesheetController {
     private int calculateEarlyMinutes(EmployeeCalendar calendarRecord, ShiftSchedule shiftSchedule) {
         if (calendarRecord.getCheckOut() != null && shiftSchedule.getEndTime() != null) {
             LocalTime checkOutTime = LocalTime.parse(calendarRecord.getCheckOut().toString());
-            if (checkOutTime.isBefore(shiftSchedule.getEndTime())) {
-                return (int) java.time.Duration.between(checkOutTime, shiftSchedule.getEndTime()).toMinutes();
+            LocalTime shiftEndBuffer = shiftSchedule.getEndTime().minusMinutes(10);  // 10 min tolerance
+
+            if (checkOutTime.isBefore(shiftEndBuffer)) {
+                return (int) java.time.Duration.between(checkOutTime, shiftEndBuffer).toMinutes();
             }
         }
         return 0;
