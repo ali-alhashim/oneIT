@@ -2,6 +2,7 @@ package com.alhashim.oneIT.controllers;
 
 import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.models.EmployeeCalendar;
+import com.alhashim.oneIT.models.ShiftSchedule;
 import com.alhashim.oneIT.repositories.EmployeeCalendarRepository;
 import com.alhashim.oneIT.repositories.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Controller
 @RequestMapping("/timesheet")
@@ -99,6 +101,23 @@ public class TimesheetController {
         model.addAttribute("pageTitle","Timesheet Employee List");
 
         return "/timesheet/employeeTimesheet";
+    }
+
+    @GetMapping("/report")
+    public String report(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate, @RequestParam Long id, Model model)
+    {
+
+        Employee employee = employeeRepository.findById(id).orElse(null);
+        if(employee ==null)
+        {
+            return "/404";
+        }
+
+        List<EmployeeCalendar> employeeCalendar = employeeCalendarRepository.findByEmployeeFromTo(employee, startDate, endDate);
+
+        ShiftSchedule shiftSchedule = employee.getShiftSchedule();
+
+      return "/timesheet/report";
     }
 
 }

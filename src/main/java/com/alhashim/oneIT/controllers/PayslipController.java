@@ -2,13 +2,13 @@ package com.alhashim.oneIT.controllers;
 
 
 import com.alhashim.oneIT.dto.BenefitDto;
+import com.alhashim.oneIT.dto.CalculateMinutesDto;
 import com.alhashim.oneIT.dto.DepartmentEmployeesDto;
 import com.alhashim.oneIT.dto.PayslipDto;
-import com.alhashim.oneIT.models.Department;
-import com.alhashim.oneIT.models.Employee;
-import com.alhashim.oneIT.models.Payslip;
-import com.alhashim.oneIT.models.Salary;
+import com.alhashim.oneIT.models.*;
 import com.alhashim.oneIT.repositories.DepartmentRepository;
+import com.alhashim.oneIT.repositories.EmployeeCalendarRepository;
+import com.alhashim.oneIT.repositories.EmployeeRepository;
 import com.alhashim.oneIT.repositories.PayslipRepository;
 import com.alhashim.oneIT.services.SalaryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +22,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import java.time.DayOfWeek;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +42,12 @@ public class PayslipController {
 
     @Autowired
     DepartmentRepository departmentRepository;
+
+    @Autowired
+    EmployeeRepository employeeRepository;
+
+    @Autowired
+    EmployeeCalendarRepository employeeCalendarRepository;
 
     @Autowired
     private SalaryService salaryService;
@@ -121,4 +131,98 @@ public class PayslipController {
 
         return ResponseEntity.ok(employeesDto);
     }
+
+
+    @GetMapping("/CalculateMinutes")
+    public ResponseEntity<CalculateMinutesDto> calculateMinutes(
+            @RequestParam String badgeNumber,
+            @RequestParam LocalDate periodStart,
+            @RequestParam LocalDate periodEnd) {
+
+        Employee employee = employeeRepository.findByBadgeNumber(badgeNumber)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        BigDecimal basicSalary = salaryService.getBasicSalaryForSalary(employee.getCurrentSalary());
+        ShiftSchedule shiftSchedule = employee.getShiftSchedule();
+
+        if (shiftSchedule == null) {
+            throw new RuntimeException("Employee without Shift Schedule!");
+        }
+
+        // Get employee attendance for the selected period
+        List<EmployeeCalendar> employeeCalendars = employeeCalendarRepository.findByEmployeeFromTo(employee, periodStart, periodEnd);
+
+        int totalMissingMinutes = 0;
+
+        // Loop through each day in the period to calculate missing minutes
+        for (LocalDate date = periodStart; !date.isAfter(periodEnd); date = date.plusDays(1)) {
+            DayOfWeek dayOfWeek = date.getDayOfWeek();
+
+            // Check if the day is a workday in the shift schedule
+            if (shiftSchedule.isWorkDay(dayOfWeek)) {
+                LocalDate finalDate = date;
+                EmployeeCalendar calendarRecord = employeeCalendars.stream()
+                        .filter(cal -> cal.getDayDate().equals(finalDate))
+                        .findFirst()
+                        .orElse(null);
+
+                // If no record exists for a workday, consider it as an absence
+                if (calendarRecord == null) {
+                    totalMissingMinutes += 480;  // Full 8-hour day in minutes (480) for absence
+                    continue;
+                }
+
+                // Check for lateness or early checkout
+                int missingMinutes = calculateLatenessAndEarlyLeave(calendarRecord, shiftSchedule);
+                totalMissingMinutes += missingMinutes;
+            }
+        }
+
+        // Calculate deduction based on missing minutes
+        BigDecimal ratePerMinute = basicSalary.divide(BigDecimal.valueOf(30 * 8 * 60), 2, RoundingMode.HALF_UP);
+        BigDecimal deduction = ratePerMinute.multiply(BigDecimal.valueOf(totalMissingMinutes));
+        BigDecimal deductedBasicSalary = basicSalary.subtract(deduction);
+
+        // Prepare DTO response
+        CalculateMinutesDto responseDto = new CalculateMinutesDto();
+        responseDto.setDeductedBasicSalary(deductedBasicSalary);
+        responseDto.setTotalMM(totalMissingMinutes);
+
+        return ResponseEntity.ok(responseDto);
+    } // end GET CalculateMinutes
+
+
+    private int calculateLatenessAndEarlyLeave(EmployeeCalendar calendarRecord, ShiftSchedule shiftSchedule) {
+        int missingMinutes = 0;
+
+        // Check-in lateness
+        if (calendarRecord.getCheckIn() != null) {
+            int lateness = calculateLateness(calendarRecord.getCheckIn(), shiftSchedule.getStartTime());
+            if (lateness > 15) {
+                missingMinutes += lateness;  // Count lateness if > 15 mins
+            }
+        }
+
+        // Early check-out
+        if (calendarRecord.getCheckOut() != null) {
+            int earlyLeave = calculateEarlyLeave(calendarRecord.getCheckOut(), shiftSchedule.getEndTime());
+            if (earlyLeave > 10) {
+                missingMinutes += earlyLeave;  // Count early leave if > 10 mins
+            }
+        }
+
+        return missingMinutes;
+    }
+
+    private int calculateLateness(LocalTime checkIn, LocalTime shiftStart) {
+        return (int) Duration.between(shiftStart, checkIn).toMinutes();
+    }
+
+    private int calculateEarlyLeave(LocalTime checkOut, LocalTime shiftEnd) {
+        return (int) Duration.between(checkOut, shiftEnd).toMinutes();
+    }
+
+    // ------calculateLatenessAndEarlyLeave
+
+
 }

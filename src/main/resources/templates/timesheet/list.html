@@ -42,6 +42,7 @@
       <th>Date</th>
       <th>Check-In</th>
       <th>Check-OUT</th>
+      <th>Minutes</th>
       </thead>
 
       <tbody>
@@ -59,7 +60,7 @@
         <td th:text="${timesheet.dayDate}"></td>
         <td th:text="${#temporals.format(timesheet.checkIn, 'hh:mm a')}"></td>
         <td th:text="${#temporals.format(timesheet.checkOut, 'hh:mm a')}"></td>
-
+        <td th:text="${timesheet.totalMinutes}"></td>
 
       </tr>
 

@@ -149,7 +149,7 @@
                     <input type="text" name="TotalMM_${employee.badgeNumber}"/>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-danger" onclick="CalculateMinutes(${employee.badgeNumber})">Calculate and deduct missing minutes</button>
+                    <button type="button" class="btn btn-danger" onclick="CalculateMinutes('${employee.badgeNumber}')">Calculate and deduct missing minutes</button>
                 </td>
             `;
 
@@ -177,18 +177,45 @@
     }
   }
 
+// CalculateMinutes ------------------------
 
+  function CalculateMinutes(badgeNumber) {
+    const periodStart = document.getElementById("periodStart").value;
+    const periodEnd = document.getElementById("periodEnd").value;
 
-  function CalculateMinutes(badgeNumber)
-  {
-     const periodStart = document.getElementById("periodStart").value;
-     const periodEnd   = document.getElementById("periodEnd").value;
-     // send ajax http get request to /payslip/CalculateMinutes
-     // with badgeNumber, periodStart, periodEnd
-     // response server is the [DeductedBasicSalary, TotalMM]
-  }
+    if (!periodStart || !periodEnd) {
+        alert("Please select both start and end dates.");
+        return;
+    }
 
+    const url = `/payslip/CalculateMinutes?badgeNumber=${badgeNumber}&periodStart=${periodStart}&periodEnd=${periodEnd}`;
 
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Assuming server returns {deductedBasicSalary, totalMM}
+            const deductedSalaryInput = document.querySelector(`input[name="DeductedBasicSalary_${badgeNumber}"]`);
+            const totalMMInput = document.querySelector(`input[name="TotalMM_${badgeNumber}"]`);
+
+            if (deductedSalaryInput && totalMMInput) {
+                deductedSalaryInput.value = data.deductedBasicSalary;
+                totalMMInput.value = data.totalMM;
+            } else {
+                alert("Error updating the table. Please refresh the page.");
+            }
+        })
+        .catch(error => {
+            console.error("Error during calculation:", error);
+            alert("Failed to calculate missing minutes. Please try again.");
+        });
+}
+
+// CalculateMinutes ------------------------
 
 
   function CalculateMinutesAll()

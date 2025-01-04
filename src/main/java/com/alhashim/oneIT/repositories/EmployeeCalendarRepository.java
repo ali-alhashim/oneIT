@@ -21,6 +21,12 @@ public interface EmployeeCalendarRepository extends JpaRepository<EmployeeCalend
                                                 @Param("end") LocalDate end, Pageable pageable);
 
 
+    @Query("SELECT ec FROM EmployeeCalendar ec WHERE ec.employee = :employee AND ec.dayDate >= :start AND ec.dayDate <= :end")
+    List<EmployeeCalendar> findByEmployeeFromTo(@Param("employee") Employee employee,
+                                                @Param("start") LocalDate start,
+                                                @Param("end") LocalDate end);
+
+
     @Query("SELECT ec FROM EmployeeCalendar ec WHERE ec.employee = :employee AND ec.dayDate =:dayDate")
     Optional<EmployeeCalendar> findByDayDateAndEmployee(@Param("employee") Employee employee, @Param("dayDate") LocalDate dayDate);
 
@@ -36,5 +42,8 @@ public interface EmployeeCalendarRepository extends JpaRepository<EmployeeCalend
             "LOWER(e.employee.workMobile) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(e.employee.workEmail) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<EmployeeCalendar> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
+
+
+    Optional<EmployeeCalendar> findByDayDate(LocalDate date);
 
 }

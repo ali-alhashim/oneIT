@@ -13,10 +13,11 @@ public class Holiday {
     private Long id;
 
     private String name;
-    private String type;
+    private String type; // Sick Leave, annual vacation, Emergency,
     private LocalDate startDate;
     private LocalDate endDate;
-    private String status;
+    private int totalDays;
+    private String status; // Approved, Rejected,..
 
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
@@ -77,5 +78,13 @@ public class Holiday {
 
     public void setEmployee(Employee employee) {
         this.employee = employee;
+    }
+
+    public int getTotalDays() {
+        return totalDays;
+    }
+
+    public void setTotalDays(int totalDays) {
+        this.totalDays = totalDays;
     }
 }

@@ -12,29 +12,32 @@
   <div class="row" id="toolbar">
 
 
+    <div class="row">
+      <form method="get" id="timesheetForm" class="row">
 
-      <form method="get">
-
-        <div class="row">
-
-          <div class="col-4">
+          <div class="col-3">
             <label for="startDate">Start Date</label>
             <input type="date" name="startDate" class="form-control" id="startDate" />
           </div>
 
-          <div class="col-4">
+          <div class="col-3">
             <label for="endDate">End Date</label>
             <input type="date" name="endDate" class="form-control" id="endDate" />
           </div>
 
-          <div class="col-4">
+          <div class="col-3">
             <input type="submit" class="btn btn-dark my-3" value="Filter">
           </div>
 
 
-        </div>
-         <input type="hidden" name="id" th:value="${employeeId}">
+
+         <input type="hidden" name="id" id="employeeId" th:value="${employeeId}">
       </form>
+
+      <div class="col-3">
+        <button class="btn btn-dark my-3" onclick="timesheetReport()">Report</button>
+      </div>
+    </div> <!--endRow -->
 
   </div>
   <hr/>
@@ -81,12 +84,12 @@
     <ul class="pagination justify-content-center">
       <!-- Previous Button -->
       <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-        <a class="page-link" th:href="@{/timesheet/list(page=${currentPage - 1}, size=${pageSize})}" tabindex="-1">Previous</a>
+        <a class="page-link" th:href="@{/timesheet/employee(page=${currentPage - 1}, size=${pageSize}, id=${employeeId} )}" tabindex="-1">Previous</a>
       </li>
 
       <!-- Start of Pagination Numbers -->
       <li class="page-item" th:if="${currentPage > 2}">
-        <a class="page-link" th:href="@{/timesheet/list(page=0, size=${pageSize})}">1</a>
+        <a class="page-link" th:href="@{/timesheet/employee(page=0, size=${pageSize}, id=${employeeId})}">1</a>
       </li>
       <li class="page-item disabled" th:if="${currentPage > 2}">
         <a class="page-link">...</a>
@@ -95,7 +98,7 @@
       <!-- Dynamic Page Numbers -->
       <li class="page-item" th:each="i : ${#numbers.sequence(currentPage - 2 > 0 ? currentPage - 2 : 0, currentPage + 2 < totalPages - 1 ? currentPage + 2 : totalPages - 1)}"
           th:classappend="${i == currentPage} ? 'active'">
-        <a class="page-link" th:href="@{/timesheet/list(page=${i}, size=${pageSize})}" th:text="${i + 1}"></a>
+        <a class="page-link" th:href="@{/timesheet/employee(page=${i}, size=${pageSize} , id=${employeeId})}" th:text="${i + 1}"></a>
       </li>
 
       <!-- End of Pagination Numbers -->
@@ -103,12 +106,12 @@
         <a class="page-link">...</a>
       </li>
       <li class="page-item" th:if="${currentPage < totalPages - 3}">
-        <a class="page-link" th:href="@{/timesheet/list(page=${totalPages - 1}, size=${pageSize})}" th:text="${totalPages}"></a>
+        <a class="page-link" th:href="@{/timesheet/employee(page=${totalPages - 1}, size=${pageSize}, id=${employeeId})}" th:text="${totalPages}"></a>
       </li>
 
       <!-- Next Button -->
       <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
-        <a class="page-link" th:href="@{/timesheet/list(page=${currentPage + 1}, size=${pageSize})}">Next</a>
+        <a class="page-link" th:href="@{/timesheet/employee(page=${currentPage + 1}, size=${pageSize}, id=${employeeId})}">Next</a>
       </li>
     </ul>
   </nav>
@@ -116,6 +119,20 @@
   <!--/page navigation-->
 
 </div>
+
+
+<script>
+  function timesheetReport()
+  {
+    const timesheetForm = document.getElementById("timesheetForm");
+
+    timesheetForm.action = '/timesheet/report';
+
+    timesheetForm.submit();
+
+
+  }
+</script>
 
 
 <div th:replace="~{fragments/footer :: footer}"></div>

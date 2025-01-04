@@ -3,7 +3,7 @@ package com.alhashim.oneIT.models;
 
 import jakarta.persistence.*;
 import org.springframework.data.annotation.LastModifiedDate;
-
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashSet;
@@ -150,5 +150,18 @@ public class ShiftSchedule {
 
     public void setSaturdayWork(Boolean saturdayWork) {
         this.saturdayWork = saturdayWork;
+    }
+
+
+    public boolean isWorkDay(DayOfWeek dayOfWeek) {
+        return switch (dayOfWeek) {
+            case SUNDAY -> Boolean.TRUE.equals(sundayWork);
+            case MONDAY -> Boolean.TRUE.equals(mondayWork);
+            case TUESDAY -> Boolean.TRUE.equals(tuesdayWork);
+            case WEDNESDAY -> Boolean.TRUE.equals(wednesdayWork);
+            case THURSDAY -> Boolean.TRUE.equals(thursdayWork);
+            case FRIDAY -> Boolean.TRUE.equals(fridayWork);
+            case SATURDAY -> Boolean.TRUE.equals(saturdayWork);
+        };
     }
 }
