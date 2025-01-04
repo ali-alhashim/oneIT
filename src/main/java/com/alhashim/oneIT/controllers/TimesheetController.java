@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/timesheet")
@@ -103,21 +105,123 @@ public class TimesheetController {
         return "/timesheet/employeeTimesheet";
     }
 
-    @GetMapping("/report")
-    public String report(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate, @RequestParam Long id, Model model)
-    {
 
+    //---------Report
+    @GetMapping("/report")
+    public String report(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate, @RequestParam Long id, Model model) {
         Employee employee = employeeRepository.findById(id).orElse(null);
-        if(employee ==null)
-        {
+        if (employee == null) {
             return "/404";
         }
 
+        // Fetch Employee Calendars within the date range
         List<EmployeeCalendar> employeeCalendar = employeeCalendarRepository.findByEmployeeFromTo(employee, startDate, endDate);
 
         ShiftSchedule shiftSchedule = employee.getShiftSchedule();
 
-      return "/timesheet/report";
+        // Group EmployeeCalendar by dayDate to handle multiple records for the same date
+        Map<LocalDate, List<EmployeeCalendar>> calendarMap = employeeCalendar.stream()
+                .collect(Collectors.groupingBy(EmployeeCalendar::getDayDate));
+
+        // Create a list of all dates in the date range (including non-working days)
+        List<LocalDate> allDates = getAllDatesInRange(startDate, endDate);
+
+        // Prepare the timesheet data
+        List<Map<String, Object>> timesheetData = new ArrayList<>();
+
+        for (LocalDate date : allDates) {
+            // Fetch EmployeeCalendar records for the current date
+            List<EmployeeCalendar> calendarRecords = calendarMap.getOrDefault(date, Collections.emptyList());
+
+            if (calendarRecords.isEmpty()) {
+                // No record for this date, create a default entry (missing work day)
+                timesheetData.add(createDefaultRecord(date, shiftSchedule));
+            } else {
+                // If multiple records exist for this date, loop through and add each one
+                for (EmployeeCalendar calendarRecord : calendarRecords) {
+                    timesheetData.add(createRecord(calendarRecord, shiftSchedule));
+                }
+            }
+        }
+
+        // Add data to the model
+        model.addAttribute("timesheet", timesheetData);
+        model.addAttribute("shiftSchedule", shiftSchedule);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+
+        return "/timesheet/report";
+    }
+
+    private List<LocalDate> getAllDatesInRange(LocalDate startDate, LocalDate endDate) {
+        List<LocalDate> dates = new ArrayList<>();
+        LocalDate currentDate = startDate;
+        while (!currentDate.isAfter(endDate)) {
+            dates.add(currentDate);
+            currentDate = currentDate.plusDays(1);
+        }
+        return dates;
+    }
+
+    private Map<String, Object> createDefaultRecord(LocalDate date, ShiftSchedule shiftSchedule) {
+        Map<String, Object> record = new HashMap<>();
+        record.put("date", date);
+        record.put("checkIn", "No Record");
+        record.put("checkOut", "No Record");
+        record.put("shiftTimeStart", shiftSchedule != null ? shiftSchedule.getStartTime()  : "No Shift");
+        record.put("shiftTimeEnd", shiftSchedule != null ? shiftSchedule.getEndTime()  : "No Shift");
+        record.put("lateMinutes", 0);
+        record.put("earlyMinutes", 0);
+        record.put("totalMinutes", 0);
+        record.put("totalMissingMinutes", 0);
+        return record;
+    }
+
+    private Map<String, Object> createRecord(EmployeeCalendar calendarRecord, ShiftSchedule shiftSchedule) {
+        Map<String, Object> record = new HashMap<>();
+        record.put("date", calendarRecord.getDayDate());
+        record.put("checkIn", calendarRecord.getCheckIn());
+        record.put("checkOut", calendarRecord.getCheckOut());
+        record.put("badgeNumber", calendarRecord.getEmployee().getBadgeNumber());
+        record.put("name", calendarRecord.getEmployee().getName());
+        record.put("areaIn", calendarRecord.getGeolocation() !=null ? calendarRecord.getGeolocation().getAreaName():" ");
+        record.put("areaOut", calendarRecord.getGeolocationOUT() !=null ? calendarRecord.getGeolocationOUT().getAreaName() : " ");
+
+        // Calculate late and early minutes
+        int lateMinutes = calculateLateMinutes(calendarRecord, shiftSchedule);
+        int earlyMinutes = calculateEarlyMinutes(calendarRecord, shiftSchedule);
+
+        int totalMinutes = calendarRecord.getTotalMinutes();
+        int totalMissingMinutes = lateMinutes + earlyMinutes;
+
+        record.put("shiftTimeStart", shiftSchedule != null ? shiftSchedule.getStartTime()  : "No Shift");
+        record.put("shiftTimeEnd", shiftSchedule != null ? shiftSchedule.getEndTime()  : "No Shift");
+        record.put("lateMinutes", lateMinutes);
+        record.put("earlyMinutes", earlyMinutes);
+        record.put("totalMinutes", totalMinutes);
+        record.put("totalMissingMinutes", totalMissingMinutes);
+
+        return record;
+    }
+
+    private int calculateLateMinutes(EmployeeCalendar calendarRecord, ShiftSchedule shiftSchedule) {
+        if (calendarRecord.getCheckIn() != null && shiftSchedule.getStartTime() != null) {
+            LocalTime checkInTime = LocalTime.parse(calendarRecord.getCheckIn().toString());
+            if (checkInTime.isAfter(shiftSchedule.getStartTime())) {
+                return (int) java.time.Duration.between(shiftSchedule.getStartTime(), checkInTime).toMinutes();
+            }
+        }
+        return 0;
+    }
+
+    private int calculateEarlyMinutes(EmployeeCalendar calendarRecord, ShiftSchedule shiftSchedule) {
+        if (calendarRecord.getCheckOut() != null && shiftSchedule.getEndTime() != null) {
+            LocalTime checkOutTime = LocalTime.parse(calendarRecord.getCheckOut().toString());
+            if (checkOutTime.isBefore(shiftSchedule.getEndTime())) {
+                return (int) java.time.Duration.between(checkOutTime, shiftSchedule.getEndTime()).toMinutes();
+            }
+        }
+        return 0;
     }
 
 }
