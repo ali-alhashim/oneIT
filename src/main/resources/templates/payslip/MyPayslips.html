@@ -10,13 +10,9 @@
 <div class="container bordered my-5">
 
   <div class="row" id="toolbar">
-    <div class="col-4">
-      <a href="/payslip/add" class="btn btn-success">Add</a>
-    </div>
 
-    <div class="col-4">
-      <a href="#" class="btn btn-outline-success">Import CSV</a>
-    </div>
+
+
 
     <div class="col-4">
       <form method="get">
@@ -77,12 +73,12 @@
     <ul class="pagination justify-content-center">
       <!-- Previous Button -->
       <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-        <a class="page-link" th:href="@{/payslip/list(page=${currentPage - 1}, size=${pageSize})}" tabindex="-1">Previous</a>
+        <a class="page-link" th:href="@{/payslip/MyPayslips(page=${currentPage - 1}, size=${pageSize})}" tabindex="-1">Previous</a>
       </li>
 
       <!-- Start of Pagination Numbers -->
       <li class="page-item" th:if="${currentPage > 2}">
-        <a class="page-link" th:href="@{/payslip/list(page=0, size=${pageSize})}">1</a>
+        <a class="page-link" th:href="@{/payslip/MyPayslips(page=0, size=${pageSize})}">1</a>
       </li>
       <li class="page-item disabled" th:if="${currentPage > 2}">
         <a class="page-link">...</a>
@@ -91,7 +87,7 @@
       <!-- Dynamic Page Numbers -->
       <li class="page-item" th:each="i : ${#numbers.sequence(currentPage - 2 > 0 ? currentPage - 2 : 0, currentPage + 2 < totalPages - 1 ? currentPage + 2 : totalPages - 1)}"
           th:classappend="${i == currentPage} ? 'active'">
-        <a class="page-link" th:href="@{/payslip/list(page=${i}, size=${pageSize})}" th:text="${i + 1}"></a>
+        <a class="page-link" th:href="@{/payslip/MyPayslips(page=${i}, size=${pageSize})}" th:text="${i + 1}"></a>
       </li>
 
       <!-- End of Pagination Numbers -->
@@ -99,12 +95,12 @@
         <a class="page-link">...</a>
       </li>
       <li class="page-item" th:if="${currentPage < totalPages - 3}">
-        <a class="page-link" th:href="@{/payslip/list(page=${totalPages - 1}, size=${pageSize})}" th:text="${totalPages}"></a>
+        <a class="page-link" th:href="@{/payslip/MyPayslips(page=${totalPages - 1}, size=${pageSize})}" th:text="${totalPages}"></a>
       </li>
 
       <!-- Next Button -->
       <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
-        <a class="page-link" th:href="@{/payslip/list(page=${currentPage + 1}, size=${pageSize})}">Next</a>
+        <a class="page-link" th:href="@{/payslip/MyPayslips(page=${currentPage + 1}, size=${pageSize})}">Next</a>
       </li>
     </ul>
   </nav>

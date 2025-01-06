@@ -68,6 +68,16 @@ public class RolesInitializer {
                                 System.out.println("SUPPORT  created.");
                             }
 
+                            // check if PROCUREMENT role exists if not create it
+                               Role procurementRole = roleRepository.findByRoleName("PROCUREMENT").orElse(null);
+                            if(procurementRole == null)
+                            {
+                                procurementRole = new Role();
+                                procurementRole.setRoleName("PROCUREMENT");
+                                roleRepository.save(procurementRole);
+                                System.out.println("PROCUREMENT Role Created");
+                            }
+
                        };
 
     }

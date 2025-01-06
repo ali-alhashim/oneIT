@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -26,8 +27,9 @@ public class Payslip {
 
     private String status;
 
-    private Date periodStart;
-    private Date periodEnd;
+    private LocalDate periodStart;
+    private LocalDate periodEnd;
+
     private String codeName; //Month-Year like 01-2024
 
     private BigDecimal grossEarning;
@@ -73,19 +75,19 @@ public class Payslip {
         this.employee = employee;
     }
 
-    public Date getPeriodStart() {
+    public LocalDate getPeriodStart() {
         return periodStart;
     }
 
-    public void setPeriodStart(Date periodStart) {
+    public void setPeriodStart(LocalDate periodStart) {
         this.periodStart = periodStart;
     }
 
-    public Date getPeriodEnd() {
+    public LocalDate getPeriodEnd() {
         return periodEnd;
     }
 
-    public void setPeriodEnd(Date periodEnd) {
+    public void setPeriodEnd(LocalDate periodEnd) {
         this.periodEnd = periodEnd;
     }
 

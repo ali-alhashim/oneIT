@@ -59,6 +59,7 @@ public class EmployeeDto {
     private boolean is_SUPPORT;
     private boolean is_ADMIN;
     private boolean is_HR;
+    private Boolean is_PROCUREMENT;
 
 
     private String personalMobile;
@@ -154,6 +155,14 @@ public class EmployeeDto {
 
     public boolean isIs_USER() {
         return is_USER;
+    }
+
+    public Boolean getIs_PROCUREMENT() {
+        return is_PROCUREMENT;
+    }
+
+    public void setIs_PROCUREMENT(Boolean is_PROCUREMENT) {
+        this.is_PROCUREMENT = is_PROCUREMENT;
     }
 
     public void setIs_USER(boolean is_USER) {

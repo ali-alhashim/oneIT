@@ -249,6 +249,13 @@ public class EmployeeController {
                employee.setRoles(roles);
            }
 
+        if(employeeDto.getIs_PROCUREMENT())
+        {
+            Role role = roleRepository.findByRoleName("PROCUREMENT").orElse(null);
+            roles.add(role);
+            employee.setRoles(roles);
+        }
+
 
             if(employeeDto.isIs_USER())
             {
@@ -623,6 +630,11 @@ public class EmployeeController {
                 employeeDto.setIs_HR(true);
             }
 
+            if(employee.getRoles().stream().anyMatch(role -> "PROCUREMENT".equals(role.getRoleName())))
+            {
+                employeeDto.setIs_PROCUREMENT(true);
+            }
+
 
             List<Department> departments = departmentRepository.findAll();
             model.addAttribute("employeeDto",employeeDto);
@@ -744,6 +756,13 @@ public class EmployeeController {
                     roles.add(role);
                     employee.setRoles(roles);
                 }
+
+            if(employeeDto.getIs_PROCUREMENT())
+            {
+                Role role = roleRepository.findByRoleName("PROCUREMENT").orElse(null);
+                roles.add(role);
+                employee.setRoles(roles);
+            }
                 //-------------/Roles
 
 

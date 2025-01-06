@@ -6,10 +6,7 @@ import com.alhashim.oneIT.dto.CalculateMinutesDto;
 import com.alhashim.oneIT.dto.DepartmentEmployeesDto;
 import com.alhashim.oneIT.dto.PayslipDto;
 import com.alhashim.oneIT.models.*;
-import com.alhashim.oneIT.repositories.DepartmentRepository;
-import com.alhashim.oneIT.repositories.EmployeeCalendarRepository;
-import com.alhashim.oneIT.repositories.EmployeeRepository;
-import com.alhashim.oneIT.repositories.PayslipRepository;
+import com.alhashim.oneIT.repositories.*;
 import com.alhashim.oneIT.services.SalaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +14,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Controller
@@ -41,6 +41,9 @@ public class PayslipController {
 
     @Autowired
     PayslipRepository payslipRepository;
+
+    @Autowired
+    PayslipLineRepository payslipLineRepository;
 
     @Autowired
     DepartmentRepository departmentRepository;
@@ -229,32 +232,23 @@ public class PayslipController {
 
     @PostMapping("/add")
     public String addPayslip(@RequestParam Map<String, String> formData) {
-        // To store the results of employee data extraction
         System.out.println("******** addPayslip ***************** ");
         Map<String, Object> employeeData = new HashMap<>();
 
-        // Extract CSRF token and other static fields first
+        // Extract CSRF token and other static fields
         String csrfToken = formData.get("_csrf");
         String codeName = formData.get("codeName");
-        String periodStart = formData.get("periodStart");
-        String periodEnd = formData.get("periodEnd");
-        String departmentId = formData.get("departmentId");
+        LocalDate periodStart = LocalDate.parse(formData.get("periodStart"));
+        LocalDate periodEnd = LocalDate.parse(formData.get("periodEnd"));
+        Long departmentId = Long.valueOf(formData.get("departmentId"));
 
-        // Store static data
-        employeeData.put("csrfToken", csrfToken);
-        employeeData.put("codeName", codeName);
-        employeeData.put("periodStart", periodStart);
-        employeeData.put("periodEnd", periodEnd);
-        employeeData.put("departmentId", departmentId);
-
-        // Now dynamically extract data for each employee by badge number
+        // Extract dynamic employee data by badge number
         for (String key : formData.keySet()) {
             if (key.startsWith("DeductedBasicSalary_")) {
-                String badgeNumber = key.split("_")[1]; // Extract badge number (e.g. A1095)
+                String badgeNumber = key.split("_")[1];
                 String deductedSalary = formData.get(key);
                 String totalMM = formData.get("TotalMM_" + badgeNumber);
 
-                // Store each employee's data by badge number
                 Map<String, String> employee = new HashMap<>();
                 employee.put("badgeNumber", badgeNumber);
                 employee.put("deductedBasicSalary", deductedSalary);
@@ -264,10 +258,152 @@ public class PayslipController {
             }
         }
 
-        // For testing purposes, printing out the collected data
+        // Print collected employee data for testing
         System.out.println(employeeData);
 
+        // Find department
+        Department department = departmentRepository.findById(departmentId).orElse(null);
+        if (department == null) {
+            return "/404";
+        }
+
+        List<Employee> employees = department.getEmployees().stream().toList();
+
+        employees.forEach(employee -> {
+            Payslip payslip = new Payslip();
+            payslip.setEmployee(employee);
+            payslip.setPeriodStart(periodStart);
+            payslip.setPeriodEnd(periodEnd);
+            payslip.setCodeName(codeName);
+            payslipRepository.save(payslip);
+
+            Map<String, String> employeeInfo = (Map<String, String>) employeeData.get("employee_" + employee.getBadgeNumber());
+
+            if (employeeInfo != null) {
+                String deductedBasicSalaryStr = employeeInfo.getOrDefault("deductedBasicSalary", "0");
+                String totalMM = employeeInfo.getOrDefault("totalMM", "0");
+                BigDecimal deductedBasicSalary = new BigDecimal(deductedBasicSalaryStr);
+                BigDecimal baseSalary = salaryService.getBasicSalaryForSalary(employee.getCurrentSalary());
+
+                // Deduct salary if necessary
+                if (deductedBasicSalary.compareTo(BigDecimal.ZERO) > 0) {
+                    BigDecimal toDeduct = baseSalary.subtract(deductedBasicSalary);
+
+                    PayslipLine payslipLine = new PayslipLine();
+                    payslipLine.setPayslip(payslip);
+                    payslipLine.setToDeduct(toDeduct);
+                    payslipLine.setPayDescription("Deduct Missing Minutes: " + totalMM);
+                    payslipLineRepository.save(payslipLine);
+                }
+
+                // Add benefits
+                List<BenefitDto> benefits = salaryService.getBenefitsForSalary(employee.getCurrentSalary());
+                benefits.forEach(benefitDto -> {
+                    PayslipLine payslipLine = new PayslipLine();
+                    payslipLine.setPayslip(payslip);
+                    payslipLine.setToDeduct(benefitDto.getToDeduct() != null ? benefitDto.getToDeduct() : BigDecimal.ZERO);
+                    payslipLine.setPayDescription(benefitDto.getPayDescription());
+                    payslipLine.setToPay(benefitDto.getToPay() != null ? benefitDto.getToPay() : BigDecimal.ZERO);
+                    payslipLineRepository.save(payslipLine);
+                });
+
+                // Add base salary as a payslip line
+                PayslipLine basicSalaryLine = new PayslipLine();
+                basicSalaryLine.setPayslip(payslip);
+                basicSalaryLine.setPayDescription("Basic Salary");
+                basicSalaryLine.setToPay(baseSalary);
+                payslipLineRepository.save(basicSalaryLine);
+
+                // Calculate gross earnings, deductions, and net pay
+                AtomicReference<BigDecimal> grossEarning = new AtomicReference<>(BigDecimal.ZERO);
+                AtomicReference<BigDecimal> grossDeduction = new AtomicReference<>(BigDecimal.ZERO);
+
+                List<PayslipLine> lines = payslipLineRepository.findByPayslip(payslip);
+
+                lines.forEach(line -> {
+                    BigDecimal toPay = line.getToPay() != null ? line.getToPay() : BigDecimal.ZERO;
+                    BigDecimal toDeduct = line.getToDeduct() != null ? line.getToDeduct() : BigDecimal.ZERO;
+
+                    grossEarning.set(grossEarning.get().add(toPay));
+                    grossDeduction.set(grossDeduction.get().add(toDeduct));
+                });
+
+                BigDecimal netPay = grossEarning.get().subtract(grossDeduction.get());
+
+                payslip.setGrossEarning(grossEarning.get());
+                payslip.setGrossDeduction(grossDeduction.get());
+                payslip.setNetPay(netPay);
+                payslipRepository.save(payslip);
+            }
+        });
+
         return "redirect:/payslip/list";
+    }
+
+
+
+    @GetMapping("/detail")
+    public String payslipDetail(@RequestParam Long id, Model model)
+    {
+        // check in current user is admin or hr or the owner of the record otherwise not allowed to view
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+
+        if(currentUser ==null)
+        {
+            return "/404";
+        }
+
+
+
+        Payslip payslip = payslipRepository.findById(id).orElse(null);
+        if(payslip == null)
+        {
+            return "/404";
+        }
+
+        if (!(currentUser.isAdmin() || currentUser.isHR() || currentUser.equals(payslip.getEmployee()))) {
+            return "/403";
+        }
+
+        model.addAttribute("payslip", payslip);
+        return "/payslip/detail";
+    }
+
+    @GetMapping("/MyPayslips")
+    public String myPayslips(Model model, @RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size)
+    {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+
+        if(currentUser == null)
+        {
+            return "/404";
+        }
+
+        Page<Payslip> payslipPage;
+
+        if(keyword !=null && !keyword.isEmpty())
+        {
+            // Implement a paginated search query in your repository
+            payslipPage = payslipRepository.findByKeywordAndEmployee(keyword,currentUser, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+        }
+        else
+        {
+            // Fetch all  with pagination
+            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+            payslipPage = payslipRepository.findAllForEmployee(currentUser, pageable);
+        }
+
+
+        model.addAttribute("payslips", payslipPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", payslipPage.getTotalPages());
+        model.addAttribute("pageSize", size);
+        model.addAttribute("totalItems", payslipPage.getTotalElements());
+        model.addAttribute("pageTitle","Payslip List");
+
+        return "/payslip/MyPayslips";
     }
 
 

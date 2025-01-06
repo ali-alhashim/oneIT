@@ -38,15 +38,25 @@
                 <h5>Profile</h5>
                 <hr/>
             </div>
-            <div class="col-3">
+            <div class="col-2">
                 <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change Password</button>
             </div>
 
             <div class="col-3">
-                <a class="btn  btn-secondary" href="#">Update My information</a>
+                <button class="btn  btn-secondary" data-bs-toggle="modal" data-bs-target="#updateMyInfoModal">Update My information</button>
             </div>
 
             <div class="col-3">
+                <button class="btn  btn-secondary">Add Document</button>
+            </div>
+
+            <div class="col-2">
+                <a class="btn  btn-secondary" href="/payslip/MyPayslips">My Payslips</a>
+            </div>
+
+
+
+            <div class="col-2">
                 <a class="btn  btn-secondary" th:href="@{/timesheet/employee(id=${employeeId})}">Timesheet</a>
             </div>
 
@@ -296,6 +306,73 @@
                  });
         </script>
         <!--/modal-->
+
+
+        <!--updateMyInfoModal-->
+        <div class="modal fade" id="updateMyInfoModal" tabindex="-1" aria-labelledby="updateMyInfoLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="updateMyInfoLabel">Update My Info</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <form id="updateMyInfoForm" method="post" action="/updateMyInfo"  th:with="_csrfToken=${_csrf.token}">
+
+
+
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+
+
+
+                            <div class="form-floating my-1">
+                                <input type="text" class="form-control" id="personalEmail"   name="personalEmail" th:value="${personalEmail}">
+                                <label for="personalEmail">Personal Email</label>
+                            </div>
+
+                            <div class="form-floating my-1">
+                                <input type="text" class="form-control" id="personalMobile"   name="personalMobile" th:value="${personalMobile}">
+                                <label for="personalMobile">Personal Mobile</label>
+                            </div>
+
+
+
+                            <div class="form-floating my-1">
+                                <input type="text" class="form-control"  id="emergencyContactName"  name="emergencyContactName" th:value="${emergencyContactName}">
+                                <label for="emergencyContactName">Emergency Contact Name</label>
+                            </div>
+
+                            <div class="form-floating my-1">
+                                <input type="text" class="form-control" id="emergencyContactMobile"   name="emergencyContactMobile" th:value="${emergencyContactMobile}">
+                                <label for="emergencyContactMobile">Emergency Contact Mobile</label>
+                            </div>
+
+
+
+                        </form>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="updateMyInfoButton">Update</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            $('#updateMyInfoButton').on('click', function ()
+               {
+                  const form = $('#updateMyInfoForm');
+
+
+                    form.submit(); // Submit the form if a value is not empty
+
+                 });
+        </script>
+        <!--/updateMyInfoModal-->
 
     </div>
 

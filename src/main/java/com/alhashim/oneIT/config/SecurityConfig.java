@@ -59,6 +59,20 @@ public class SecurityConfig  {
                         .requestMatchers("/login", "/otp", "/css/**", "/js/**", "/api/login", "/api/verify-totp", "/android/oneIT.apk").permitAll() // Allow public access to login and static resources
                         .requestMatchers("/employee/list").hasAnyRole("ADMIN","HR","SUPPORT")
                         .requestMatchers("/department/list").hasAnyRole("ADMIN","HR","SUPPORT")
+                        .requestMatchers("/payslip/list").hasAnyRole("ADMIN","HR")
+                        .requestMatchers("/payslip/add").hasAnyRole("ADMIN","HR")
+                        .requestMatchers("/geolocation/list").hasAnyRole("ADMIN","HR")
+                        .requestMatchers("/geolocation/add").hasAnyRole("ADMIN","HR")
+                        .requestMatchers("/shiftSchedule/add").hasAnyRole("ADMIN","HR")
+                        .requestMatchers("/timesheet/list").hasAnyRole("ADMIN","HR","SUPPORT")
+                        .requestMatchers("/clearance/list").hasAnyRole("ADMIN","HR","MANAGER","SUPPORT")
+                        .requestMatchers("/system/logs").hasAnyRole("ADMIN","HR","SUPPORT")
+                        .requestMatchers("/system/roles").hasAnyRole("ADMIN","HR","SUPPORT")
+                        .requestMatchers("/system/database").hasAnyRole("ADMIN","HR","SUPPORT")
+                        .requestMatchers("/shiftSchedule/shiftScheduleDetail").hasAnyRole("ADMIN","HR","SUPPORT")
+                        .requestMatchers("/procurement/**").hasAnyRole("ADMIN","PROCUREMENT")
+
+
                         .anyRequest().authenticated()
 
                 )

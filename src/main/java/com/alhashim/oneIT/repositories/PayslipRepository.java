@@ -1,5 +1,6 @@
 package com.alhashim.oneIT.repositories;
 
+import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.models.Payslip;
 
 import org.springframework.data.domain.Page;
@@ -14,4 +15,16 @@ public interface PayslipRepository extends JpaRepository<Payslip, Long> {
             "LOWER(e.codeName) LIKE LOWER(CONCAT('%', :keyword, '%'))"
     )
     Page<Payslip> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
+
+
+
+    @Query("SELECT e FROM Payslip e WHERE e.employee = :employee " +
+            "AND LOWER(e.codeName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    Page<Payslip> findByKeywordAndEmployee(@Param("keyword") String keyword,
+                                           @Param("employee") Employee employee,
+                                           Pageable pageable);
+
+
+    @Query("SELECT e FROM Payslip e WHERE e.employee = :employee ")
+    Page<Payslip> findAllForEmployee(@Param("employee") Employee employee,Pageable pageable);
 }

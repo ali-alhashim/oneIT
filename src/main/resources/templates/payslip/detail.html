@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+
+</head>
+<body class="bg-body-secondary">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+
+
+<div class="container bordered my-5">
+
+
+
+  <div class="row rounded border p-4 bg-light">
+
+    <table class="table">
+      <tr>
+        <td>ID</td><td th:text="${payslip.id}">
+      </tr>
+      <tr>
+        <td>created At</td><td th:text="${payslip.createdAt}">
+      </tr>
+      <tr>
+        <td>Code Name</td><td th:text="${payslip.codeName}"></td>
+      </tr>
+      <tr>
+        <td>Period Start</td><td th:text="${payslip.periodStart}"></td>
+      </tr>
+
+      <tr>
+        <td>Period End</td><td th:text="${payslip.periodEnd}"></td>
+      </tr>
+
+      <tr>
+        <td>Name</td><td th:text="${payslip.employee.name}"></td>
+      </tr>
+      <tr>
+        <td>BadgeNumber</td><td th:text="${payslip.employee.badgeNumber}"></td>
+      </tr>
+
+      <tr>
+        <td>Gross Earning</td><td th:text="${payslip.grossEarning}"></td>
+      </tr>
+
+      <tr>
+        <td>Gross Deduction</td><td th:text="${payslip.grossDeduction}"></td>
+      </tr>
+
+      <tr>
+        <td>Net Pay</td><td th:text="${payslip.netPay}"></td>
+      </tr>
+
+    </table>
+
+    <hr>
+
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Pay Description</th>
+        <th>To Pay</th>
+        <th>To Deduct</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="line: ${payslip.getLines()}">
+        <td th:text="${line.payDescription}"></td>
+        <td th:text="${line.toPay}"></td>
+        <td th:text="${line.toDeduct}"></td>
+      </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+
+
+
+
+
+</div>
+
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

@@ -6,10 +6,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "employees")
@@ -30,6 +27,9 @@ public class Employee {
 
 
     private String personalEmail;
+
+    private String emergencyContactName;
+    private String emergencyContactMobile;
 
 
     private String workMobile;
@@ -112,6 +112,18 @@ public class Employee {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new HashSet<>();
+
+    public Boolean isAdmin() {
+        return this.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("ADMIN"));
+    }
+
+    public Boolean isHR() {
+        return this.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("HR"));
+    }
+
+    public Boolean isSupport() {
+        return this.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("SUPPORT"));
+    }
 
 
     @OneToMany(mappedBy = "employee")
@@ -540,5 +552,21 @@ public class Employee {
                 .sorted((s1, s2) -> s2.getCreatedAt().compareTo(s1.getCreatedAt()))  // Sort by createdAt DESC
                 .findFirst()
                 .orElse(null);  // Return the most recent or null if no salary exists
+    }
+
+    public String getEmergencyContactName() {
+        return emergencyContactName;
+    }
+
+    public void setEmergencyContactName(String emergencyContactName) {
+        this.emergencyContactName = emergencyContactName;
+    }
+
+    public String getEmergencyContactMobile() {
+        return emergencyContactMobile;
+    }
+
+    public void setEmergencyContactMobile(String emergencyContactMobile) {
+        this.emergencyContactMobile = emergencyContactMobile;
     }
 }

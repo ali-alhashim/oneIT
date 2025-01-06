@@ -119,6 +119,12 @@ public class TimesheetController {
 
         ShiftSchedule shiftSchedule = employee.getShiftSchedule();
 
+        if(shiftSchedule ==null)
+        {
+            model.addAttribute("message", "shiftSchedule is null");
+            return "/404";
+        }
+
         // Group EmployeeCalendar by dayDate to handle multiple records for the same date
         Map<LocalDate, List<EmployeeCalendar>> calendarMap = employeeCalendar.stream()
                 .collect(Collectors.groupingBy(EmployeeCalendar::getDayDate));

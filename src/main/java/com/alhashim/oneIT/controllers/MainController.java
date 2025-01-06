@@ -88,6 +88,9 @@ public class MainController {
             model.addAttribute("workEmail", employee.getWorkEmail());
             model.addAttribute("workMobile",employee.getWorkMobile());
             model.addAttribute("personalMobile", employee.getPersonalMobile());
+            model.addAttribute("personalEmail", employee.getPersonalEmail());
+            model.addAttribute("emergencyContactName", employee.getEmergencyContactName());
+            model.addAttribute("emergencyContactMobile", employee.getEmergencyContactMobile());
 
             int laptopCount = deviceRepository.countByEmployeeAndCategory(employee, "Laptop");
             model.addAttribute("laptopCount",laptopCount);
@@ -157,6 +160,23 @@ public class MainController {
             session.invalidate(); // Invalidate the session
         }
         return "logout";
+    }
+
+    @PostMapping("/updateMyInfo")
+    public String updateMyInfo(@RequestParam String personalEmail, @RequestParam String personalMobile, @RequestParam String emergencyContactName, @RequestParam String emergencyContactMobile)
+    {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        if(currentUser ==null)
+        {
+            return "/404";
+        }
+        currentUser.setPersonalEmail(personalEmail);
+        currentUser.setPersonalMobile(personalMobile);
+        currentUser.setEmergencyContactName(emergencyContactName);
+        currentUser.setEmergencyContactMobile(emergencyContactMobile);
+        employeeRepository.save(currentUser);
+        return "redirect:/dashboard";
     }
 
     @PostMapping("/changePassword")
