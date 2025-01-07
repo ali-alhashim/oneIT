@@ -1,17 +1,20 @@
 package com.alhashim.oneIT.controllers;
 
 
+import com.alhashim.oneIT.config.DatabaseConfig;
 import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.models.Role;
 import com.alhashim.oneIT.models.SystemLog;
 import com.alhashim.oneIT.repositories.EmployeeRepository;
 import com.alhashim.oneIT.repositories.RoleRepository;
 import com.alhashim.oneIT.repositories.SystemLogRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.sql.DataSource;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,11 +32,24 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Controller
 @RequestMapping("/system")
 public class SystemController {
+
+    private final DatabaseConfig dbConfig;
+
+    private static final String BACKUP_FOLDER = "backup/";
+    private static final String PUBLIC_FOLDER_PATH = "public/";  // Same level as src
+
+    public SystemController(DatabaseConfig dbConfig) {
+        this.dbConfig = dbConfig;
+    }
 
 
 
@@ -173,4 +191,103 @@ public class SystemController {
 
         return String.format("%.2f MB", sizeInBytes / (1024.0 * 1024.0));
     }
+
+//*********************************** databaseBackup *************************
+    //sudo apt install mysql-client
+    //sudo yum install mysql
+    //brew install mysql-client
+
+
+
+    @GetMapping("/databaseBackup")
+    public void databaseBackup(HttpServletResponse response)
+    {
+        // get public folder add to zip file
+        // get the database backup as .sql file add to zip file
+        // name the zip file of current date as oneIT_backup_NOV_5_2025
+        // download the zip file to client pc
+        String sqlBackupPath = BACKUP_FOLDER + "database_backup.sql";
+        String zipFileName = "oneIT_backup_" + new SimpleDateFormat("MMM_dd_yyyy").format(new Date()) + ".zip";
+
+        try {
+            // Step 1: Generate Database Backup
+            generateDatabaseBackup(sqlBackupPath);
+
+            // Step 2: Prepare Response for ZIP Download
+            response.setContentType("application/zip");
+            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + zipFileName);
+
+            // Step 3: Create ZIP File and Add Contents
+            try (ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream())) {
+                addFileToZip(sqlBackupPath, zipOut);
+
+                File publicFolder = new File(PUBLIC_FOLDER_PATH);
+                if (publicFolder.exists() && publicFolder.isDirectory()) {
+                    zipFolder(publicFolder, publicFolder.getName(), zipOut);
+                } else {
+                    throw new RuntimeException("Public folder not found at " + publicFolder.getAbsolutePath());
+                }
+                zipOut.close();
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to create backup zip");
+        }
+
+    } // endBackup
+    // Generate the .sql backup using mysqldump
+    private void generateDatabaseBackup(String sqlBackupPath) throws IOException, InterruptedException {
+        File backupDir = new File(BACKUP_FOLDER);
+        if (!backupDir.exists()) {
+            backupDir.mkdirs();
+        }
+
+        // update the path as per mysqldump location in server
+        String command = String.format(
+                "/opt/homebrew/opt/mysql-client/bin/mysqldump -u%s -p%s %s -r %s",
+                dbConfig.getUsername(), dbConfig.getPassword(), dbConfig.getName(), sqlBackupPath
+        );
+
+        Process process = Runtime.getRuntime().exec(command);
+        int processComplete = process.waitFor();
+
+        if (processComplete != 0) {
+            throw new RuntimeException("Database backup process failed");
+        }
+    }
+
+    private void addFileToZip(String filePath, ZipOutputStream zipOut) throws IOException {
+        File fileToZip = new File(filePath);
+        if (fileToZip.exists()) {
+            try (FileInputStream fis = new FileInputStream(fileToZip)) {
+                ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
+                zipOut.putNextEntry(zipEntry);
+
+                byte[] bytes = new byte[1024];
+                int length;
+                while ((length = fis.read(bytes)) >= 0) {
+                    zipOut.write(bytes, 0, length);
+                }
+            }
+        }
+    }
+
+    private void zipFolder(File folder, String parentFolder, ZipOutputStream zipOut) throws IOException {
+        for (File file : folder.listFiles()) {
+            if (file.isDirectory()) {
+                zipFolder(file, parentFolder + "/" + file.getName(), zipOut);
+            } else {
+                try (FileInputStream fis = new FileInputStream(file)) {
+                    ZipEntry zipEntry = new ZipEntry(parentFolder + "/" + file.getName());
+                    zipOut.putNextEntry(zipEntry);
+
+                    byte[] bytes = new byte[1024];
+                    int length;
+                    while ((length = fis.read(bytes)) >= 0) {
+                        zipOut.write(bytes, 0, length);
+                    }
+                }
+            }
+        }
+    } //End zip Folder
 }

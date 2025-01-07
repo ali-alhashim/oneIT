@@ -71,6 +71,7 @@ public class SecurityConfig  {
                         .requestMatchers("/system/database").hasAnyRole("ADMIN","HR","SUPPORT")
                         .requestMatchers("/shiftSchedule/shiftScheduleDetail").hasAnyRole("ADMIN","HR","SUPPORT")
                         .requestMatchers("/procurement/**").hasAnyRole("ADMIN","PROCUREMENT")
+                        .requestMatchers("/system/databaseBackup").hasAnyRole("ADMIN")
 
 
                         .anyRequest().authenticated()

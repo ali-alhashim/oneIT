@@ -18,7 +18,7 @@ target/
 *.iws
 *.iml
 *.ipr
-
+*.sql
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -34,6 +34,7 @@ build/
 
 ### public files ###
 public/
+backup/
 
 ## env.properties
 src/main/resources/config.properties
