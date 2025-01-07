@@ -60,6 +60,9 @@ public class EmployeeDto {
     private boolean is_ADMIN;
     private boolean is_HR;
     private Boolean is_PROCUREMENT;
+    private Boolean is_MEDICAL;
+    private Boolean is_VEHICLE;
+    private Boolean is_FINANCE;
 
 
     private String personalMobile;
@@ -304,5 +307,29 @@ public class EmployeeDto {
 
     public void setCitizenship(String citizenship) {
         this.citizenship = citizenship;
+    }
+
+    public Boolean getIs_MEDICAL() {
+        return is_MEDICAL;
+    }
+
+    public void setIs_MEDICAL(Boolean is_MEDICAL) {
+        this.is_MEDICAL = is_MEDICAL;
+    }
+
+    public Boolean getIs_VEHICLE() {
+        return is_VEHICLE;
+    }
+
+    public void setIs_VEHICLE(Boolean is_VEHICLE) {
+        this.is_VEHICLE = is_VEHICLE;
+    }
+
+    public Boolean getIs_FINANCE() {
+        return is_FINANCE;
+    }
+
+    public void setIs_FINANCE(Boolean is_FINANCE) {
+        this.is_FINANCE = is_FINANCE;
     }
 }

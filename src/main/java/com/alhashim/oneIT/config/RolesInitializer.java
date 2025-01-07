@@ -78,6 +78,37 @@ public class RolesInitializer {
                                 System.out.println("PROCUREMENT Role Created");
                             }
 
+                          //MEDICAL
+                           Role medicalRole = roleRepository.findByRoleName("MEDICAL").orElse(null);
+                            if(medicalRole ==null)
+                            {
+                                medicalRole = new Role();
+                                medicalRole.setRoleName("MEDICAL");
+                                roleRepository.save(medicalRole);
+                                System.out.println("MEDICAL Role Created");
+                            }
+                          //VEHICLE
+
+                            Role vehicleRole = roleRepository.findByRoleName("VEHICLE").orElse(null);
+                            if(vehicleRole ==null)
+                            {
+                                vehicleRole = new Role();
+                                vehicleRole.setRoleName("VEHICLE");
+                                roleRepository.save(vehicleRole);
+                                System.out.println("VEHICLE Role Created");
+                            }
+                          //FINANCE
+
+                        Role financeRole = roleRepository.findByRoleName("FINANCE").orElse(null);
+                        if(financeRole ==null)
+                        {
+                            financeRole = new Role();
+                            financeRole.setRoleName("FINANCE");
+                            roleRepository.save(financeRole);
+                            System.out.println("FINANCE Role Created");
+                        }
+
+
                        };
 
     }

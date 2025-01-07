@@ -113,6 +113,7 @@ public class Employee {
     )
     private Set<Role> roles = new HashSet<>();
 
+
     public Boolean isAdmin() {
         return this.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("ADMIN"));
     }
@@ -123,6 +124,26 @@ public class Employee {
 
     public Boolean isSupport() {
         return this.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("SUPPORT"));
+    }
+
+    public Boolean isProcurement()
+    {
+        return this.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("PROCUREMENT"));
+    }
+
+    public Boolean isMedical()
+    {
+        return this.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("MEDICAL"));
+    }
+
+    public Boolean isVehicle()
+    {
+        return this.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("VEHICLE"));
+    }
+
+    public Boolean isFinance()
+    {
+        return this.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("FINANCE"));
     }
 
 

@@ -64,7 +64,10 @@ public class EmployeeController {
     SalaryRepository salaryRepository;
 
     @Autowired
-    EmployeeClearanceRepository employeeClearanceRepository; ;
+    EmployeeClearanceRepository employeeClearanceRepository;
+
+    @Autowired
+    NotificationRepository notificationRepository;
 
        //Employee list only with role of ROLE_ADMIN ROLE_HR, ROLE_SUPPORT
     @GetMapping("/list")
@@ -248,6 +251,27 @@ public class EmployeeController {
                roles.add(role);
                employee.setRoles(roles);
            }
+
+        if(employeeDto.getIs_MEDICAL())
+        {
+            Role role = roleRepository.findByRoleName("MEDICAL").orElse(null);
+            roles.add(role);
+            employee.setRoles(roles);
+        }
+
+        if(employeeDto.getIs_VEHICLE())
+        {
+            Role role = roleRepository.findByRoleName("VEHICLE").orElse(null);
+            roles.add(role);
+            employee.setRoles(roles);
+        }
+
+        if(employeeDto.getIs_FINANCE())
+        {
+            Role role = roleRepository.findByRoleName("FINANCE").orElse(null);
+            roles.add(role);
+            employee.setRoles(roles);
+        }
 
         if(employeeDto.getIs_PROCUREMENT())
         {
@@ -635,6 +659,21 @@ public class EmployeeController {
                 employeeDto.setIs_PROCUREMENT(true);
             }
 
+            if(employee.getRoles().stream().anyMatch(role -> "MEDICAL".equals(role.getRoleName())))
+            {
+                employeeDto.setIs_MEDICAL(true);
+            }
+
+            if(employee.getRoles().stream().anyMatch(role -> "VEHICLE".equals(role.getRoleName())))
+            {
+                employeeDto.setIs_VEHICLE(true);
+            }
+
+            if(employee.getRoles().stream().anyMatch(role -> "FINANCE".equals(role.getRoleName())))
+            {
+                employeeDto.setIs_FINANCE(true);
+            }
+
 
             List<Department> departments = departmentRepository.findAll();
             model.addAttribute("employeeDto",employeeDto);
@@ -760,6 +799,26 @@ public class EmployeeController {
             if(employeeDto.getIs_PROCUREMENT())
             {
                 Role role = roleRepository.findByRoleName("PROCUREMENT").orElse(null);
+                roles.add(role);
+                employee.setRoles(roles);
+            }
+
+            if(employeeDto.getIs_MEDICAL())
+            {
+                Role role = roleRepository.findByRoleName("MEDICAL").orElse(null);
+                roles.add(role);
+                employee.setRoles(roles);
+            }
+            if(employeeDto.getIs_VEHICLE())
+            {
+                Role role = roleRepository.findByRoleName("VEHICLE").orElse(null);
+                roles.add(role);
+                employee.setRoles(roles);
+            }
+
+            if(employeeDto.getIs_FINANCE())
+            {
+                Role role = roleRepository.findByRoleName("FINANCE").orElse(null);
                 roles.add(role);
                 employee.setRoles(roles);
             }
@@ -1008,6 +1067,7 @@ public class EmployeeController {
     }
 
 
+    //############ termination -------
 
 
     @PostMapping("/termination")
@@ -1035,6 +1095,81 @@ public class EmployeeController {
         employeeRepository.save(employee);
 
         employeeClearanceRepository.save(employeeClearance);
+
+
+        //send notification for HR, IT=support, Department Manager, medical, vehicle,finance
+        // each to get note & Signature
+        Department department = employee.getDepartment();
+        List<Employee> hrEmployees = employeeRepository.findByRoles_RoleName("HR");
+        List<Employee> itEmployees = employeeRepository.findByRoles_RoleName("SUPPORT");
+        List<Employee> medicalEmployees = employeeRepository.findByRoles_RoleName("MEDICAL");
+        List<Employee> vehicleEmployees = employeeRepository.findByRoles_RoleName("VEHICLE");
+        List<Employee> financeEmployees = employeeRepository.findByRoles_RoleName("FINANCE");
+
+        Employee directManager = department.getManager();
+
+        //send Notification to direct manager
+        Notification notification = new Notification();
+        notification.setEmployee(directManager);
+        notification.setCreatedAt(LocalDateTime.now());
+        notification.setSubject("Employee Clearance");
+        notification.setDescription("Employee Clearance For:"+employee.getName());
+        notification.setPageLink("/clearance/clearanceDetail?id="+employeeClearance.getId());
+        notificationRepository.save(notification);
+
+        hrEmployees.forEach(employee1 -> {
+            Notification notification1 = new Notification();
+            notification1.setEmployee(employee1);
+            notification1.setCreatedAt(LocalDateTime.now());
+            notification1.setSubject("Employee Clearance");
+            notification1.setDescription("Employee Clearance For:"+employee.getName());
+            notification1.setPageLink("/clearance/clearanceDetail?id="+employeeClearance.getId());
+            notificationRepository.save(notification1);
+        });
+
+        itEmployees.forEach(employee1 ->{
+            Notification notification1 = new Notification();
+            notification1.setEmployee(employee1);
+            notification1.setCreatedAt(LocalDateTime.now());
+            notification1.setSubject("Employee Clearance");
+            notification1.setDescription("Employee Clearance For:"+employee.getName());
+            notification1.setPageLink("/clearance/clearanceDetail?id="+employeeClearance.getId());
+            notificationRepository.save(notification1);
+        } );
+
+        medicalEmployees.forEach(employee1 -> {
+            Notification notification1 = new Notification();
+            notification1.setEmployee(employee1);
+            notification1.setCreatedAt(LocalDateTime.now());
+            notification1.setSubject("Employee Clearance");
+            notification1.setDescription("Employee Clearance For:"+employee.getName());
+            notification1.setPageLink("/clearance/clearanceDetail?id="+employeeClearance.getId());
+            notificationRepository.save(notification1);
+        });
+
+        vehicleEmployees.forEach(employee1 -> {
+            Notification notification1 = new Notification();
+            notification1.setEmployee(employee1);
+            notification1.setCreatedAt(LocalDateTime.now());
+            notification1.setSubject("Employee Clearance");
+            notification1.setDescription("Employee Clearance For:"+employee.getName());
+            notification1.setPageLink("/clearance/clearanceDetail?id="+employeeClearance.getId());
+            notificationRepository.save(notification1);
+        });
+
+        financeEmployees.forEach(employee1 -> {
+            Notification notification1 = new Notification();
+            notification1.setEmployee(employee1);
+            notification1.setCreatedAt(LocalDateTime.now());
+            notification1.setSubject("Employee Clearance");
+            notification1.setDescription("Employee Clearance For:"+employee.getName());
+            notification1.setPageLink("/clearance/clearanceDetail?id="+employeeClearance.getId());
+            notificationRepository.save(notification1);
+        });
+
+
+
+
         return "redirect:/clearance/list";
     }
 

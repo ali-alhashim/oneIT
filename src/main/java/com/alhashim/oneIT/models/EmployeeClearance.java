@@ -45,32 +45,38 @@ public class EmployeeClearance {
     @ManyToOne
     private Employee directManager;
     private Boolean  directManagerOk;
+    private String directManagerNote;
     private String managerSignatureFileName;
 
 
     @ManyToOne
     private Employee hr;
     private Boolean hrOk;
+    private String hrNote;
     private String hrSignatureFileName;
 
     @ManyToOne
     private Employee it;
     private Boolean itOk;
+    private String itNote;
     private String itSignatureFileName;
 
     @ManyToOne
     private Employee medical;
     private Boolean medicalOk;
+    private String medicalNote;
     private String medicalSignatureFileName;
 
     @ManyToOne
     private Employee vehicle;
     private Boolean vehicleOk;
+    private String vehicleNote;
     private String vehicleSignatureFileName;
 
     @ManyToOne
     private Employee finance;
     private Boolean financeOk;
+    private String financeNote;
     private String financeSignatureFileName;
 
 
@@ -341,5 +347,53 @@ public class EmployeeClearance {
 
     public void setContractType(String contractType) {
         this.contractType = contractType;
+    }
+
+    public String getDirectManagerNote() {
+        return directManagerNote;
+    }
+
+    public void setDirectManagerNote(String directManagerNote) {
+        this.directManagerNote = directManagerNote;
+    }
+
+    public String getHrNote() {
+        return hrNote;
+    }
+
+    public void setHrNote(String hrNote) {
+        this.hrNote = hrNote;
+    }
+
+    public String getItNote() {
+        return itNote;
+    }
+
+    public void setItNote(String itNote) {
+        this.itNote = itNote;
+    }
+
+    public String getMedicalNote() {
+        return medicalNote;
+    }
+
+    public void setMedicalNote(String medicalNote) {
+        this.medicalNote = medicalNote;
+    }
+
+    public String getVehicleNote() {
+        return vehicleNote;
+    }
+
+    public void setVehicleNote(String vehicleNote) {
+        this.vehicleNote = vehicleNote;
+    }
+
+    public String getFinanceNote() {
+        return financeNote;
+    }
+
+    public void setFinanceNote(String financeNote) {
+        this.financeNote = financeNote;
     }
 }
