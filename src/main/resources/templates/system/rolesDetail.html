@@ -149,7 +149,7 @@
 
         <form id="addEmployeeForm" method="post" action="/system/role/add-employee"  th:with="_csrfToken=${_csrf.token}">
 
-          <input type="hidden" name="roleId"  th:text="${role.id}"/>
+          <input type="hidden" name="roleId"  th:value="${role.id}"/>
 
           <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
 

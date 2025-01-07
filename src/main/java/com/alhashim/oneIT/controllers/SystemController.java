@@ -18,6 +18,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -35,6 +36,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -72,6 +74,27 @@ public class SystemController {
         model.addAttribute("roles", roles);
 
         return "/system/rolesList";
+    }
+
+    @PostMapping("/role/add-employee")
+    public String addRoleToEmployee(@RequestParam String badgeNumber, @RequestParam Long roleId)
+    {
+        Role role = roleRepository.findById(roleId).orElse(null);
+        if(role ==null)
+        {
+            return "/404";
+        }
+        Employee employee = employeeRepository.findByBadgeNumber(badgeNumber).orElse(null);
+        if(employee ==null)
+        {
+            return "/404";
+        }
+
+        Set<Role> roleSet = employee.getRoles();
+        roleSet.add(role);
+        employee.setRoles(roleSet);
+        employeeRepository.save(employee);
+        return "redirect:/system/rolesDetail?id="+roleId;
     }
 
     @GetMapping("/rolesDetail")
