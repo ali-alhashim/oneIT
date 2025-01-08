@@ -465,10 +465,25 @@ public class EmployeeController {
         try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_8))) {
             writer.write('\ufeff');
             // Write CSV header row
-            writer.println("badgeNumber,name,arName,workEmail,workMobile,status,birthDate,gender");
+            writer.println("badgeNumber,name,arName,workEmail,workMobile,status,birthDate,gender,govId,hireDate,officeLocation,citizenship,jobTitle,refId,personalEmail");
 
             employees.forEach(employee -> {
-                writer.println( employee.getBadgeNumber() +","+ employee.getName() +","+ employee.getArName() +","+ employee.getWorkEmail() +","+ employee.getWorkMobile() +","+ employee.getStatus() +","+ employee.getBirthDate() +","+ employee.getGender());
+                writer.println( employee.getBadgeNumber() +","+
+                                employee.getName() +","+
+                                employee.getArName() +","+
+                                employee.getWorkEmail() +","+
+                                employee.getWorkMobile() +","+
+                                employee.getStatus() +","+
+                                employee.getBirthDate() +","+
+                                employee.getGender() +","+
+                                employee.getGovId() +","+
+                                employee.getHireDate()+","+
+                                employee.getOfficeLocation()+","+
+                                employee.getCitizenship()+","+
+                                employee.getJobTitle()+","+
+                                employee.getRefId()+","+
+                                employee.getPersonalEmail()
+                );
             });
 
 
@@ -537,6 +552,23 @@ public class EmployeeController {
                 }
 
                 try {
+
+                    // badgeNumber =0
+                    // name =1
+                    // arName =2
+                    // workEmail = 3
+                    // workMobile = 4
+                    // status = 5
+                    // birthDate = 6
+                    // gender = 7
+                    // govId = 8
+                    // hireDate = 9
+                    // officeLocation = 10
+                    // citizenship = 11
+                    // jobTitle = 12
+                    // refId = 13
+                    // personalEmail = 14
+
                     Employee employee = new Employee();
                     employee.setBadgeNumber(data[0].trim()); // Mandatory field
 
@@ -557,6 +589,22 @@ public class EmployeeController {
 
                     // Handle gender
                     employee.setGender(data.length > 7 ? data[7].trim() : null);
+                    employee.setGovId(data.length > 8 ? data[8].trim(): null);
+
+
+                    // Handle birthDate parsing safely
+                    if (data.length > 9 && !data[9].trim().isEmpty()) {
+                        Date hireDate = dateFormat.parse(data[9].trim());
+                        employee.setHireDate(hireDate);
+                    } else {
+                        employee.setHireDate(null);
+                    }
+
+                    employee.setOfficeLocation(data.length > 10 ? data[10].trim(): null);
+                    employee.setCitizenship(data.length > 11 ? data[11].trim(): null);
+                    employee.setJobTitle(data.length > 12 ? data[12].trim(): null);
+                    employee.setRefId(data.length > 13 ? data[13].trim(): null);
+                    employee.setPersonalEmail(data.length > 14 ? data[14].trim(): null);
 
                     // Set other fields
                     employee.setRoles(roles);

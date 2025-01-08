@@ -71,6 +71,8 @@ public class Employee {
 
     private String govId;
 
+    private String refId;
+
     private Date hireDate;
 
     private String businessUnit;
@@ -589,5 +591,13 @@ public class Employee {
 
     public void setEmergencyContactMobile(String emergencyContactMobile) {
         this.emergencyContactMobile = emergencyContactMobile;
+    }
+
+    public String getRefId() {
+        return refId;
+    }
+
+    public void setRefId(String refId) {
+        this.refId = refId;
     }
 }
