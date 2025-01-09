@@ -73,9 +73,24 @@ public class ClearanceController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        boolean isDirectManager = false;
+        try{
+            Employee directManager =  clearance.getEmployee().getDepartment().getManager();
+
+            if(currentUser == directManager)
+            {
+                isDirectManager = true;
+            }
+           }
+        catch (Exception e)
+        {
+            System.out.println("No Department No Direct Manager");
+        }
+
 
         model.addAttribute("clearance", clearance);
         model.addAttribute("currentUser",currentUser);
+        model.addAttribute("isDirectManager", isDirectManager);
         return "/clearance/clearanceDetail";
     }
 
@@ -84,6 +99,14 @@ public class ClearanceController {
     {
         EmployeeClearance clearance = employeeClearanceRepository.findById(clearanceId).orElse(null);
         if(clearance ==null)
+        {
+            return "/404";
+        }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+
+        if(currentUser ==null)
         {
             return "/404";
         }
@@ -97,7 +120,47 @@ public class ClearanceController {
             {
                 fileType = "_financeSignature.png";
                 clearance.setFinanceSignatureFileName(clearance.getId() + fileType);
+                clearance.setFinance(currentUser);
             }
+
+            if(type.equalsIgnoreCase("Vehicle"))
+            {
+                fileType = "_vehicleSignature.png";
+                clearance.setVehicleSignatureFileName(clearance.getId() + fileType);
+                clearance.setVehicle(currentUser);
+            }
+
+            if(type.equalsIgnoreCase("Medical"))
+            {
+                fileType = "_medicalSignature.png";
+                clearance.setMedicalSignatureFileName(clearance.getId() + fileType);
+                clearance.setMedical(currentUser);
+            }
+
+            if(type.equalsIgnoreCase("IT"))
+            {
+                fileType = "_itSignature.png";
+                clearance.setItSignatureFileName(clearance.getId() + fileType);
+                clearance.setIt(currentUser);
+            }
+
+            if(type.equalsIgnoreCase("HR"))
+            {
+                fileType = "_hrSignature.png";
+                clearance.setHrSignatureFileName(clearance.getId() + fileType);
+                clearance.setHr(currentUser);
+            }
+
+            if(type.equalsIgnoreCase("directManager"))
+            {
+                fileType = "_directManagerSignature.png";
+                clearance.setManagerSignatureFileName(clearance.getId() + fileType);
+                clearance.setDirectManager(currentUser);
+            }
+
+
+
+
 
             // Define the directory and file path
             String directoryPath = "public/images/clearance/signature/";

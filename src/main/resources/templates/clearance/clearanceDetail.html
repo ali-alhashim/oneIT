@@ -22,6 +22,9 @@
         <td>Name</td><td th:text="${clearance.employee.name}"></td>
       </tr>
       <tr>
+        <td>AR.Name</td><td th:text="${clearance.employee.arName}"></td>
+      </tr>
+      <tr>
         <td>Badge Number</td><td th:text="${clearance.employee.badgeNumber}"></td>
       </tr>
 
@@ -62,60 +65,128 @@
       </thead>
       <tbody>
 
-      <tr>
-        <td th:text="${clearance.directManager !=null ? clearance.directManager.name : ''}"></td>
+      <tr> <!-- Signature directManager -->
+        <td th:text="${clearance.directManager !=null ? 'Direct Manager: '+ clearance.directManager.name : 'Direct Manager'}"></td>
         <td th:text="${clearance.directManagerNote}"></td>
         <td>
-          <img th:if="${clearance.managerSignatureFileName !=null}"  alt="No Signature !" th:src="@{/images/clearance/signature/{fileName}(fileName=${clearance.id + 'directManagerSignature.png'})}">
+          <img th:if="${clearance.managerSignatureFileName !=null}"  alt="No Signature !" th:src="@{/images/clearance/signature/{fileName}(fileName=${clearance.id + '_directManagerSignature.png'})}">
+          <div class="mx-5" th:if="${isDirectManager && clearance.managerSignatureFileName == null}">
+            <h5>Direct Manager Signature</h5>
+            <canvas id="signature-directManager" style=" border: 1px solid #ccc;"></canvas>
+            <div class="button-container">
+              <button id="clear-button-directManager" type="button">Clear</button>
+              <button id="save-button-directManager" type="button">Save</button>
+            </div>
+            <form id="signature-form-directManager" th:action="@{/clearance/uploadSignature}" method="post" enctype="multipart/form-data" th:with="_csrfToken=${_csrf.token}" hidden>
+              <input type="hidden" name="signature" id="signature-data-directManager">
+              <input type="hidden" name="type" value="directManager">
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+              <input type="hidden" name="clearanceId" th:value="${clearance.id}">
+            </form>
+          </div>
         </td>
-      </tr>
+      </tr> <!-- / Signature directManager -->
 
 
-      <tr>
-        <td th:text="${clearance.hr !=null ? clearance.hr.name : ''}"></td>
+      <tr><!-- Signature HR -->
+        <td th:text="${clearance.hr !=null ? 'HR Department: '+ clearance.hr.name : 'HR Department'}"></td>
         <td th:text="${clearance.hrNote}"></td>
         <td>
-          <img th:if="${clearance.hrSignatureFileName !=null}"  alt="No Signature !" th:src="@{/images/clearance/signature/{fileName}(fileName=${clearance.id + 'hrSignature.png'})}">
+          <img th:if="${clearance.hrSignatureFileName !=null}"  alt="No Signature !" th:src="@{/images/clearance/signature/{fileName}(fileName=${clearance.id + '_hrSignature.png'})}">
+          <div class="mx-5" th:if="${currentUser.isHR() && clearance.hrSignatureFileName == null}">
+            <h5>HR Signature</h5>
+            <canvas id="signature-HR" style=" border: 1px solid #ccc;"></canvas>
+            <div class="button-container">
+              <button id="clear-button-HR" type="button">Clear</button>
+              <button id="save-button-HR" type="button">Save</button>
+            </div>
+            <form id="signature-form-HR" th:action="@{/clearance/uploadSignature}" method="post" enctype="multipart/form-data" th:with="_csrfToken=${_csrf.token}" hidden>
+              <input type="hidden" name="signature" id="signature-data-HR">
+              <input type="hidden" name="type" value="HR">
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+              <input type="hidden" name="clearanceId" th:value="${clearance.id}">
+            </form>
+          </div>
         </td>
-      </tr>
+      </tr><!-- Signature HR -->
 
 
-      <tr>
-        <td th:text="${clearance.it !=null ? clearance.it.name : ''}"></td>
+      <tr><!-- Signature IT -->
+        <td th:text="${clearance.it !=null ? 'IT Department: '+clearance.it.name : 'IT Department'}"></td>
         <td th:text="${clearance.itNote}"></td>
         <td>
-          <img th:if="${clearance.itSignatureFileName !=null}"  alt="No Signature !" th:src="@{/images/clearance/signature/{fileName}(fileName=${clearance.id + 'itSignature.png'})}">
+          <img th:if="${clearance.itSignatureFileName !=null}"  alt="No Signature !" th:src="@{/images/clearance/signature/{fileName}(fileName=${clearance.id + '_itSignature.png'})}">
+          <div class="mx-5" th:if="${currentUser.isSupport() && clearance.itSignatureFileName == null}">
+            <h5>IT Signature</h5>
+            <canvas id="signature-IT" style=" border: 1px solid #ccc;"></canvas>
+            <div class="button-container">
+              <button id="clear-button-IT" type="button">Clear</button>
+              <button id="save-button-IT" type="button">Save</button>
+            </div>
+            <form id="signature-form-IT" th:action="@{/clearance/uploadSignature}" method="post" enctype="multipart/form-data" th:with="_csrfToken=${_csrf.token}" hidden>
+              <input type="hidden" name="signature" id="signature-data-IT">
+              <input type="hidden" name="type" value="IT">
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+              <input type="hidden" name="clearanceId" th:value="${clearance.id}">
+            </form>
+          </div>
         </td>
-      </tr>
+      </tr><!-- / Signature IT -->
 
 
 
-      <tr>
-        <td th:text="${clearance.medical !=null ? clearance.medical.name : ''}"></td>
+      <tr><!-- Signature Medical -->
+        <td th:text="${clearance.medical !=null ? 'Medical Department: '+ clearance.medical.name : 'Medical Department'}"></td>
         <td th:text="${clearance.medicalNote}"></td>
         <td>
-          <img th:if="${clearance.medicalSignatureFileName !=null}"  alt="No Signature !" th:src="@{/images/clearance/signature/{fileName}(fileName=${clearance.id + 'medicalSignature.png'})}">
+          <img th:if="${clearance.medicalSignatureFileName !=null}"  alt="No Signature !" th:src="@{/images/clearance/signature/{fileName}(fileName=${clearance.id + '_medicalSignature.png'})}">
+          <div class="mx-5" th:if="${currentUser.isMedical() && clearance.medicalSignatureFileName == null}">
+            <h5>Medical Signature</h5>
+            <canvas id="signature-Medical" style=" border: 1px solid #ccc;"></canvas>
+            <div class="button-container">
+              <button id="clear-button-Medical" type="button">Clear</button>
+              <button id="save-button-Medical" type="button">Save</button>
+            </div>
+            <form id="signature-form-Medical" th:action="@{/clearance/uploadSignature}" method="post" enctype="multipart/form-data" th:with="_csrfToken=${_csrf.token}" hidden>
+              <input type="hidden" name="signature" id="signature-data-Medical">
+              <input type="hidden" name="type" value="Medical">
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+              <input type="hidden" name="clearanceId" th:value="${clearance.id}">
+            </form>
+          </div>
         </td>
-      </tr>
+      </tr><!-- /Signature Medical -->
 
 
-      <tr>
-        <td th:text="${clearance.vehicle !=null ? clearance.vehicle.name : ''}"></td>
+      <tr><!-- Signature Vehicle -->
+        <td th:text="${clearance.vehicle !=null ? 'Vehicle Department: '+clearance.vehicle.name : 'Vehicle Department'}"></td>
         <td th:text="${clearance.vehicleNote}"></td>
         <td>
-          <img th:if="${clearance.vehicleSignatureFileName !=null}"  alt="No Signature !" th:src="@{/images/clearance/signature/{fileName}(fileName=${clearance.id + 'vehicleSignature.png'})}">
+          <img th:if="${clearance.vehicleSignatureFileName !=null}"  alt="No Signature !" th:src="@{/images/clearance/signature/{fileName}(fileName=${clearance.id + '_vehicleSignature.png'})}">
+          <div class="mx-5" th:if="${currentUser.isVehicle() && clearance.vehicleSignatureFileName == null}">
+            <h5>Vehicle Signature</h5>
+            <canvas id="signature-Vehicle" style=" border: 1px solid #ccc;"></canvas>
+            <div class="button-container">
+              <button id="clear-button-Vehicle" type="button">Clear</button>
+              <button id="save-button-Vehicle" type="button">Save</button>
+            </div>
+            <form id="signature-form-Vehicle" th:action="@{/clearance/uploadSignature}" method="post" enctype="multipart/form-data" th:with="_csrfToken=${_csrf.token}" hidden>
+              <input type="hidden" name="signature" id="signature-data-Vehicle">
+              <input type="hidden" name="type" value="Vehicle">
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+              <input type="hidden" name="clearanceId" th:value="${clearance.id}">
+            </form>
+          </div>
         </td>
-      </tr>
+      </tr><!-- Signature Vehicle -->
 
 
-      <tr>
-        <td th:text="${clearance.finance !=null ? clearance.finance.name : ''}"></td>
+      <tr> <!-- Signature Finance -->
+        <td th:text="${clearance.finance !=null ? 'Finance Department: '+ clearance.finance.name : 'Finance Department'}"></td>
         <td th:text="${clearance.financeNote}"></td>
         <td>
           <img th:if="${clearance.financeSignatureFileName !=null}"  alt="No Signature !" th:src="@{/images/clearance/signature/{fileName}(fileName=${clearance.id + '_financeSignature.png'})}">
 
-
-          <!-- Signature Finance -->
           <div class="mx-5" th:if="${currentUser.isFinance() && clearance.financeSignatureFileName == null}">
             <h5>Finance Signature</h5>
             <canvas id="signature-Finance" style=" border: 1px solid #ccc;"></canvas>
@@ -123,7 +194,7 @@
               <button id="clear-button-Finance" type="button">Clear</button>
               <button id="save-button-Finance" type="button">Save</button>
             </div>
-            <form id="signature-form-Finance" th:action="@{/clearance/uploadSignature}" method="post" enctype="multipart/form-data" h:with="_csrfToken=${_csrf.token}" hidden>
+            <form id="signature-form-Finance" th:action="@{/clearance/uploadSignature}" method="post" enctype="multipart/form-data" th:with="_csrfToken=${_csrf.token}" hidden>
               <input type="hidden" name="signature" id="signature-data-Finance">
               <input type="hidden" name="type" value="Finance">
               <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
@@ -132,9 +203,9 @@
           </div>
 
 
-
         </td>
-      </tr>
+
+      </tr> <!-- /Signature Finance -->
 
 
 
@@ -154,31 +225,171 @@
 
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
 <script>
+  document.addEventListener("DOMContentLoaded", () => {
+   // ----------Finance Signature ------------------
+   const canvasFinance = document.getElementById('signature-Finance');
+   if (canvasFinance) {
+     const signaturePadFinance = new SignaturePad(canvasFinance); // Fixed canvas variable
+     const clearButtonFinance = document.getElementById('clear-button-Finance');
+     const saveButtonFinance = document.getElementById('save-button-Finance');
+     const formFinance = document.getElementById('signature-form-Finance');
+     const signatureInputFinance = document.getElementById('signature-data-Finance');
 
-  // ----------Finance Signature ------------------
-  const canvas = document.getElementById('signature-Finance');
-  const signaturePad = new SignaturePad(canvas);
-  const clearButton = document.getElementById('clear-button-Finance');
-  const saveButton = document.getElementById('save-button-Finance');
-  const form = document.getElementById('signature-form-Finance');
-  const signatureInput = document.getElementById('signature-data-Finance');
+     // Clear the signature pad
+     clearButtonFinance.addEventListener('click', () => {
+       signaturePadFinance.clear();
+     });
 
-  // Clear the signature pad
-  clearButton.addEventListener('click', () => {
-      signaturePad.clear();
-  });
+     // Save the signature
+     saveButtonFinance.addEventListener('click', () => {
+       if (!signaturePadFinance.isEmpty()) {
+         const dataURL = signaturePadFinance.toDataURL();
+         signatureInputFinance.value = dataURL;
+         formFinance.submit();
+       } else {
+         alert('Please provide a signature first.');
+       }
+     });
+   }
+    // ---------- / Finance Signature ------------------
 
-  // Save the signature
-  saveButton.addEventListener('click', () => {
-      if (!signaturePad.isEmpty()) {
-          const dataURL = signaturePad.toDataURL();
-          signatureInput.value = dataURL;
-          form.submit();
-      } else {
-          alert('Please provide a signature first.');
-      }
-  });
-  // ---------- / Finance Signature ------------------
+   //-------------Vehicle------------------------------
+   const canvasVehicle = document.getElementById('signature-Vehicle');
+   if (canvasVehicle) {
+     const signaturePadVehicle = new SignaturePad(canvasVehicle); // Fixed canvas variable
+     const clearButtonVehicle = document.getElementById('clear-button-Vehicle');
+     const saveButtonVehicle = document.getElementById('save-button-Vehicle');
+     const formVehicle = document.getElementById('signature-form-Vehicle');
+     const signatureInputVehicle = document.getElementById('signature-data-Vehicle');
+
+     // Clear the signature pad
+     clearButtonVehicle.addEventListener('click', () => {
+       signaturePadVehicle.clear();
+     });
+
+     // Save the signature
+     saveButtonVehicle.addEventListener('click', () => {
+       if (!signaturePadVehicle.isEmpty()) {
+         const dataURL = signaturePadVehicle.toDataURL();
+         signatureInputVehicle.value = dataURL;
+         formVehicle.submit();
+       } else {
+         alert('Please provide a signature first.');
+       }
+     });
+   }
+
+    //------------- / Vehicle------------------------------
+
+    //--------------Medical---------------------------------
+     const canvasMedical = document.getElementById('signature-Medical');
+   if (canvasMedical) {
+     const signaturePadMedical = new SignaturePad(canvasMedical);
+     const clearButtonMedical = document.getElementById('clear-button-Medical');
+     const saveButtonMedical = document.getElementById('save-button-Medical');
+     const formMedical = document.getElementById('signature-form-Medical');
+     const signatureInputMedical = document.getElementById('signature-data-Medical');
+
+     // Clear the signature pad
+     clearButtonMedical.addEventListener('click', () => {
+       signaturePadMedical.clear();
+     });
+
+     // Save the signature
+     saveButtonMedical.addEventListener('click', () => {
+       if (!signaturePadMedical.isEmpty()) {
+         const dataURL = signaturePadMedical.toDataURL();
+         signatureInputMedical.value = dataURL;
+         formMedical.submit();
+       } else {
+         alert('Please provide a signature first.');
+       }
+     });
+   }
+    //--------------/Medical--------------------------------
+
+    //------------- IT -----------------------------------
+     const canvasIT = document.getElementById('signature-IT');
+   if (canvasIT) {
+     const signaturePadIT = new SignaturePad(canvasIT);
+     const clearButtonIT = document.getElementById('clear-button-IT');
+     const saveButtonIT = document.getElementById('save-button-IT');
+     const formIT = document.getElementById('signature-form-IT');
+     const signatureInputIT = document.getElementById('signature-data-IT');
+
+     // Clear the signature pad
+     clearButtonIT.addEventListener('click', () => {
+       signaturePadIT.clear();
+     });
+
+     // Save the signature
+     saveButtonIT.addEventListener('click', () => {
+       if (!signaturePadIT.isEmpty()) {
+         const dataURL = signaturePadIT.toDataURL();
+         signatureInputIT.value = dataURL;
+         formIT.submit();
+       } else {
+         alert('Please provide a signature first.');
+       }
+     });
+   }
+    //------------- / IT ---------------------------------
+
+    //------------- HR ---------------------------------
+     const canvasHR = document.getElementById('signature-HR');
+   if (canvasHR) {
+     const signaturePadHR = new SignaturePad(canvasHR);
+     const clearButtonHR = document.getElementById('clear-button-HR');
+     const saveButtonHR = document.getElementById('save-button-HR');
+     const formHR = document.getElementById('signature-form-HR');
+     const signatureInputHR = document.getElementById('signature-data-HR');
+
+     // Clear the signature pad
+     clearButtonHR.addEventListener('click', () => {
+       signaturePadHR.clear();
+     });
+
+     // Save the signature
+     saveButtonHR.addEventListener('click', () => {
+       if (!signaturePadHR.isEmpty()) {
+         const dataURL = signaturePadHR.toDataURL();
+         signatureInputHR.value = dataURL;
+         formHR.submit();
+       } else {
+         alert('Please provide a signature first.');
+       }
+     });
+   }
+    //-------------/ HR ---------------------------------
+
+
+    //------------directManager----------------
+     const canvasDirectManager = document.getElementById('signature-directManager');
+   if (canvasDirectManager) {
+     const signaturePadDirectManager = new SignaturePad(canvasDirectManager);
+     const clearButtonDirectManager = document.getElementById('clear-button-directManager');
+     const saveButtonDirectManager = document.getElementById('save-button-directManager');
+     const formDirectManager = document.getElementById('signature-form-directManager');
+     const signatureInputDirectManager = document.getElementById('signature-data-directManager');
+
+     // Clear the signature pad
+     clearButtonDirectManager.addEventListener('click', () => {
+       signaturePadDirectManager.clear();
+     });
+
+     // Save the signature
+     saveButtonDirectManager.addEventListener('click', () => {
+       if (!signaturePadDirectManager.isEmpty()) {
+         const dataURL = signaturePadDirectManager.toDataURL();
+         signatureInputDirectManager.value = dataURL;
+         formDirectManager.submit();
+       } else {
+         alert('Please provide a signature first.');
+       }
+     });
+   }
+    //------------/directManager---------------
+ });
 </script>
 
 

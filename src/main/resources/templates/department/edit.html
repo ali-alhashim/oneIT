@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+
+
+</head>
+<body class="bg-body-secondary">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container bordered my-5 ">
+
+  <!--Add Form-->
+  <div class="row rounded border p-4 bg-light">
+    <form method="post" enctype="multipart/form-data" th:object="${departmentDto}" th:with="_csrfToken=${_csrf.token}">
+
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+
+
+      <div class="form-floating my-1">
+        <input type="text" class="form-control" id="name"  name="name" th:field="${departmentDto.name}">
+        <label for="name">Name</label>
+
+        <p th:if="${#fields.hasErrors('name')}" th:errorclass="text-danger" th:errors="${departmentDto.name}"></p>
+      </div>
+
+      <div class="form-floating my-1">
+        <input type="text" class="form-control" id="arName"  name="arName" th:field="${departmentDto.arName}">
+        <label for="arName">Arabic Name</label>
+
+        <p th:if="${#fields.hasErrors('arName')}" th:errorclass="text-danger" th:errors="${departmentDto.arName}"></p>
+      </div>
+
+      <div class="form-floating my-1">
+        <input type="text" class="form-control" id="description"  name="description" th:field="${departmentDto.description}">
+        <label for="description">Description</label>
+
+        <p th:if="${#fields.hasErrors('description')}" th:errorclass="text-danger" th:errors="${departmentDto.description}"></p>
+      </div>
+
+
+
+
+
+      <hr/>
+      <div class="row">
+        <div class="col-2">
+          <label for="departmentManagerField">Department Manager</label>
+        </div>
+        <div class="col-10">
+          <select class="form-select"  id="departmentManagerField"  name="manager" th:field="${departmentDto.manager}">
+            <option
+                    th:each="employee: ${employees}"
+                    th:value="${employee.badgeNumber}"
+                    th:text="${employee.name} +'-'+ ${employee.arName}">
+
+            </option>
+
+          </select>
+          <p th:if="${#fields.hasErrors('manager')}" th:errorclass="text-danger" th:errors="${departmentDto.manager}"></p>
+        </div>
+      </div>
+      <hr/>
+
+      <script>
+        $(document).ready(function() {
+          $('#departmentManagerField').select2();
+        });
+      </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <div class="row justify-content-between my-3">
+        <div class="col-sm-4 d-grid">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+        <div class="col-sm-4  d-grid">
+          <a class="btn btn-outline-primary" href="/employee/list" role="button">Cancel</a>
+        </div>
+      </div>
+
+
+
+    </form>
+  </div>
+  <!--/Add Form -->
+
+</div>
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

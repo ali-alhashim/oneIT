@@ -50,6 +50,8 @@ public class Employee {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    private String educationTitle;
+
 
     private Date birthDate;
 
@@ -119,6 +121,8 @@ public class Employee {
     public Boolean isAdmin() {
         return this.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("ADMIN"));
     }
+
+
 
     public Boolean isHR() {
         return this.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("HR"));
@@ -599,5 +603,13 @@ public class Employee {
 
     public void setRefId(String refId) {
         this.refId = refId;
+    }
+
+    public String getEducationTitle() {
+        return educationTitle;
+    }
+
+    public void setEducationTitle(String educationTitle) {
+        this.educationTitle = educationTitle;
     }
 }

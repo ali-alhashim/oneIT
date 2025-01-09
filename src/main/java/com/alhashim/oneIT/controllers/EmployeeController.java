@@ -394,6 +394,7 @@ public class EmployeeController {
             model.addAttribute("MFA", MFA);
             model.addAttribute("employeeId", employee.getId());
             model.addAttribute("imageFileName", employee.getImageFileName());
+            model.addAttribute("refId", employee.getRefId());
             model.addAttribute("workEmail", employee.getWorkEmail());
             model.addAttribute("workMobile",employee.getWorkMobile());
             model.addAttribute("personalEmail", employee.getPersonalEmail());
@@ -465,7 +466,7 @@ public class EmployeeController {
         try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_8))) {
             writer.write('\ufeff');
             // Write CSV header row
-            writer.println("badgeNumber,name,arName,workEmail,workMobile,status,birthDate,gender,govId,hireDate,officeLocation,citizenship,jobTitle,refId,personalEmail");
+            writer.println("badgeNumber,name,arName,workEmail,workMobile,status,birthDate,gender,govId,hireDate,officeLocation,citizenship,jobTitle,refId,personalEmail,iban,educationTitle,personalMobile,maritalStatus");
 
             employees.forEach(employee -> {
                 writer.println( employee.getBadgeNumber() +","+
@@ -482,7 +483,11 @@ public class EmployeeController {
                                 employee.getCitizenship()+","+
                                 employee.getJobTitle()+","+
                                 employee.getRefId()+","+
-                                employee.getPersonalEmail()
+                                employee.getPersonalEmail()+","+
+                                employee.getIban() + ","+
+                                employee.getEducationTitle() + "," +
+                                employee.getPersonalMobile() + ","+
+                                employee.getMaritalStatus()
                 );
             });
 
@@ -568,8 +573,17 @@ public class EmployeeController {
                     // jobTitle = 12
                     // refId = 13
                     // personalEmail = 14
+                    // iban = 15
+                    // educationTitle = 16
+                    // personalMobile = 17
+                    // maritalStatus = 18
+                    Employee employee = employeeRepository.findByBadgeNumber(data[0].trim()).orElse(null);
+                    if(employee == null)
+                    {
+                         employee = new Employee();
+                    }
 
-                    Employee employee = new Employee();
+
                     employee.setBadgeNumber(data[0].trim()); // Mandatory field
 
                     // Use conditional checks for optional fields
@@ -605,6 +619,11 @@ public class EmployeeController {
                     employee.setJobTitle(data.length > 12 ? data[12].trim(): null);
                     employee.setRefId(data.length > 13 ? data[13].trim(): null);
                     employee.setPersonalEmail(data.length > 14 ? data[14].trim(): null);
+                    employee.setIban(data.length > 15 ? data[15].trim(): null);
+
+                    employee.setEducationTitle(data.length > 16 ? data[16].trim(): null);
+                    employee.setPersonalMobile(data.length > 17 ? data[17].trim(): null);
+                    employee.setMaritalStatus(data.length > 18 ? data[18].trim(): null);
 
                     // Set other fields
                     employee.setRoles(roles);

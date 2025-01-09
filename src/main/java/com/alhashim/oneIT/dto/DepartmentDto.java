@@ -11,6 +11,8 @@ public class DepartmentDto {
     private String description;
     private String manager; //his badge number
 
+    private String managerName;
+
     public String getName() {
         return name;
     }
@@ -41,5 +43,13 @@ public class DepartmentDto {
 
     public void setManager(String manager) {
         this.manager = manager;
+    }
+
+    public String getManagerName() {
+        return managerName;
+    }
+
+    public void setManagerName(String managerName) {
+        this.managerName = managerName;
     }
 }

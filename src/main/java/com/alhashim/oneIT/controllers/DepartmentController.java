@@ -5,9 +5,11 @@ import com.alhashim.oneIT.dto.DepartmentDto;
 
 import com.alhashim.oneIT.models.Department;
 import com.alhashim.oneIT.models.Employee;
+import com.alhashim.oneIT.models.Role;
 import com.alhashim.oneIT.models.SystemLog;
 import com.alhashim.oneIT.repositories.DepartmentRepository;
 import com.alhashim.oneIT.repositories.EmployeeRepository;
+import com.alhashim.oneIT.repositories.RoleRepository;
 import com.alhashim.oneIT.repositories.SystemLogRepository;
 import com.alhashim.oneIT.services.DepartmentService;
 import jakarta.validation.Valid;
@@ -40,6 +42,9 @@ public class DepartmentController {
 
     @Autowired
     SystemLogRepository systemLogRepository;
+
+    @Autowired
+    RoleRepository roleRepository;
 
 
     @GetMapping("/list")
@@ -104,6 +109,13 @@ public class DepartmentController {
         if(departmentManager !=null)
         {
             department.setManager(departmentManager);
+            // set Role MANAGER for departmentManager
+            Set<Role> roles = departmentManager.getRoles();
+            Role managerRole = roleRepository.findByRoleName("MANAGER").orElse(null);
+            roles.add(managerRole);
+
+            departmentManager.setRoles(roles);
+            employeeRepository.save(departmentManager);
         }
 
         try
@@ -199,5 +211,23 @@ public class DepartmentController {
             systemLogRepository.save(systemLog);
         }
         return "redirect:/department/detail?id="+addEmpDepartmentDto.getDepartmentId().toString();
+    }
+
+    @GetMapping("/edit")
+    public String editDepartment(@RequestParam Long id, Model model)
+    {
+        Department department = departmentRepository.findById(id).orElse(null);
+
+        DepartmentDto departmentDto = new DepartmentDto();
+        List<Employee> employees = employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+
+        departmentDto.setManager(department.getManager().getBadgeNumber());
+        departmentDto.setName(department.getName());
+        departmentDto.setArName(department.getArName());
+        departmentDto.setManagerName(department.getManager().getName());
+
+        model.addAttribute("departmentDto", departmentDto);
+        model.addAttribute("employees", employees);
+        return "/department/edit";
     }
 }
