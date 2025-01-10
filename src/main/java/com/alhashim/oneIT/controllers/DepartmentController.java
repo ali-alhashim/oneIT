@@ -225,9 +225,42 @@ public class DepartmentController {
         departmentDto.setName(department.getName());
         departmentDto.setArName(department.getArName());
         departmentDto.setManagerName(department.getManager().getName());
-
+        departmentDto.setDescription(department.getDescription());
+        departmentDto.setId(department.getId());
         model.addAttribute("departmentDto", departmentDto);
         model.addAttribute("employees", employees);
         return "/department/edit";
+    }
+
+
+    @PostMapping("/edit")
+    public String editDepartmentDo(@Valid @ModelAttribute DepartmentDto departmentDto)
+    {
+        Department department = departmentRepository.findById(departmentDto.getId()).orElse(null);
+        if(department ==null)
+        {
+            return "/404";
+        }
+
+        Employee employee = employeeRepository.findByBadgeNumber(departmentDto.getManager()).orElse(null);
+        if(employee ==null)
+        {
+            return "/404";
+        }
+
+        department.setManager(employee);
+        department.setName(departmentDto.getName());
+        department.setArName(departmentDto.getArName());
+        department.setDescription(departmentDto.getDescription());
+        departmentRepository.save(department);
+
+        Set<Role> roles = employee.getRoles();
+        Role managerRole = roleRepository.findByRoleName("MANAGER").orElse(null);
+        roles.add(managerRole);
+
+        employee.setRoles(roles);
+        employeeRepository.save(employee);
+
+        return "redirect:/department/detail?id="+departmentDto.getId();
     }
 }

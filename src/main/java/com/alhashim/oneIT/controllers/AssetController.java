@@ -84,6 +84,7 @@ public class AssetController {
 
     if(isSupportOrAdminOrHR)
     {
+        System.out.println("isSupportOrAdminOrHR");
         if(keyword !=null && !keyword.isEmpty())
         {
             // Implement a paginated search query in your repository
@@ -99,6 +100,7 @@ public class AssetController {
     }
     else if (isManager)
     {
+        System.out.println("isManager");
         Department department = currentUser.getDepartment();
         if(keyword !=null && !keyword.isEmpty())
         {
@@ -117,6 +119,7 @@ public class AssetController {
     {
         if(keyword !=null && !keyword.isEmpty())
         {
+            System.out.println("normal user");
             // Implement a paginated search query in your repository
             assetPage = assetRepository.findByKeywordAndEmployee(keyword,currentUser, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
             model.addAttribute("keyword",keyword);

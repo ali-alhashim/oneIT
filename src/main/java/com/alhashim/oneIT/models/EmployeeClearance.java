@@ -23,9 +23,11 @@ public class EmployeeClearance {
     private LocalDateTime updatedAt;
 
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
+
+
     private String employeeSignatureFileName;
 
     private LocalDate lastDay;

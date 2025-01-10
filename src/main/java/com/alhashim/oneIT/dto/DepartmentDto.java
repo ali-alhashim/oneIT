@@ -10,6 +10,7 @@ public class DepartmentDto {
     private String arName;
     private String description;
     private String manager; //his badge number
+    private Long id;
 
     private String managerName;
 
@@ -51,5 +52,13 @@ public class DepartmentDto {
 
     public void setManagerName(String managerName) {
         this.managerName = managerName;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }
