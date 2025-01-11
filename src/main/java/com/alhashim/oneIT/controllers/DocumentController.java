@@ -1,28 +1,34 @@
 package com.alhashim.oneIT.controllers;
-
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 
 import com.alhashim.oneIT.dto.DocumentDto;
 import com.alhashim.oneIT.models.Document;
 import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.repositories.DocumentRepository;
 import com.alhashim.oneIT.repositories.EmployeeRepository;
+
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -104,4 +110,57 @@ public class DocumentController {
 
         return "redirect:/dashboard";
     }
+
+    //------
+    @GetMapping("/{badgeNumber}/{fileName}")
+    public ResponseEntity<Resource> getDocument( @PathVariable String badgeNumber,  @PathVariable String fileName, Principal principal)
+    {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        Document document = documentRepository.findByFileName(fileName).orElse(null);
+
+        if(document ==null)
+        {
+            return ResponseEntity.notFound().build();
+        }
+
+        if(currentUser == null)
+        {
+            return ResponseEntity.notFound().build();
+        }
+
+
+        // Check if the user is Not owner or Not admin or  Not HR then FORBIDDEN
+        if (currentUser != document.getEmployee() && !currentUser.isAdmin() && !currentUser.isHR())
+        {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+
+        // Load the document
+        Resource file = loadDocument(badgeNumber, fileName);
+        if (file == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Return the file as a response
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .body(file);
+    }
+
+
+
+
+
+    private Resource loadDocument(String badgeNumber, String fileName) {
+        // Load the document from storage
+        Path filePath = Paths.get("public/document/" + badgeNumber + "/" + fileName);
+        try {
+            return new UrlResource(filePath.toUri());
+        } catch (MalformedURLException e) {
+            return null;
+        }
+    }
+    //------
 }
