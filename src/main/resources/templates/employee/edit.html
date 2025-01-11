@@ -23,6 +23,13 @@
             </div>
 
 
+            <div class="form-floating my-1">
+                <input type="text" class="form-control" id="refId"  name="refId" th:field="${employeeDto.refId}">
+                <label for="refId">Ref. Id</label>
+                <p th:if="${#fields.hasErrors('refId')}" th:errorclass="text-danger" th:errors="${employeeDto.refId}"></p>
+            </div>
+
+
 
             <div class="form-floating my-1">
                 <input type="text" class="form-control" id="name"  name="name" required th:field="${employeeDto.name}">

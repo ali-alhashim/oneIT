@@ -13,6 +13,8 @@ public class EmployeeDto {
 
     private String badgeNumber;
 
+    private String refId;
+
     private String arName;
 
     private String workEmail;
@@ -331,5 +333,13 @@ public class EmployeeDto {
 
     public void setIs_FINANCE(Boolean is_FINANCE) {
         this.is_FINANCE = is_FINANCE;
+    }
+
+    public String getRefId() {
+        return refId;
+    }
+
+    public void setRefId(String refId) {
+        this.refId = refId;
     }
 }

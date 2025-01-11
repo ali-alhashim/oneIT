@@ -20,11 +20,10 @@ public class Document {
     @Column(nullable = false)
     private String fileType; // Type of document (e.g., ID, Certificate, Passport)
 
+    private String description;
 
 
 
-    @Column(nullable = false)
-    private String contentType; // MIME type (e.g., application/pdf)
 
     @Column(nullable = false)
     private long fileSize; // Size of the file in bytes
@@ -63,13 +62,7 @@ public class Document {
 
 
 
-    public String getContentType() {
-        return contentType;
-    }
 
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
 
     public long getFileSize() {
         return fileSize;
@@ -77,5 +70,13 @@ public class Document {
 
     public void setFileSize(long fileSize) {
         this.fileSize = fileSize;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

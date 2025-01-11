@@ -236,6 +236,7 @@ public class EmployeeController {
            employee.setStatus(employeeDto.getStatus());
            employee.setWorkMobile(employeeDto.getWorkMobile());
            employee.setWorkEmail(employeeDto.getWorkEmail());
+           employee.setRefId(employeeDto.getRefId());
 
            Department department = departmentRepository.findById(employeeDto.getDepartment()).orElse(null);
            if(department !=null)
@@ -694,6 +695,7 @@ public class EmployeeController {
             employeeDto.setGovId(employee.getGovId());
             employeeDto.setMaritalStatus(employee.getMaritalStatus());
             employeeDto.setSponsorName(employee.getSponsorName());
+            employeeDto.setRefId(employee.getRefId());
             //-
 
             if(employee.getRoles().stream().anyMatch(role -> "USER".equals(role.getRoleName())))
@@ -799,6 +801,7 @@ public class EmployeeController {
             employee.setGovId(employeeDto.getGovId());
             employee.setMaritalStatus(employeeDto.getMaritalStatus());
             employee.setSponsorName(employeeDto.getSponsorName());
+            employee.setRefId(employeeDto.getRefId());
             //-
 
             employee.setPersonalEmail(employeeDto.getPersonalEmail());

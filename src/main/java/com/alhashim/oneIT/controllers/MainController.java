@@ -3,6 +3,8 @@ package com.alhashim.oneIT.controllers;
 import com.alhashim.oneIT.config.OtpValidator;
 import com.alhashim.oneIT.config.SecurityConfig;
 import com.alhashim.oneIT.dto.ChangePasswordDto;
+import com.alhashim.oneIT.dto.DocumentDto;
+import com.alhashim.oneIT.models.Document;
 import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.models.Notification;
 import com.alhashim.oneIT.models.SystemLog;
@@ -35,6 +37,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.IOException;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Controller
 
@@ -65,7 +68,7 @@ public class MainController {
         System.out.println("Welcome to Dashboard Page Name: " + employee.getName());
 
 
-
+        DocumentDto documentDto = new DocumentDto();
 
         //---------
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -78,8 +81,11 @@ public class MainController {
 
            ChangePasswordDto changePasswordDto = new ChangePasswordDto();
 
-           model.addAttribute("changePasswordDto",changePasswordDto);
+            List<Document> documents = currentUser.getDocuments();
 
+            model.addAttribute("documents",documents);
+            model.addAttribute("changePasswordDto",changePasswordDto);
+            model.addAttribute("documentDto",documentDto);
             model.addAttribute("badgeNumber", badgeNumber);
             model.addAttribute("employeeId", employee.getId());
             model.addAttribute("userName", employee.getName());

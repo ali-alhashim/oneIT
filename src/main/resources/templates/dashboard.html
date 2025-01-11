@@ -47,7 +47,7 @@
             </div>
 
             <div class="col-3">
-                <button class="btn  btn-secondary">Add Document</button>
+                <button class="btn  btn-secondary" data-bs-toggle="modal" data-bs-target="#uploadDocumentModal">Add Document</button>
             </div>
 
             <div class="col-2">
@@ -154,6 +154,20 @@
         </div>
         <!--/basic info -->
 
+        <hr/>
+        
+        <!-- documents -->
+        <div class="row rounded border p-4 bg-light">
+
+            <div th:each="document : ${documents}" class="text-center col">
+                <a target="_blank" th:href="@{/document/{badgeNumber}/{fileName}(badgeNumber=${badgeNumber}, fileName=${document.fileName})}">
+                    <img th:src="@{/img/File.png}" alt="..." />
+                    <p th:text="${document.fileType +'['+document.id+']'}"></p>
+                </a>
+            </div>
+
+        </div>
+        <!-- / documents -->
         <hr/>
 
         <!--Notification Center -->
@@ -370,11 +384,79 @@
 
                     form.submit(); // Submit the form if a value is not empty
 
-                 });
+               });
         </script>
         <!--/updateMyInfoModal-->
 
-    </div>
+
+
+
+        <!-- Upload Document Modal -->
+        <div class="modal fade" id="uploadDocumentModal" tabindex="-1" aria-labelledby="uploadDocumentLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="uploadDocumentLabel">Upload Document</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="uploadDocumentForm" enctype="multipart/form-data" th:object="${documentDto}" method="post" action="/document/upload" th:with="_csrfToken=${_csrf.token}">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+
+
+                            <div class="form-floating my-1">
+                                <select class="form-select" id="type" th:field="${documentDto.type}" required>
+                                    <option value="">Select Type</option>
+                                    <option value="GovernmentId">Government Id</option>
+                                    <option value="Passport">Passport</option>
+                                    <option value="DrivingLicense">Driving License</option>
+                                    <option value="Certificate">Certificate</option>
+                                </select>
+                                <label for="type">Document Type</label>
+                            </div>
+
+                            <div class="form-floating my-1">
+                                <input type="text" class="form-control" id="description" name="description" th:field="${documentDto.description}" required>
+                                <label for="description">Description</label>
+                                <p th:if="${#fields.hasErrors('description')}" th:errorclass="text-danger" th:errors="${documentDto.description}"></p>
+                            </div>
+                            <div class="form-floating my-1">
+                                <input type="file" class="form-control" id="documentFile" name="documentFile" th:field="${documentDto.documentFile}" required>
+                                <label for="documentFile">File [only PDF]</label>
+                                <p th:if="${#fields.hasErrors('documentFile')}" th:errorclass="text-danger" th:errors="${documentDto.documentFile}"></p>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="uploadDocumentButton">Upload</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+
+            $(document).ready(function () {
+                $('#uploadDocumentButton').on('click', function () {
+                    const form = $('#uploadDocumentForm');
+                    if ($('#type').val() && $('#description').val() && $('#documentFile').val()) {
+                        form.submit();
+                    } else {
+                        alert('Please fill in all required fields and attach a file.');
+                    }
+                });
+            });
+        </script>
+
+
+
+    </div> <!--/ Container -->
+
+
+
+
+
 
 
 
