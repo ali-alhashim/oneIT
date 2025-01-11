@@ -75,6 +75,8 @@ public class DocumentController {
             }
 
             String  storageFileName = documentDto.getType()+"_"+ documentFile.getOriginalFilename();
+            // add his badgeNumber in file name
+            String theFileName = currentUser.getBadgeNumber() +'_'+ storageFileName;
             String uploadDir = "public/document/"+currentUser.getBadgeNumber()+"/";
             Path uploadPath = Paths.get(uploadDir);
 
@@ -86,10 +88,10 @@ public class DocumentController {
                 }
 
                 InputStream inputStream = documentFile.getInputStream();
-                Files.copy(inputStream, Paths.get(uploadDir + storageFileName), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(inputStream, Paths.get(uploadDir + theFileName), StandardCopyOption.REPLACE_EXISTING);
 
 
-                document.setFileName(storageFileName);
+                document.setFileName(theFileName);
                 document.setEmployee(currentUser);
                 document.setFileSize(documentFile.getSize());
                 document.setDescription(documentDto.getDescription());
