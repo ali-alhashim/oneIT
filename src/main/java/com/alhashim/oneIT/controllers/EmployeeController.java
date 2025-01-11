@@ -382,7 +382,14 @@ public class EmployeeController {
                 MFA = "Active";
             }
 
+            List<Document> documents = employee.getDocuments();
+
             restPasswordDto.setBadgeNumber(badgeNumber);
+
+            model.addAttribute("emergencyContactName", employee.getEmergencyContactName());
+            model.addAttribute("emergencyContactMobile", employee.getEmergencyContactMobile());
+            model.addAttribute("emergencyContactMobile", employee.getEmergencyContactMobile());
+            model.addAttribute("documents",documents);
             model.addAttribute("salaries", salaries.reversed());
             model.addAttribute("salaryDto", salaryDto);
             model.addAttribute("restPasswordDto",restPasswordDto);

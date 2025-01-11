@@ -101,9 +101,20 @@
                     <tr>
                         <th>Personal Email</th><td th:text="${personalEmail}"></td><th>  البريد الإلكتروني خاص</th>
                     </tr>
+
                     <tr>
                         <th>Personal Mobile</th> <td th:text="${personalMobile}"></td><th>رقم الجوال خاص</th>
                     </tr>
+
+                    <tr>
+                        <th>Emergency Contact Name</th> <td th:text="${emergencyContactName}"></td><th>اسم جهة الاتصال في حالات الطوارئ</th>
+                    </tr>
+
+                    <tr>
+                        <th>Emergency Contact Mobile</th> <td th:text="${emergencyContactMobile}"></td><th>رقم الهاتف المحمول للاتصال في حالات الطوارئ</th>
+                    </tr>
+
+
                     <tr>
                         <th>Department Name</th> <td th:text="${departmentName}"></td><th>القسم</th>
                     </tr>
@@ -157,7 +168,7 @@
                     </tr>
 
                     <tr>
-                        <th>termination Date</th> <td th:text="${terminationDate}"></td> <th>تاريخ الفصل</th>
+                        <th>Termination Date</th> <td th:text="${terminationDate}"></td> <th>تاريخ الفصل</th>
                     </tr>
 
                     <tr>
@@ -225,6 +236,23 @@
 
         </div>
         <!--/basic info -->
+
+
+        <hr/>
+        <!-- documents -->
+        <div class="row rounded border p-4 bg-light">
+
+            <div th:each="document : ${documents}" class="text-center col">
+                <a target="_blank" th:href="@{/document/{badgeNumber}/{fileName}(badgeNumber=${badgeNumber}, fileName=${document.fileName})}">
+                    <img th:src="@{/img/File.png}" alt="..." />
+                    <p th:text="${document.fileType +'['+document.id+']'}"></p>
+                </a>
+            </div>
+
+        </div>
+        <!-- / documents -->
+
+
 
         <hr/>
         <!--Salaries -->
