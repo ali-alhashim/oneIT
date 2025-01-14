@@ -52,6 +52,9 @@ public class EmployeeCalendar {
     @Column(nullable = false)
     private LocalDate dayDate;
 
+    private boolean bypassCal = false; // if true don't include the missing minutes
+    private String bypassNote;
+
 
     public Long getId() {
         return id;
@@ -163,5 +166,21 @@ public class EmployeeCalendar {
 
     public void setMobileModelOUT(String mobileModelOUT) {
         this.mobileModelOUT = mobileModelOUT;
+    }
+
+    public boolean isBypassCal() {
+        return bypassCal;
+    }
+
+    public void setBypassCal(boolean bypassCal) {
+        this.bypassCal = bypassCal;
+    }
+
+    public String getBypassNote() {
+        return bypassNote;
+    }
+
+    public void setBypassNote(String bypassNote) {
+        this.bypassNote = bypassNote;
     }
 }

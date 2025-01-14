@@ -10,9 +10,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -66,8 +69,26 @@ public class TimesheetController {
     @GetMapping("/detail")
     public String timesheetDetail(Model model, @RequestParam Long id)
     {
+        boolean isAdminOrHR = false;
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        if(currentUser ==null)
+        {
+            return "/404";
+        }
+
+        if(currentUser.isAdmin())
+        {
+            isAdminOrHR = true;
+        }
+        if(currentUser.isHR())
+        {
+            isAdminOrHR = true;
+        }
         EmployeeCalendar employeeCalendar = employeeCalendarRepository.findById(id).orElse(null);
         model.addAttribute("timesheet", employeeCalendar);
+        model.addAttribute("isAdminOrHR", isAdminOrHR);
         return "/timesheet/detail";
     }
 
@@ -212,7 +233,7 @@ public class TimesheetController {
     }
 
     private int calculateLateMinutes(EmployeeCalendar calendarRecord, ShiftSchedule shiftSchedule) {
-        if (calendarRecord.getCheckIn() != null && shiftSchedule.getStartTime() != null) {
+        if (calendarRecord.getCheckIn() != null && shiftSchedule.getStartTime() != null && !calendarRecord.isBypassCal()) {
             LocalTime checkInTime = LocalTime.parse(calendarRecord.getCheckIn().toString());
             LocalTime shiftStartBuffer = shiftSchedule.getStartTime().plusMinutes(15);  // 15 min grace period
 
@@ -224,7 +245,7 @@ public class TimesheetController {
     }
 
     private int calculateEarlyMinutes(EmployeeCalendar calendarRecord, ShiftSchedule shiftSchedule) {
-        if (calendarRecord.getCheckOut() != null && shiftSchedule.getEndTime() != null) {
+        if (calendarRecord.getCheckOut() != null && shiftSchedule.getEndTime() != null && !calendarRecord.isBypassCal()) {
             LocalTime checkOutTime = LocalTime.parse(calendarRecord.getCheckOut().toString());
             LocalTime shiftEndBuffer = shiftSchedule.getEndTime().minusMinutes(10);  // 10 min tolerance
 
@@ -233,6 +254,57 @@ public class TimesheetController {
             }
         }
         return 0;
+    }
+
+
+
+    @PostMapping("/BypassCalculation")
+    public String bypassCalculation(@RequestParam Long timesheetId)
+    {
+        EmployeeCalendar timesheet = employeeCalendarRepository.findById(timesheetId).orElse(null);
+        if(timesheet ==null)
+        {
+            return "/404";
+        }
+
+
+        boolean isAdminOrHR = false;
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        if(currentUser ==null)
+        {
+            return "/404";
+        }
+
+        if(currentUser.isAdmin())
+        {
+            isAdminOrHR = true;
+        }
+        if(currentUser.isHR())
+        {
+            isAdminOrHR = true;
+        }
+
+        if(isAdminOrHR)
+        {
+            if(timesheet.isBypassCal())
+            {
+                timesheet.setBypassCal(false);
+            }
+            else
+            {
+                timesheet.setBypassCal(true);
+            }
+
+            employeeCalendarRepository.save(timesheet);
+            return "redirect:/timesheet/detail?id="+timesheetId;
+        }
+        else
+        {
+            return "/403";
+        }
+
     }
 
 }

@@ -201,7 +201,7 @@ public class PayslipController {
         int missingMinutes = 0;
 
         // Check-in lateness
-        if (calendarRecord.getCheckIn() != null) {
+        if (calendarRecord.getCheckIn() != null && !calendarRecord.isBypassCal()) {
             int lateness = calculateLateness(calendarRecord.getCheckIn(), shiftSchedule.getStartTime());
             if (lateness > 15) {
                 missingMinutes += lateness;  // Count lateness if > 15 mins
@@ -209,7 +209,7 @@ public class PayslipController {
         }
 
         // Early check-out
-        if (calendarRecord.getCheckOut() != null) {
+        if (calendarRecord.getCheckOut() != null && !calendarRecord.isBypassCal()) {
             int earlyLeave = calculateEarlyLeave(calendarRecord.getCheckOut(), shiftSchedule.getEndTime());
             if (earlyLeave > 10) {
                 missingMinutes += earlyLeave;  // Count early leave if > 10 mins
