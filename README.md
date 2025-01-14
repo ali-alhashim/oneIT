@@ -1,6 +1,6 @@
 # OneIT Web Application User Manual
 
-![OneIT Logo](/api/placeholder/120/120)
+![OneIT Logo](/Users/ali/Documents/MyJava/oneIT/oneIT/src/main/resources/static/img/dark.jpg)
 
 | Document Details |             |
 |-----------------|-------------|
