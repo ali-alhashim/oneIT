@@ -5,7 +5,10 @@ import jakarta.persistence.*;
 import org.springframework.data.annotation.LastModifiedDate;
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.*;
 
 @Entity
@@ -611,5 +614,29 @@ public class Employee {
 
     public void setEducationTitle(String educationTitle) {
         this.educationTitle = educationTitle;
+    }
+
+    public int getAge()
+    {
+        if(this.birthDate !=null)
+        {
+             try
+             {
+                 // Convert java.util.Date to java.time.LocalDate
+                 LocalDate birthDateLocal = birthDate.toInstant()
+                         .atZone(ZoneId.systemDefault())
+                         .toLocalDate();
+
+
+                 return Period.between(birthDateLocal, LocalDate.now()).getYears();
+             }
+             catch (Exception e)
+             {
+                 System.out.println("Can't get Age Date Problem: "+e.getMessage());
+                 return 0;
+             }
+
+        }
+        return 0;
     }
 }

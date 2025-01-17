@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,10 +29,7 @@ import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -404,6 +402,36 @@ public class PayslipController {
         model.addAttribute("pageTitle","Payslip List");
 
         return "/payslip/MyPayslips";
+    }
+
+
+    @GetMapping("/CalculateMinutesAll")
+    public ResponseEntity<List<CalculateMinutesDto>> calculateMinutesAll(@RequestParam LocalDate periodStart,
+                                                                         @RequestParam LocalDate periodEnd,
+                                                                         @RequestParam Long departmentId
+                                                                         )
+    {
+        Department department =departmentRepository.findById(departmentId).orElse(null);
+        if (department == null)
+        {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.emptyList()); // Return 404 if department not found
+        }
+
+
+        List<Employee> employees = department.getEmployees().stream().toList();
+
+
+        List<CalculateMinutesDto> responseDto = new ArrayList<>();;
+
+        for (Employee employee : employees) {
+            CalculateMinutesDto dto = calculateMinutes(employee.getBadgeNumber(), periodStart, periodEnd).getBody();
+            dto.setBadgeNumber(employee.getBadgeNumber());
+            responseDto.add(dto);
+        }
+
+
+        return ResponseEntity.ok(responseDto);
     }
 
 

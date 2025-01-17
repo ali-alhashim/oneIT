@@ -218,16 +218,61 @@
 // CalculateMinutes ------------------------
 
 
-  function CalculateMinutesAll()
-  {
-   const periodStart  = document.getElementById("periodStart").value;
-   const periodEnd    = document.getElementById("periodEnd").value;
-   const departmentId = document.getElementById("departmentId").value;
+function CalculateMinutesAll() {
+    const periodStart = document.getElementById("periodStart").value;
+    const periodEnd = document.getElementById("periodEnd").value;
+    const departmentId = document.getElementById("departmentId").value;
 
-    // send ajax http get request to /payslip/CalculateMinutesAll
-    // with departmentId, periodStart, periodEnd
-    // response server is the list of [DeductedBasicSalary, TotalMM]
-  }
+    // Validate input fields
+    if (!periodStart || !periodEnd || !departmentId) {
+        alert("Please fill out all fields.");
+        return;
+    }
+
+    // Prepare the request parameters
+    const url = `/payslip/CalculateMinutesAll?departmentId=${departmentId}&periodStart=${encodeURIComponent(periodStart)}&periodEnd=${encodeURIComponent(periodEnd)}`;
+
+    // Send AJAX request
+    fetch(url, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json(); // Parse JSON response
+        })
+        .then(data => {
+
+           console.log("CalculateMinutesAll Response Data:", data);
+
+            // Update UI elements
+
+            data.forEach(item => {
+             //console.log(`Badge: ${item.badgeNumber}, Deducted Salary: ${item.deductedBasicSalary}, Total MM: ${item.totalMM}`);
+
+             const deductedSalaryInput = document.querySelector(`input[name="DeductedBasicSalary_${item.badgeNumber}"]`);
+             const totalMMInput = document.querySelector(`input[name="TotalMM_${item.badgeNumber}"]`);
+
+            if (deductedSalaryInput && totalMMInput)
+            {
+                deductedSalaryInput.value = item.deductedBasicSalary;
+                totalMMInput.value = item.totalMM;
+            }
+
+
+            });
+
+        })
+        .catch(error => {
+            // Handle errors
+            console.error("Error:", error);
+            alert("An error occurred while calculating minutes. Please try again.");
+        });
+}
 
 
 </script>

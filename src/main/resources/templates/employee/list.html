@@ -7,7 +7,7 @@
 
 <div th:replace="~{fragments/header :: header}"></div>
 
-<div class="container bordered my-5">
+<div class="container-fluid bordered my-5">
 
      <div class="row" id="toolbar">
          <div class="col-2">
@@ -104,6 +104,7 @@
         <th style="white-space: nowrap;">Work Mobile</th>
         <th>Email</th>
         <th>Status</th>
+        <th>Ref.Id</th>
         </thead>
 
         <tbody>
@@ -124,6 +125,7 @@
             <td th:text="${employee.workMobile}"></td>
             <td th:text="${employee.workEmail}"></td>
             <td th:text="${employee.status}"></td>
+            <td th:text="${employee.refId}"></td>
         </tr>
 
         </tbody>

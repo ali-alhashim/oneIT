@@ -7,6 +7,8 @@ public class CalculateMinutesDto {
     private BigDecimal deductedBasicSalary;
     private int totalMM;
 
+    private String badgeNumber;
+
     public CalculateMinutesDto(BigDecimal deductedBasicSalary, int totalMM) {
         this.deductedBasicSalary = deductedBasicSalary;
         this.totalMM = totalMM;
@@ -30,5 +32,13 @@ public class CalculateMinutesDto {
 
     public void setTotalMM(int totalMM) {
         this.totalMM = totalMM;
+    }
+
+    public String getBadgeNumber() {
+        return badgeNumber;
+    }
+
+    public void setBadgeNumber(String badgeNumber) {
+        this.badgeNumber = badgeNumber;
     }
 }

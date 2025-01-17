@@ -386,6 +386,7 @@ public class EmployeeController {
 
             restPasswordDto.setBadgeNumber(badgeNumber);
 
+            model.addAttribute("age", employee.getAge());
             model.addAttribute("emergencyContactName", employee.getEmergencyContactName());
             model.addAttribute("emergencyContactMobile", employee.getEmergencyContactMobile());
             model.addAttribute("emergencyContactMobile", employee.getEmergencyContactMobile());

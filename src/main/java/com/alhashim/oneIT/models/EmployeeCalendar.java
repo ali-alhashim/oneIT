@@ -52,8 +52,13 @@ public class EmployeeCalendar {
     @Column(nullable = false)
     private LocalDate dayDate;
 
+    //------ if holiday sick leave bypassCal must be true and set value note if there is document set document
     private boolean bypassCal = false; // if true don't include the missing minutes
     private String bypassNote;
+    private String bypassDocument;
+
+    // this bonusMinutes subtract from missing Minutes // we add bonusMinutes for some situation like raining day - fog day
+    private int bonusMinutes = 0;
 
 
     public Long getId() {
@@ -182,5 +187,21 @@ public class EmployeeCalendar {
 
     public void setBypassNote(String bypassNote) {
         this.bypassNote = bypassNote;
+    }
+
+    public String getBypassDocument() {
+        return bypassDocument;
+    }
+
+    public void setBypassDocument(String bypassDocument) {
+        this.bypassDocument = bypassDocument;
+    }
+
+    public int getBonusMinutes() {
+        return bonusMinutes;
+    }
+
+    public void setBonusMinutes(int bonusMinutes) {
+        this.bonusMinutes = bonusMinutes;
     }
 }
