@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import java.time.LocalDateTime;
@@ -565,6 +566,12 @@ public class EmployeeController {
                     continue;
                 }
 
+                if(data.length < 1 && data[0].trim() =="A0000")
+                {
+                    //Skip edit admin data
+                    continue;
+                }
+
                 try {
 
                     // badgeNumber =0
@@ -602,25 +609,43 @@ public class EmployeeController {
                     employee.setWorkMobile(data.length > 4 ? data[4].trim() : null);
                     employee.setStatus(data.length > 5 ? data[5].trim() : null);
 
-                    // Handle birthDate parsing safely
-                    if (data.length > 6 && !data[6].trim().isEmpty()) {
-                        Date birthDate = dateFormat.parse(data[6].trim());
-                        employee.setBirthDate(birthDate);
-                    } else {
-                        employee.setBirthDate(null);
-                    }
+
 
                     // Handle gender
                     employee.setGender(data.length > 7 ? data[7].trim() : null);
                     employee.setGovId(data.length > 8 ? data[8].trim(): null);
 
 
-                    // Handle birthDate parsing safely
-                    if (data.length > 9 && !data[9].trim().isEmpty()) {
-                        Date hireDate = dateFormat.parse(data[9].trim());
-                        employee.setHireDate(hireDate);
-                    } else {
-                        employee.setHireDate(null);
+
+                    try {
+                        // Handle birthDate parsing safely
+                        if (data.length > 6) {
+                            String birthDateString = data[6];
+                            if (birthDateString != null && !birthDateString.trim().isEmpty() && !"null".equalsIgnoreCase(birthDateString.trim())) {
+                                Date birthDate = dateFormat.parse(birthDateString.trim());
+                                employee.setBirthDate(birthDate);
+                            } else {
+                                employee.setBirthDate(null);
+                            }
+                        } else {
+                            employee.setBirthDate(null);
+                        }
+
+                        // Handle hireDate parsing safely
+                        if (data.length > 9) {
+                            String hireDateString = data[9];
+                            if (hireDateString != null && !hireDateString.trim().isEmpty() && !"null".equalsIgnoreCase(hireDateString.trim())) {
+                                Date hireDate = dateFormat.parse(hireDateString.trim());
+                                employee.setHireDate(hireDate);
+                            } else {
+                                employee.setHireDate(null);
+                            }
+                        } else {
+                            employee.setHireDate(null);
+                        }
+                    } catch (ParseException e) {
+                        System.err.println("Error parsing date in data: " + String.join(",", data));
+                        e.printStackTrace(); // Log stack trace for debugging
                     }
 
                     employee.setOfficeLocation(data.length > 10 ? data[10].trim(): null);

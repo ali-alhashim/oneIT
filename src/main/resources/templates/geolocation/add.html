@@ -84,24 +84,42 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-      var map = L.map('map').setView([24.7136, 46.6753], 10);
-
-      // Add OpenStreetMap tiles
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      // Define the map layers
+      var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           maxZoom: 19,
           attribution: '© OpenStreetMap'
-      }).addTo(map);
+      });
 
+      var satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+          attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+      });
+
+      // Initialize the map
+      var map = L.map('map', {
+          center: [24.7136, 46.6753],
+          zoom: 10,
+          layers: [osmLayer] // Default layer
+      });
+
+      // Layer control to toggle between layers
+      var baseMaps = {
+          "OpenStreetMap": osmLayer,
+          "Satellite": satelliteLayer
+      };
+      L.control.layers(baseMaps).addTo(map);
+
+      // Feature group for drawn items
       var drawnItems = new L.FeatureGroup();
       map.addLayer(drawnItems);
 
+      // Draw control
       var drawControl = new L.Control.Draw({
-          draw: { rectangle: true },
+          draw: { rectangle: { shapeOptions: { color: '#3388ff', weight: 2, fillOpacity: 0.2 } } },
           edit: { featureGroup: drawnItems }
       });
       map.addControl(drawControl);
 
-      // Handle drawing events to update lat/lng inputs
+      // Handle drawing events
       map.on(L.Draw.Event.CREATED, function (event) {
           var layer = event.layer;
           var bounds = layer.getBounds();
@@ -120,25 +138,25 @@
           document.getElementById('latitudeD').value = southWest.lat;
           document.getElementById('longitudeD').value = northEast.lng;
 
-          drawnItems.clearLayers();
-          drawnItems.addLayer(layer);
+          drawnItems.clearLayers(); // Remove previous shapes
+          drawnItems.addLayer(layer); // Add new shape
       });
 
-      // Geolocation to get user's current position
+      // Geolocation to locate user
       function locateUser() {
           if (navigator.geolocation) {
               navigator.geolocation.getCurrentPosition(function (position) {
                   var lat = position.coords.latitude;
                   var lng = position.coords.longitude;
 
-                  // Set map view to current location
+                  // Center map on user's location
                   map.setView([lat, lng], 15);
 
                   // Add a marker at the user's location
                   var userMarker = L.marker([lat, lng], {
                       title: "You are here",
                       icon: L.icon({
-                          iconUrl: '/icons/location.png',  // Optional: Add a custom location icon
+                          iconUrl: '/icons/location.png',  // Ensure this path is valid
                           iconSize: [30, 30],
                           iconAnchor: [15, 30]
                       })
@@ -151,7 +169,7 @@
           }
       }
 
-      // Call locateUser on page load
+      // Locate user on page load
       locateUser();
   });
 </script>
