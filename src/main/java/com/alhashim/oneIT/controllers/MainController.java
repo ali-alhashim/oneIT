@@ -264,25 +264,36 @@ public class MainController {
             // OTP is valid
             String targetUrl = (String) session.getAttribute("targetUrl");
 
-            // Remove targetUrl from session to prevent reuse
-            session.removeAttribute("targetUrl");
+            // Log the target URL for debugging
+            System.out.println("OTP Controller targetUrl =: " + targetUrl);
 
-            System.out.println("OTP is valid. Redirecting to: " + (targetUrl != null ? targetUrl : "/dashboard"));
+            // Remove targetUrl from session to prevent reuse
+            //session.removeAttribute("targetUrl");
+
+            if (targetUrl == null || targetUrl.isEmpty() || "/otp".equals(targetUrl) || "/login".equals(targetUrl))
+            {
+                System.out.println("targetUrl == null || targetUrl.isEmpty() || \"/otp\".equals(targetUrl) || \"/login\".equals(targetUrl)");
+                targetUrl = request.getContextPath() + "/dashboard";
+            }
+            else
+            {
+
+                targetUrl = request.getContextPath() +  session.getAttribute("targetUrl");
+                System.out.println("targetUrl cashed redirect to :"+targetUrl);
+            }
+
+            System.out.println("OTP is valid. Redirecting to: " + targetUrl);
 
             // Mark session as verified
             session.setAttribute("otpVerified", true);
-            System.out.println("Session 'otpVerified' attribute set: " + session.getAttribute("otpVerified"));
+            session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
 
-            // Save SecurityContext to session to persist authentication
-            SecurityContext securityContext = SecurityContextHolder.getContext();
-            session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
 
-            // Use HttpServletResponse for more reliable redirection
-            if (targetUrl != null && !targetUrl.isEmpty()) {
-                response.sendRedirect(targetUrl);
-            } else {
-                response.sendRedirect(request.getContextPath() + "/dashboard");
-            }
+            System.out.println("Session attribute 'otpVerified': " + session.getAttribute("otpVerified"));
+            System.out.println("Session attribute 'targetUrl': " + session.getAttribute("targetUrl"));
+
+            // Redirect to the target URL
+            response.sendRedirect(targetUrl);
         } else {
             // OTP is invalid
             System.out.println("Invalid OTP!");

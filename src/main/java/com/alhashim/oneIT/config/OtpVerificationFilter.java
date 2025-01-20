@@ -34,7 +34,15 @@ public class OtpVerificationFilter implements Filter {
         String requestURI = httpRequest.getRequestURI();
         String contextPath = httpRequest.getContextPath();
 
-        System.out.println("You Request to URl: "+requestURI);
+        System.out.println("OtpVerificationFilter Class: You Request to URl: "+requestURI);
+        // here the first request so save it
+        //getSession().setAttribute("targetUrl", requestURI);
+        if(((HttpServletRequest) request).getSession().getAttribute("targetUrl")==null)
+        {
+            System.out.println("request.getSession is null set to: "+requestURI);
+            ((HttpServletRequest) request).getSession().setAttribute("targetUrl", requestURI);
+        }
+
 
         // Check if the requested resource is public
         if (isPublicResource(requestURI, contextPath)) {
@@ -43,7 +51,7 @@ public class OtpVerificationFilter implements Filter {
             return;
         }
 
-        // Check if the user is authenticated
+            // Check if the user is authenticated
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             System.out.println("Check if the user is authenticated:" +authentication);
             System.out.println("session :="+ ((HttpServletRequest) request).getSession().getId());

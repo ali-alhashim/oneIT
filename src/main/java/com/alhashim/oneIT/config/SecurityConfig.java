@@ -95,7 +95,12 @@ public class SecurityConfig  {
                        // .defaultSuccessUrl("/dashboard") // Redirect to dashboard on successful login
                         .failureUrl("/login?error=true") // Redirect back to login page on failure
                         .successHandler(customLoginSuccessHandler)
+
                         .permitAll()
+                )
+
+                .requestCache(cash -> cash.requestCache(new HttpSessionRequestCache())
+
                 )
 
 
