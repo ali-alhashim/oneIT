@@ -34,13 +34,17 @@ public class OtpVerificationFilter implements Filter {
         String requestURI = httpRequest.getRequestURI();
         String contextPath = httpRequest.getContextPath();
 
+        // Get the query string (if any)
+        String queryString = httpRequest.getQueryString();
+        String fullUrl = requestURI + (queryString != null ? "?" + queryString : "");
+
         System.out.println("OtpVerificationFilter Class: You Request to URl: "+requestURI);
         // here the first request so save it
         //getSession().setAttribute("targetUrl", requestURI);
         if(((HttpServletRequest) request).getSession().getAttribute("targetUrl")==null)
         {
             System.out.println("request.getSession is null set to: "+requestURI);
-            ((HttpServletRequest) request).getSession().setAttribute("targetUrl", requestURI);
+            ((HttpServletRequest) request).getSession().setAttribute("targetUrl", fullUrl);
         }
 
 
