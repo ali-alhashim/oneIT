@@ -202,7 +202,8 @@ public class ApiController {
         SystemLog systemLog = new SystemLog();
         systemLog.setEmployee(employee);
         systemLog.setCreatedAt(LocalDateTime.now());
-        systemLog.setDescription("CheckIn Area Name: "+geolocation.getAreaName());
+        systemLog.setDescription("CheckIn Area Name: "+geolocation.getAreaName() +" Latitude:" +checkInOutDto.getLatitude() +" Longitude:"+checkInOutDto.getLongitude());
+
         systemLogRepository.save(systemLog);
         System.out.println("Log CheckIn Action");
 
@@ -277,7 +278,7 @@ public class ApiController {
         SystemLog systemLog = new SystemLog();
         systemLog.setEmployee(employee);
         systemLog.setCreatedAt(LocalDateTime.now());
-        systemLog.setDescription("CheckOUT Area Name: "+geolocation.getAreaName());
+        systemLog.setDescription("CheckOUT Area Name: "+geolocation.getAreaName() +" Latitude:" +checkInOutDto.getLatitude() +" Longitude:"+checkInOutDto.getLongitude());
         systemLogRepository.save(systemLog);
         System.out.println("Log CheckOUT Action");
 
