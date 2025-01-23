@@ -261,6 +261,16 @@ public class DepartmentController {
         employee.setRoles(roles);
         employeeRepository.save(employee);
 
+
+        // Log the  action
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        SystemLog systemLog = new SystemLog();
+        systemLog.setCreatedAt(LocalDateTime.now());
+        systemLog.setEmployee(currentUser);
+        systemLog.setDescription("Edit Department#"+ department.getName());
+        systemLogRepository.save(systemLog);
+
         return "redirect:/department/detail?id="+departmentDto.getId();
     }
 }

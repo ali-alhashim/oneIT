@@ -1,4 +1,6 @@
 package com.alhashim.oneIT.controllers;
+import com.alhashim.oneIT.models.SystemLog;
+import com.alhashim.oneIT.repositories.SystemLogRepository;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
@@ -41,6 +43,9 @@ public class DocumentController {
 
     @Autowired
     private DocumentRepository documentRepository;
+
+    @Autowired
+    SystemLogRepository systemLogRepository;
 
     @PostMapping("/upload")
     public String uploadEmployeeDocument(@Valid @ModelAttribute DocumentDto documentDto, BindingResult result, Model model)
@@ -97,6 +102,15 @@ public class DocumentController {
                 document.setDescription(documentDto.getDescription());
                 document.setFileType(documentDto.getType());
                 documentRepository.save(document);
+
+
+                // Log the  action
+
+                SystemLog systemLog = new SystemLog();
+                systemLog.setCreatedAt(LocalDateTime.now());
+                systemLog.setEmployee(currentUser);
+                systemLog.setDescription("upload document"+ document.getFileType());
+                systemLogRepository.save(systemLog);
 
             }
             catch (Exception e)

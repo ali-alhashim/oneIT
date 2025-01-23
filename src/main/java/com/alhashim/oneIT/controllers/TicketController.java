@@ -421,4 +421,12 @@ public class TicketController {
 
         return "redirect:/ticket/list"; // Adjust redirection URL as needed
     }
+
+
+
+    @GetMapping("/report")
+    public String reportTicket()
+    {
+        return "/ticket/report";
+    }
 }

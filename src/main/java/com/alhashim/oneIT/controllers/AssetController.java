@@ -2,14 +2,12 @@ package com.alhashim.oneIT.controllers;
 
 import com.alhashim.oneIT.dto.ImportAssetDto;
 import com.alhashim.oneIT.dto.ImportDeviceDto;
-import com.alhashim.oneIT.models.Asset;
+import com.alhashim.oneIT.models.*;
 
-import com.alhashim.oneIT.models.Department;
-import com.alhashim.oneIT.models.Device;
-import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.repositories.AssetRepository;
 import com.alhashim.oneIT.repositories.DeviceRepository;
 import com.alhashim.oneIT.repositories.EmployeeRepository;
+import com.alhashim.oneIT.repositories.SystemLogRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -50,6 +48,9 @@ public class AssetController {
 
     @Autowired
     EmployeeRepository employeeRepository;
+
+    @Autowired
+    SystemLogRepository systemLogRepository;
 
     @GetMapping("/list")
     public String assetList(Model model, @RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size)
@@ -170,6 +171,16 @@ public class AssetController {
                 asset.setConfirmReceived(true);
                 asset.setConfirmationDate(LocalDateTime.now());
                 assetRepository.save(asset);
+
+
+                // Log the  action
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+                SystemLog systemLog = new SystemLog();
+                systemLog.setCreatedAt(LocalDateTime.now());
+                systemLog.setEmployee(currentUser);
+                systemLog.setDescription("Signing Asset#"+asset.getCode());
+                systemLogRepository.save(systemLog);
 
                 return "redirect:/asset/list";
             } catch (Exception e) {

@@ -1,14 +1,20 @@
 package com.alhashim.oneIT.controllers;
 
 import com.alhashim.oneIT.dto.GeolocationDto;
+import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.models.Geolocation;
+import com.alhashim.oneIT.models.SystemLog;
+import com.alhashim.oneIT.repositories.EmployeeRepository;
 import com.alhashim.oneIT.repositories.GeolocationRepository;
+import com.alhashim.oneIT.repositories.SystemLogRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +27,12 @@ public class GeolocationController {
 
     @Autowired
     GeolocationRepository geolocationRepository;
+
+    @Autowired
+    SystemLogRepository systemLogRepository;
+
+    @Autowired
+    EmployeeRepository employeeRepository;
 
     @GetMapping("/list")
     public String geolocationList(Model model, @RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size)
@@ -78,6 +90,17 @@ public class GeolocationController {
         geolocation.setLongitudeD(geolocationDto.getLongitudeD());
 
         geolocationRepository.save(geolocation);
+
+
+        // Log the  action
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        SystemLog systemLog = new SystemLog();
+        systemLog.setCreatedAt(LocalDateTime.now());
+        systemLog.setEmployee(currentUser);
+        systemLog.setDescription("Add Geolocation name:"+geolocation.getAreaName());
+        systemLogRepository.save(systemLog);
+
         return "redirect:/geolocation/list";
     } // Add Geolocation
 

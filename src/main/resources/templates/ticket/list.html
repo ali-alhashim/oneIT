@@ -108,7 +108,7 @@
 
 
                     <a class="btn btn-info"
-                       th:text="${ticket.handledBy != null ? ticket.handledBy.badgeNumber : 'Handle'}"
+                       th:text="${ticket.handledBy != null ? ticket.handledBy.badgeNumber + ticket.handledBy.name : 'Handle'}"
 
                        th:href="${ticket.handledBy != null ? '/employee/detail?badgeNumber=' + ticket.handledBy.badgeNumber : '/ticket/handle?id=' + ticket.id}">
                     </a>

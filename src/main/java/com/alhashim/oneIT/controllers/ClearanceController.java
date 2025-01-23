@@ -2,8 +2,10 @@ package com.alhashim.oneIT.controllers;
 
 import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.models.EmployeeClearance;
+import com.alhashim.oneIT.models.SystemLog;
 import com.alhashim.oneIT.repositories.EmployeeClearanceRepository;
 import com.alhashim.oneIT.repositories.EmployeeRepository;
+import com.alhashim.oneIT.repositories.SystemLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,6 +37,9 @@ public class ClearanceController {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    SystemLogRepository systemLogRepository;
 
     @GetMapping("/list")
     public String clearanceList(Model model, @RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size)
@@ -178,6 +183,14 @@ public class ClearanceController {
 
 
            employeeClearanceRepository.save(clearance);
+
+
+            // Log the  action
+            SystemLog systemLog = new SystemLog();
+            systemLog.setCreatedAt(LocalDateTime.now());
+            systemLog.setEmployee(currentUser);
+            systemLog.setDescription("Signing Clearance#"+ clearance.getId());
+            systemLogRepository.save(systemLog);
 
             return "redirect:/clearance/clearanceDetail?id="+clearanceId;
         } catch (Exception e) {

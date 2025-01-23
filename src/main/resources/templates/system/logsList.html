@@ -46,7 +46,7 @@
             <tr th:each="log: ${logs}">
 
                 <td th:text="${log.id}"></td>
-                <td th:text="${log.createdAt}"></td>
+                <td th:text="${#temporals.format(log.createdAt, 'yyyy-MM-dd hh:mm a')}"></td>
                 <td th:text="${log.employee.name}"></td>
                 <td th:text="${log.description}"></td>
             </tr>

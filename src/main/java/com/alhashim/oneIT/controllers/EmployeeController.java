@@ -316,7 +316,16 @@ public class EmployeeController {
           else
           {
               System.out.println("if you trying add admin role to new user ! you are Not admin");
+
+              SystemLog systemLog = new SystemLog();
+              systemLog.setCreatedAt(LocalDateTime.now());
+              systemLog.setEmployee(currentUser);
+              systemLog.setDescription("! you are Not admin trying add admin role to new user  Badge#"+employee.getBadgeNumber() +" Name:"+employee.getName());
+              systemLogRepository.save(systemLog);
+
           }
+
+
 
             if(employeeDto.isIs_SUPPORT())
             {
@@ -854,7 +863,7 @@ public class EmployeeController {
             //-------------Roles only admin can set admin role roles
 
 
-                Set<Role> roles = new HashSet<>();
+                Set<Role> roles = employee.getRoles();
 
                 if(employeeDto.isIs_MANAGER())
                 {
@@ -873,7 +882,9 @@ public class EmployeeController {
                     employee.setRoles(roles);
                 }
 
-            if( currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("ADMIN"))) {
+            // only admin can give this role
+            if(currentUser.getRoles().stream().anyMatch(role -> "ADMIN".equals(role.getRoleName())))
+            {
 
                 if (employeeDto.isIs_ADMIN()) {
                     Role role = roleRepository.findByRoleName("ADMIN").orElse(null);
@@ -881,7 +892,18 @@ public class EmployeeController {
                     employee.setRoles(roles);
                 }
 
-            } // only admin can give this role
+            }
+            else
+            {
+                System.out.println("if you trying add admin role to  user ! you are Not admin");
+
+                SystemLog systemLog = new SystemLog();
+                systemLog.setCreatedAt(LocalDateTime.now());
+                systemLog.setEmployee(currentUser);
+                systemLog.setDescription("! you are Not admin trying add admin role to  user  Badge#"+employee.getBadgeNumber() +" Name:"+employee.getName());
+                systemLogRepository.save(systemLog);
+
+            }
 
 
 
@@ -1269,6 +1291,16 @@ public class EmployeeController {
             notification1.setPageLink("/clearance/clearanceDetail?id="+employeeClearance.getId());
             notificationRepository.save(notification1);
         });
+
+
+        // Log the  action
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        SystemLog systemLog = new SystemLog();
+        systemLog.setCreatedAt(LocalDateTime.now());
+        systemLog.setEmployee(currentUser);
+        systemLog.setDescription("Termination Employee"+employee.getName());
+        systemLogRepository.save(systemLog);
 
 
 
