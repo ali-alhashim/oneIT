@@ -3,8 +3,10 @@ package com.alhashim.oneIT.controllers;
 import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.models.EmployeeCalendar;
 import com.alhashim.oneIT.models.ShiftSchedule;
+import com.alhashim.oneIT.models.SystemLog;
 import com.alhashim.oneIT.repositories.EmployeeCalendarRepository;
 import com.alhashim.oneIT.repositories.EmployeeRepository;
+import com.alhashim.oneIT.repositories.SystemLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,6 +36,9 @@ public class TimesheetController {
 
     @Autowired
     EmployeeRepository employeeRepository;
+
+    @Autowired
+    SystemLogRepository systemLogRepository;
 
 
     // only for HR & admin
@@ -298,6 +304,15 @@ public class TimesheetController {
             }
 
             employeeCalendarRepository.save(timesheet);
+
+            // Log the  action
+
+            SystemLog systemLog = new SystemLog();
+            systemLog.setCreatedAt(LocalDateTime.now());
+            systemLog.setEmployee(currentUser);
+            systemLog.setDescription("BypassCal : "+timesheet.getEmployee().getName()+" Date   : "+timesheet.getDayDate());
+            systemLogRepository.save(systemLog);
+
             return "redirect:/timesheet/detail?id="+timesheetId;
         }
         else

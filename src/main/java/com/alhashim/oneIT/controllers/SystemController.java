@@ -15,6 +15,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +36,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -250,6 +253,18 @@ public class SystemController {
                 } else {
                     throw new RuntimeException("Public folder not found at " + publicFolder.getAbsolutePath());
                 }
+
+
+                // Log the  action
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+                SystemLog systemLog = new SystemLog();
+                systemLog.setCreatedAt(LocalDateTime.now());
+                systemLog.setEmployee(currentUser);
+                systemLog.setDescription("Database Backup");
+                systemLogRepository.save(systemLog);
+
+
                 zipOut.close();
             }
         } catch (IOException | InterruptedException e) {

@@ -5,20 +5,25 @@ import com.alhashim.oneIT.dto.ShiftScheduleDto;
 import com.alhashim.oneIT.models.Department;
 import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.models.ShiftSchedule;
+import com.alhashim.oneIT.models.SystemLog;
 import com.alhashim.oneIT.repositories.DepartmentRepository;
 import com.alhashim.oneIT.repositories.EmployeeRepository;
 import com.alhashim.oneIT.repositories.ShiftScheduleRepository;
+import com.alhashim.oneIT.repositories.SystemLogRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +40,9 @@ public class ShiftScheduleController {
 
     @Autowired
     DepartmentRepository departmentRepository;
+
+    @Autowired
+    SystemLogRepository systemLogRepository;
 
     @GetMapping("/list")
 public String shiftScheduleList(Model model, @RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size)
@@ -95,6 +103,17 @@ public String shiftScheduleList(Model model, @RequestParam(required = false) Str
         shiftSchedule.setSaturdayWork(shiftScheduleDto.getSaturdayWork());
 
         shiftScheduleRepository.save(shiftSchedule);
+
+
+        // Log the  action
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        SystemLog systemLog = new SystemLog();
+        systemLog.setCreatedAt(LocalDateTime.now());
+        systemLog.setEmployee(currentUser);
+        systemLog.setDescription("Add shiftSchedule   : "+shiftSchedule.getName());
+        systemLogRepository.save(systemLog);
+
         return "redirect:/shiftSchedule/list";
     }
 
@@ -158,6 +177,15 @@ public String shiftScheduleList(Model model, @RequestParam(required = false) Str
             employee.setShiftSchedule(shiftSchedule);
             employeeRepository.save(employee);
         });
+
+        // Log the  action
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        SystemLog systemLog = new SystemLog();
+        systemLog.setCreatedAt(LocalDateTime.now());
+        systemLog.setEmployee(currentUser);
+        systemLog.setDescription("Add Department : "+department.getName()+" to shiftSchedule   : "+shiftSchedule.getName());
+        systemLogRepository.save(systemLog);
 
         return "redirect:/shiftSchedule/shiftScheduleDetail?id="+shiftScheduleId;
     }

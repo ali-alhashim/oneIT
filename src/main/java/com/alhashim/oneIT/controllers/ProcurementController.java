@@ -61,6 +61,9 @@ public class ProcurementController {
     @Autowired
     PaymentRepository paymentRepository;
 
+    @Autowired
+    SystemLogRepository systemLogRepository;
+
     @GetMapping("/order")
     public String orderList(Model model, @RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size)
     {
@@ -210,6 +213,14 @@ public class ProcurementController {
         purchaseOrder.setLines(orderLines);
         purchaseOrderRepository.save(purchaseOrder);
 
+
+        // Log the  action
+        SystemLog systemLog = new SystemLog();
+        systemLog.setCreatedAt(LocalDateTime.now());
+        systemLog.setEmployee(currentUser);
+        systemLog.setDescription("Add PO# "+purchaseOrder.getCode());
+        systemLogRepository.save(systemLog);
+
         return "redirect:/procurement/order";
     } //POST PO
 
@@ -276,6 +287,16 @@ public class ProcurementController {
         vendor.setCreatedAt(LocalDateTime.now());
 
         vendorRepository.save(vendor);
+
+        // Log the  action
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        SystemLog systemLog = new SystemLog();
+        systemLog.setCreatedAt(LocalDateTime.now());
+        systemLog.setEmployee(currentUser);
+        systemLog.setDescription("Add Vendor"+vendor.getName());
+        systemLogRepository.save(systemLog);
+
         redirectAttributes.addFlashAttribute("sweetMessage", "The Vendor has been added Successfully");
         return "redirect:/procurement/vendor";
     } // POST Add Vendor
@@ -336,6 +357,17 @@ public class ProcurementController {
         vendor.setBankName(vendorDto.getBankName());
         vendor.setAddress(vendorDto.getAddress());
         vendorRepository.save(vendor);
+
+
+        // Log the  action
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        SystemLog systemLog = new SystemLog();
+        systemLog.setCreatedAt(LocalDateTime.now());
+        systemLog.setEmployee(currentUser);
+        systemLog.setDescription("Edit Vendor"+vendor.getName());
+        systemLogRepository.save(systemLog);
+
         return "redirect:/procurement/vendorDetail?id="+vendorDto.getId();
     } // post edit vendor
 
@@ -398,6 +430,16 @@ public class ProcurementController {
         vendor.setRepresentatives(listContact);
         vendor.setUpdatedAt(LocalDateTime.now());
         vendorRepository.save(vendor);
+
+
+        // Log the  action
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        SystemLog systemLog = new SystemLog();
+        systemLog.setCreatedAt(LocalDateTime.now());
+        systemLog.setEmployee(currentUser);
+        systemLog.setDescription("Add Vendor Contact"+vendor.getName());
+        systemLogRepository.save(systemLog);
 
         return "redirect:/procurement/vendorDetail?id=" + contactDto.getVendorId();
     } // add contact
@@ -507,6 +549,14 @@ public class ProcurementController {
         }
 
 
+        // Log the  action
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        SystemLog systemLog = new SystemLog();
+        systemLog.setCreatedAt(LocalDateTime.now());
+        systemLog.setEmployee(currentUser);
+        systemLog.setDescription("Add Order Invoice"+purchaseOrder.getCode());
+        systemLogRepository.save(systemLog);
 
         return "redirect:/procurement/orderDetail?id="+addInvoiceToOrderDto.getPurchaseOrderId();
 
@@ -554,7 +604,18 @@ public class ProcurementController {
         purchaseOrder.setStatus(orderStatus);
         purchaseOrder.setUpdatedAt(LocalDateTime.now());
         purchaseOrderRepository.save(purchaseOrder);
+
+
         // Log the action
+        // Log the  action
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        SystemLog systemLog = new SystemLog();
+        systemLog.setCreatedAt(LocalDateTime.now());
+        systemLog.setEmployee(currentUser);
+        systemLog.setDescription("update  Order Status #"+purchaseOrder.getCode());
+        systemLogRepository.save(systemLog);
+
         return "redirect:/procurement/orderDetail?id="+orderId;
     } //updateOrderStatus
 
@@ -622,6 +683,15 @@ public class ProcurementController {
             }
         }
 
+
+        // Log the  action
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        SystemLog systemLog = new SystemLog();
+        systemLog.setCreatedAt(LocalDateTime.now());
+        systemLog.setEmployee(currentUser);
+        systemLog.setDescription("Add Payment for Invoice : "+invoice.getInvoiceNumber());
+        systemLogRepository.save(systemLog);
 
 
         return "redirect:/procurement/invoiceDetail?id="+paymentDto.getInvoiceId();

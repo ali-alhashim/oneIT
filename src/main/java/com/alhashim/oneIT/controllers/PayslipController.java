@@ -23,12 +23,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import java.time.DayOfWeek;
+
+import java.time.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -51,6 +49,9 @@ public class PayslipController {
 
     @Autowired
     EmployeeCalendarRepository employeeCalendarRepository;
+
+    @Autowired
+    SystemLogRepository systemLogRepository;
 
     @Autowired
     private SalaryService salaryService;
@@ -334,6 +335,16 @@ public class PayslipController {
                 payslipRepository.save(payslip);
             }
         });
+
+
+        // Log the  action
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        SystemLog systemLog = new SystemLog();
+        systemLog.setCreatedAt(LocalDateTime.now());
+        systemLog.setEmployee(currentUser);
+        systemLog.setDescription("Add Payslip :"+codeName +" For Department: "+department.getName());
+        systemLogRepository.save(systemLog);
 
         return "redirect:/payslip/list";
     }
