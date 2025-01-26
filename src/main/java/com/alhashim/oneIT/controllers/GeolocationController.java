@@ -117,4 +117,78 @@ public class GeolocationController {
         model.addAttribute("geolocation", geolocation);
         return "/geolocation/detail";
     }
+
+    @GetMapping("/edit")
+    public String geolocationEdit(@RequestParam Long id, Model model)
+    {
+        Geolocation geolocation = geolocationRepository.findById(id).orElse(null);
+        if(geolocation ==null)
+        {
+            return "/404";
+        }
+
+        GeolocationDto geolocationDto = new GeolocationDto();
+
+        geolocationDto.setId(geolocation.getId());
+
+        geolocationDto.setAreaName(geolocation.getAreaName());
+
+        geolocationDto.setLatitudeA(geolocation.getLatitudeA());
+        geolocationDto.setLongitudeA(geolocation.getLongitudeA());
+
+        geolocationDto.setLatitudeB(geolocation.getLatitudeB());
+        geolocationDto.setLongitudeB(geolocation.getLongitudeB());
+
+        geolocationDto.setLatitudeC(geolocation.getLatitudeC());
+        geolocationDto.setLongitudeC(geolocation.getLongitudeC());
+
+        geolocationDto.setLatitudeD(geolocation.getLatitudeD());
+        geolocationDto.setLongitudeD(geolocation.getLongitudeD());
+
+
+
+        model.addAttribute("geolocationDto", geolocationDto);
+
+        return "/geolocation/edit";
+    }
+
+
+    @PostMapping("/edit")
+    public String geolocationUpdate(@Valid @ModelAttribute GeolocationDto geolocationDto)
+    {
+
+        Geolocation geolocation = geolocationRepository.findById(geolocationDto.getId()).orElse(null);
+        if(geolocation ==null)
+        {
+            return "/404";
+        }
+
+        geolocation.setAreaName(geolocationDto.getAreaName());
+
+        geolocation.setLatitudeA(geolocationDto.getLatitudeA());
+        geolocation.setLongitudeA(geolocationDto.getLongitudeA());
+
+        geolocation.setLatitudeB(geolocationDto.getLatitudeB());
+        geolocation.setLongitudeB(geolocationDto.getLongitudeB());
+
+        geolocation.setLongitudeC(geolocationDto.getLongitudeC());
+        geolocation.setLatitudeC(geolocationDto.getLatitudeC());
+
+        geolocation.setLongitudeD(geolocationDto.getLongitudeD());
+        geolocation.setLatitudeD(geolocationDto.getLatitudeD());
+
+        geolocationRepository.save(geolocation);
+
+        //Log the action
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        SystemLog systemLog = new SystemLog();
+        systemLog.setCreatedAt(LocalDateTime.now());
+        systemLog.setEmployee(currentUser);
+        systemLog.setDescription("Update Geolocation name:"+geolocation.getAreaName());
+        systemLogRepository.save(systemLog);
+
+
+        return "redirect:/geolocation/geolocationDetail?id="+geolocationDto.getId();
+    }
 }

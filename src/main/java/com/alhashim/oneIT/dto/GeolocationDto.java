@@ -6,14 +6,23 @@ public class GeolocationDto {
 
     private String areaName;
 
+    private Long id;
+
 
     private Double latitudeA;
-
-
     private Double longitudeA;
 
 
     private Double latitudeB;
+    private Double longitudeB;
+
+
+    private Double latitudeC;
+    private Double longitudeC;
+
+
+    private Double latitudeD;
+    private Double longitudeD;
 
     public String getAreaName() {
         return areaName;
@@ -87,18 +96,14 @@ public class GeolocationDto {
         this.longitudeD = longitudeD;
     }
 
-    private Double longitudeB;
 
 
-    private Double latitudeC;
 
+    public Long getId() {
+        return id;
+    }
 
-    private Double longitudeC;
-
-
-    private Double latitudeD;
-
-
-    private Double longitudeD;
-
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

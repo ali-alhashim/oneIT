@@ -16,7 +16,9 @@
 
 <div class="container bordered my-5">
 
-
+<div class="row rounded border p-4 bg-light">
+  <a th:href="@{/geolocation/edit(id=${geolocation.id})}" class="btn btn-primary">Edit</a>
+</div>
 
 
   <div class="row rounded border p-4 bg-light">
@@ -82,39 +84,62 @@
 
 
 <script>
-  // Initialize the map
-    const map = L.map('map').setView([24.7136, 46.6753], 10); // Default view (Riyadh)
+  document.addEventListener("DOMContentLoaded", function () {
+      // Define the map layers
+      var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '© OpenStreetMap'
+      });
 
-    // Add a tile layer (e.g., OpenStreetMap)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-    }).addTo(map);
+      var satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+          attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+      });
 
-    // Fetch geolocation coordinates from Thymeleaf variables
-    const latitudeA = parseFloat([[${geolocation.latitudeA}]]);
-    const longitudeA = parseFloat([[${geolocation.longitudeA}]]);
-    const latitudeB = parseFloat([[${geolocation.latitudeB}]]);
-    const longitudeB = parseFloat([[${geolocation.longitudeB}]]);
-    const latitudeC = parseFloat([[${geolocation.latitudeC}]]);
-    const longitudeC = parseFloat([[${geolocation.longitudeC}]]);
-    const latitudeD = parseFloat([[${geolocation.latitudeD}]]);
-    const longitudeD = parseFloat([[${geolocation.longitudeD}]]);
+      // Initialize the map
+      var map = L.map('map', {
+          center: [24.7136, 46.6753],
+          zoom: 10,
+          layers: [satelliteLayer] // Default layer
+      });
 
-    // Define rectangle corners
-    const bounds = [
-        [latitudeA, longitudeA], // Point A
-        [latitudeB, longitudeB], // Point B
-        [latitudeC, longitudeC], // Point C
-        [latitudeD, longitudeD]  // Point D
-    ];
+      // Layer control to toggle between layers
+      var baseMaps = {
+          "OpenStreetMap": osmLayer,
+          "Satellite": satelliteLayer
+      };
+      L.control.layers(baseMaps).addTo(map);
 
-    // Add rectangle to the map
-    const rectangle = L.polygon(bounds, { color: 'blue', weight: 2 });
-    rectangle.addTo(map);
+      // Fetch geolocation coordinates from Thymeleaf variables
+      const latitudeA = parseFloat([[${geolocation.latitudeA}]]);
+      const longitudeA = parseFloat([[${geolocation.longitudeA}]]);
+      const latitudeB = parseFloat([[${geolocation.latitudeB}]]);
+      const longitudeB = parseFloat([[${geolocation.longitudeB}]]);
+      const latitudeC = parseFloat([[${geolocation.latitudeC}]]);
+      const longitudeC = parseFloat([[${geolocation.longitudeC}]]);
+      const latitudeD = parseFloat([[${geolocation.latitudeD}]]);
+      const longitudeD = parseFloat([[${geolocation.longitudeD}]]);
 
-    // Adjust map view to fit the rectangle
-    map.fitBounds(rectangle.getBounds());
+      // Check if any coordinates are invalid
+      if (!latitudeA || !longitudeA || !latitudeB || !longitudeB || !latitudeC || !longitudeC || !latitudeD || !longitudeD) {
+          console.error("Invalid geolocation coordinates");
+          return;
+      }
+
+      // Define rectangle corners
+      const bounds = [
+          [latitudeA, longitudeA], // Point A
+          [latitudeB, longitudeB], // Point B
+          [latitudeC, longitudeC], // Point C
+          [latitudeD, longitudeD]  // Point D
+      ];
+
+      // Add rectangle to the map
+      const rectangle = L.polygon(bounds, { color: 'blue', weight: 2 });
+      rectangle.addTo(map);
+
+      // Adjust map view to fit the rectangle
+      map.fitBounds(rectangle.getBounds());
+  });
 </script>
 </body>
 </html>
