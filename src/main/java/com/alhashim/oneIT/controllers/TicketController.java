@@ -3,6 +3,7 @@ package com.alhashim.oneIT.controllers;
 import com.alhashim.oneIT.dto.TicketDto;
 import com.alhashim.oneIT.models.*;
 import com.alhashim.oneIT.repositories.*;
+import com.alhashim.oneIT.services.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -30,6 +32,9 @@ public class TicketController {
 
     @Autowired
     EmployeeRepository employeeRepository;
+
+    @Autowired
+    private EmployeeService employeeService;
 
     @Autowired
     DeviceRepository deviceRepository;
@@ -423,10 +428,24 @@ public class TicketController {
     }
 
 
-
+    //Only support & admin
     @GetMapping("/report")
-    public String reportTicket()
+    public String reportTicket(Model model)
     {
+        List<Employee> supportEmployees = employeeService.getAllSupportEmployees();
+
+        model.addAttribute("supportEmployees", supportEmployees);
         return "/ticket/report";
+    }
+
+    //only support & admin
+    @GetMapping("/generateReport")
+    public String generateReport(Model model, @RequestParam LocalDate startDate, @RequestParam LocalDate endDate, @RequestParam String badgeNumbers)
+    {
+        //startDate, endDate,  badgeNumbers = "A0954,A5450,A3330,.."
+        // for each badge number get employee object and get his tickets from date to date
+
+
+        return "/ticket/generateReport";
     }
 }

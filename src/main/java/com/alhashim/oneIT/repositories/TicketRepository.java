@@ -17,6 +17,8 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     List<Ticket> findByHandledBy(Employee employee);
 
+
+
     List<Ticket> findByDevice(Device device);
 
     List<Ticket> findByStatus(String status);
@@ -34,6 +36,18 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     @Query("SELECT t FROM Ticket t WHERE t.requestedBy = :employee AND (t.subject LIKE %:keyword% OR t.description LIKE %:keyword%)")
     Page<Ticket> findByKeywordAndRequestedBy(@Param("keyword") String keyword, @Param("employee") Employee employee, Pageable pageable);
+
+
+
+    @Query("SELECT COUNT(t) FROM Ticket t WHERE t.handledBy = :employee AND t.satisfactionRating = 5")
+    int countFullSatisfactionRatingByEmployee(@Param("employee") Employee employee);
+
+    //count  All Ticket that status = In Progress for employee
+    @Query("SELECT COUNT(t) FROM Ticket t WHERE t.handledBy = :employee AND t.status = 'In Progress'")
+    int countAllOpenTicketFor(@Param("employee") Employee employee);
+
+    //total Ticket
+    int countByHandledBy(Employee employee);
 
 
 }

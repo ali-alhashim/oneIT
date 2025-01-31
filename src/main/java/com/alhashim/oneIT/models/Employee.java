@@ -95,6 +95,16 @@ public class Employee {
     private Boolean isActive;
 
 
+    @Transient // Not stored in the database
+    private int openTickets;
+
+    @Transient // Not stored in the database
+    private int totalTickets;
+
+    @Transient // Not stored in the database
+    private int fullSatisfaction;
+
+
 
 //-------- the Relationship filed-----------
 
@@ -638,5 +648,30 @@ public class Employee {
 
         }
         return 0;
+    }
+
+
+    public int getOpenTickets() {
+        return openTickets;
+    }
+
+    public void setOpenTickets(int openTickets) {
+        this.openTickets = openTickets;
+    }
+
+    public int getTotalTickets() {
+        return totalTickets;
+    }
+
+    public void setTotalTickets(int totalTickets) {
+        this.totalTickets = totalTickets;
+    }
+
+    public int getFullSatisfaction() {
+        return fullSatisfaction;
+    }
+
+    public void setFullSatisfaction(int fullSatisfaction) {
+        this.fullSatisfaction = fullSatisfaction;
     }
 }

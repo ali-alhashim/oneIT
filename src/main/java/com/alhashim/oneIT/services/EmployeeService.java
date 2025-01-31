@@ -2,6 +2,7 @@ package com.alhashim.oneIT.services;
 
 import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.repositories.EmployeeRepository;
+import com.alhashim.oneIT.repositories.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,11 +10,19 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class EmployeeService implements UserDetailsService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private TicketRepository ticketRepository;
+
+
+
 
     @Override
     public UserDetails loadUserByUsername(String badgeNumber) throws UsernameNotFoundException {
@@ -39,4 +48,21 @@ public class EmployeeService implements UserDetailsService {
     private void initializeRoles(Employee employee) {
         employee.getRoles().size(); // This triggers lazy loading of roles
     }
+
+
+    public List<Employee> getAllSupportEmployees() {
+        List<Employee> employees = employeeRepository.findByRoles_RoleName("SUPPORT");
+
+        // Populate transient fields
+        for (Employee employee : employees) {
+            employee.setOpenTickets(ticketRepository.countAllOpenTicketFor(employee));
+            employee.setTotalTickets(ticketRepository.countByHandledBy(employee));
+            employee.setFullSatisfaction(ticketRepository.countFullSatisfactionRatingByEmployee(employee));
+        }
+
+        return employees;
+    }
+
+
+
 }

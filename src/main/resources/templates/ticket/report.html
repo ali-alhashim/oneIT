@@ -1,10 +1,120 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
 
+</head>
+<body class="bg-body-secondary">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container bordered my-5">
+
+    <hr/>
+    <div class="row" id="toolbar1">
+
+
+            <form method="get" class="row" action="generateReport" id="reportForm">
+
+                <div class="col">
+                <label for="startDate">From:</label>
+                <input type="date" name="startDate" class="form-control" id="startDate">
+                </div>
+
+                <div class="col">
+                <label for="endDate">To:</label>
+                <input type="date" name="endDate" class="form-control" id="endDate">
+                </div>
+
+                <input type="hidden" name="badgeNumbers" id="badgeNumbers">
+
+                <div class="col">
+                <button class="btn btn-success" type="button" onclick="generateReport()">Report</button>
+                </div>
+
+            </form>
+
+
+
+
+    </div>
+
+
+    <hr/>
+
+
+
+
+
+
+
+    <!--Department Employee list  -->
+    <div class="table-responsive">
+        <table class="table border">
+            <thead>
+            <th>#</th>
+            <th>Photo</th>
+            <th style="white-space: nowrap;">Badge Number</th>
+            <th>Name</th>
+
+            <th style="white-space: nowrap;">Total Tickets</th>
+            <th>Open Tickets</th>
+            <th>Total Full Satisfaction</th>
+
+            </thead>
+
+            <tbody id="tbody">
+            <tr th:each="employee , stat: ${supportEmployees}">
+                <td>
+                    <input type="checkbox" th:name="'badgeNumber[' + ${stat.index} + ']'" th:value="${employee.badgeNumber}"/>
+                </td>
+                <td>
+                    <img th:src="@{'/images/'+${employee.badgeNumber}+'/'+${employee.imageFileName}}" alt="..." width="100"/>
+                </td>
+                <td>
+                    <a class="btn btn-info" th:text="${employee.badgeNumber}" th:href="@{/employee/detail(badgeNumber=${employee.badgeNumber})}"></a>
+                </td>
+                <td>
+                    <p th:text="${employee.name}"></p><br/><p th:text="${employee.arName}"></p>
+                </td>
+
+                <td th:text="${employee.totalTickets}"></td>
+                <td th:text="${employee.openTickets}"></td>
+                <td th:text="${employee.fullSatisfaction}"></td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+    <!--/Employee list -->
+
+</div>
+
+
+<script>
+
+    function generateReport()
+    {
+      const badgeNumbersInput = document.getElementById('badgeNumbers');
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+
+       const reportForm = document.getElementById('reportForm');
+       //get all select checkbox input employee set to badgeNumbers
+
+        // Collect all selected badge numbers
+        const selectedBadgeNumbers = Array.from(checkboxes).map(checkbox => checkbox.value);
+
+         // Set the badgeNumbers input value as a comma-separated list
+        badgeNumbersInput.value = selectedBadgeNumbers.join(',');
+
+         document.getElementById('reportForm').submit();
+    }
+</script>
+
+
+
+
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
