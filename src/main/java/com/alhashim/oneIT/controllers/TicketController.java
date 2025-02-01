@@ -21,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -452,6 +453,34 @@ public class TicketController {
         int stars3 = ticketRepository.countAll3Stars();
         int stars2 = ticketRepository.countAll2Stars();
         int stars1 = ticketRepository.countAll1Stars();
+
+        //['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        int theYear = LocalDate.now().getYear();
+        int janTicket = ticketRepository.countTicketByMonthOfYear(1, theYear);
+        int febTicket = ticketRepository.countTicketByMonthOfYear(2, theYear);
+        int marTicket = ticketRepository.countTicketByMonthOfYear(3, theYear);
+        int aprTicket = ticketRepository.countTicketByMonthOfYear(4, theYear);
+        int mayTicket = ticketRepository.countTicketByMonthOfYear(5, theYear);
+        int junTicket = ticketRepository.countTicketByMonthOfYear(6, theYear);
+        int julTicket = ticketRepository.countTicketByMonthOfYear(7, theYear);
+        int augTicket = ticketRepository.countTicketByMonthOfYear(8, theYear);
+        int sepTicket = ticketRepository.countTicketByMonthOfYear(9, theYear);
+        int octTicket = ticketRepository.countTicketByMonthOfYear(10, theYear);
+        int novTicket = ticketRepository.countTicketByMonthOfYear(11, theYear);
+        int decTicket = ticketRepository.countTicketByMonthOfYear(12,theYear);
+
+        model.addAttribute("janTicket", janTicket);
+        model.addAttribute("febTicket", febTicket);
+        model.addAttribute("marTicket", marTicket);
+        model.addAttribute("aprTicket", aprTicket);
+        model.addAttribute("mayTicket", mayTicket);
+        model.addAttribute("junTicket", junTicket);
+        model.addAttribute("julTicket", julTicket);
+        model.addAttribute("augTicket", augTicket);
+        model.addAttribute("sepTicket", sepTicket);
+        model.addAttribute("octTicket", octTicket);
+        model.addAttribute("novTicket", novTicket);
+        model.addAttribute("decTicket", decTicket);
 
         model.addAttribute("stars5", stars5);
         model.addAttribute("stars4", stars4);

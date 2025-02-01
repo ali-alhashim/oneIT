@@ -107,6 +107,12 @@
 
     </div>
 
+    <hr>
+
+    <div class="row">
+        <canvas id="theSatisfaction"></canvas>
+    </div>
+
 
 
 
@@ -163,10 +169,10 @@
          {
                     type: 'bar',
                     data: {
-                       labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                       labels: ['Jan' ,'Feb' , 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                       datasets: [{
                         label: 'Ticket Monthly',
-                        data: [30, 10, 40, 4, 66, 77, 99, 100, 98, 22, 45, 54],
+                        data: [ [[${janTicket}]], [[${febTicket}]], [[${marTicket}]], [[${aprTicket}]], [[${mayTicket}]], [[${junTicket}]], [[${julTicket}]], [[${augTicket}]], [[${sepTicket}]], [[${octTicket}]], [[${novTicket}]], [[${decTicket}]]],
                         borderWidth: 1,
 
                       }]
@@ -176,6 +182,38 @@
         });
 
 
+
+
+
+
+
+
+    </script>
+
+
+
+
+    <script th:inline="javascript">
+        const employeeNames = [[${supportEmployees.![name]}]];
+        const satisfactionData = [[${supportEmployees.![fullSatisfaction]}]];
+
+        new Chart(document.getElementById('theSatisfaction'), {
+            type: 'bar',
+            data: {
+                labels: employeeNames,
+                datasets: [{
+                    label: '# Full Satisfaction',
+                    data: satisfactionData,
+                    borderWidth: 1,
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
     </script>
 
 </div> <!-- end Container -->

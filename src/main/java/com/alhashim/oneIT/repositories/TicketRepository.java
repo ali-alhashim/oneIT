@@ -75,4 +75,10 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     int countByHandledBy(Employee employee);
 
 
+    @Query("SELECT COUNT(t) FROM Ticket t WHERE t.createdAt BETWEEN " +
+            "FUNCTION('STR_TO_DATE', CONCAT(:year, '-', :month, '-01'), '%Y-%m-%d') AND " +
+            "FUNCTION('LAST_DAY', FUNCTION('STR_TO_DATE', CONCAT(:year, '-', :month, '-01'), '%Y-%m-%d'))")
+    int countTicketByMonthOfYear(@Param("month") int month, @Param("year") int year);
+
+
 }
