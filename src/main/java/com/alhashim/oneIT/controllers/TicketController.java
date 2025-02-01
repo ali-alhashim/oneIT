@@ -430,22 +430,41 @@ public class TicketController {
 
     //Only support & admin
     @GetMapping("/report")
-    public String reportTicket(Model model)
+    public String reportTicket(Model model, @RequestParam(required = false) LocalDate startDate, @RequestParam(required = false) LocalDate endDate, @RequestParam(required = false) String badgeNumbers)
     {
-        List<Employee> supportEmployees = employeeService.getAllSupportEmployees();
+        List<Employee> supportEmployees;
+        //if no startDate and endDate
+        supportEmployees = employeeService.getAllSupportEmployees();
+
+        //if start Date & end Date and list of selected employees > badgeNumbers
+
+        // Get All Ticket
+        // Get All Done
+        // Get All In Progress
+        // Get All Canceled
+
+        int allOpenTicket = ticketRepository.countAllOpenTicket();
+        int allDoneTicket = ticketRepository.countAllDoneTicket();
+        int allCanceledTicket = ticketRepository.countAllCanceledTicket();
+
+        int stars5 = ticketRepository.countAll5Stars();
+        int stars4 = ticketRepository.countAll4Stars();
+        int stars3 = ticketRepository.countAll3Stars();
+        int stars2 = ticketRepository.countAll2Stars();
+        int stars1 = ticketRepository.countAll1Stars();
+
+        model.addAttribute("stars5", stars5);
+        model.addAttribute("stars4", stars4);
+        model.addAttribute("stars3", stars3);
+        model.addAttribute("stars2", stars2);
+        model.addAttribute("stars1", stars1);
+        model.addAttribute("openTicket", allOpenTicket);
+        model.addAttribute("doneTicket", allDoneTicket);
+        model.addAttribute("canceledTicket", allCanceledTicket);
 
         model.addAttribute("supportEmployees", supportEmployees);
         return "/ticket/report";
     }
 
-    //only support & admin
-    @GetMapping("/generateReport")
-    public String generateReport(Model model, @RequestParam LocalDate startDate, @RequestParam LocalDate endDate, @RequestParam String badgeNumbers)
-    {
-        //startDate, endDate,  badgeNumbers = "A0954,A5450,A3330,.."
-        // for each badge number get employee object and get his tickets from date to date
 
-
-        return "/ticket/generateReport";
-    }
 }

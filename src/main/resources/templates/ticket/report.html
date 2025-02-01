@@ -13,7 +13,7 @@
     <div class="row" id="toolbar1">
 
 
-            <form method="get" class="row" action="generateReport" id="reportForm">
+            <form method="get" class="row"  id="reportForm">
 
                 <div class="col">
                 <label for="startDate">From:</label>
@@ -87,7 +87,98 @@
     </div>
     <!--/Employee list -->
 
-</div>
+
+    <!-- chart -->
+
+    <hr/>
+
+    <div class="row">
+         <div class="col-4">
+            <canvas id="DoughnutChart"></canvas>
+        </div>
+
+        <div class="col-4">
+            <canvas id="StarChart"></canvas>
+        </div>
+
+        <div class="col-4">
+            <canvas id="MonthlyChart"></canvas>
+        </div>
+
+    </div>
+
+
+
+
+
+    <script th:src="@{/js/chart.js}"></script>
+
+    <script>
+         const DoughnutChart = document.getElementById('DoughnutChart');
+         new Chart(DoughnutChart,
+         {
+                    type: 'doughnut',
+                    data: {
+                      labels: ['Done', 'In Progress', 'Canceled'],
+                      datasets: [{
+                        label: '# Ticket Status',
+                        data: [ [[${doneTicket}]], [[${openTicket}]], [[${canceledTicket}]]],
+                        borderWidth: 1
+                      }]
+                    }
+        });
+
+
+         const StarChart = document.getElementById('StarChart');
+         new Chart(StarChart,
+         {
+                    type: 'bar',
+                    data: {
+                      labels: ['5 Stars', '4 Stars', '3 Stars', '2 Stars', '1 Stars'],
+                      datasets: [{
+                        label: '# Ticket Satisfaction',
+                        data: [ [[${stars5}]], [[${stars4}]], [[${stars3}]], [[${stars2}]], [[${stars1}]]],
+                        borderWidth: 1,
+                        fill: false,
+                        backgroundColor: [
+                          'rgba(255, 99, 132, 0.2)',
+                          'rgba(255, 159, 64, 0.2)',
+                          'rgba(255, 205, 86, 0.2)',
+                          'rgba(75, 192, 192, 0.2)',
+                          'rgba(54, 162, 235, 0.2)',
+
+                        ],
+                      }]
+                    }
+
+                   , options: {
+                                indexAxis: 'y',
+                              }
+        });
+
+
+        const MonthlyChart = document.getElementById('MonthlyChart');
+
+         new Chart(MonthlyChart,
+         {
+                    type: 'bar',
+                    data: {
+                       labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                      datasets: [{
+                        label: 'Ticket Monthly',
+                        data: [30, 10, 40, 4, 66, 77, 99, 100, 98, 22, 45, 54],
+                        borderWidth: 1,
+
+                      }]
+                    }
+
+
+        });
+
+
+    </script>
+
+</div> <!-- end Container -->
 
 
 <script>

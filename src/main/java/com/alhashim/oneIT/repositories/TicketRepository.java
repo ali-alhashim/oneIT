@@ -46,6 +46,31 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     @Query("SELECT COUNT(t) FROM Ticket t WHERE t.handledBy = :employee AND t.status = 'In Progress'")
     int countAllOpenTicketFor(@Param("employee") Employee employee);
 
+
+    @Query("SELECT COUNT(t) FROM Ticket t WHERE  t.status = 'In Progress'")
+    int countAllOpenTicket();
+
+    @Query("SELECT COUNT(t) FROM Ticket t WHERE  t.status = 'Done'")
+    int countAllDoneTicket();
+
+    @Query("SELECT COUNT(t) FROM Ticket t WHERE  t.status = 'Canceled'")
+    int countAllCanceledTicket();
+
+    @Query("SELECT COUNT(t) FROM Ticket t WHERE  t.satisfactionRating = 5")
+    int countAll5Stars();
+
+    @Query("SELECT COUNT(t) FROM Ticket t WHERE  t.satisfactionRating = 4")
+    int countAll4Stars();
+
+    @Query("SELECT COUNT(t) FROM Ticket t WHERE  t.satisfactionRating = 3")
+    int countAll3Stars();
+
+    @Query("SELECT COUNT(t) FROM Ticket t WHERE  t.satisfactionRating = 2")
+    int countAll2Stars();
+
+    @Query("SELECT COUNT(t) FROM Ticket t WHERE  t.satisfactionRating = 1")
+    int countAll1Stars();
+
     //total Ticket
     int countByHandledBy(Employee employee);
 
