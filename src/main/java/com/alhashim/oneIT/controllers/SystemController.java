@@ -281,10 +281,13 @@ public class SystemController {
         }
 
         // update the path as per mysqldump location in server
+        // /opt/homebrew/opt/mysql-client/bin/ for mac
         String command = String.format(
-                "/opt/homebrew/opt/mysql-client/bin/mysqldump -u%s -p%s %s -r %s",
+                "mysqldump -u%s -p%s %s -r %s",
                 dbConfig.getUsername(), dbConfig.getPassword(), dbConfig.getName(), sqlBackupPath
         );
+
+        System.out.println(" dbConfig.getUsername() = "+  dbConfig.getUsername() + "dbConfig.getPassword()" + dbConfig.getPassword());
 
         Process process = Runtime.getRuntime().exec(command);
         int processComplete = process.waitFor();

@@ -439,7 +439,7 @@ public class EmployeeController {
             int laptopCount = deviceRepository.countByEmployeeAndCategory(employee, "Laptop");
             model.addAttribute("laptopCount",laptopCount);
 
-            int smartPhoneCount = deviceRepository.countByEmployeeAndCategory(employee, "SmartPhone");
+            int smartPhoneCount = deviceRepository.countByEmployeeAndCategory(employee, "Smart Phone");
             model.addAttribute("smartPhoneCount",smartPhoneCount);
 
             int monitorCount = deviceRepository.countByEmployeeAndCategory(employee, "Monitor");
