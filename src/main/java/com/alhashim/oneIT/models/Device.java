@@ -58,6 +58,10 @@ public class Device {
     private LocalDateTime updatedAt;
 
 
+    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
+
+
     public List<Asset> getAssets() {
         return assets;
     }
@@ -184,5 +188,14 @@ public class Device {
 
     public void setModel(String model) {
         this.model = model;
+    }
+
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }

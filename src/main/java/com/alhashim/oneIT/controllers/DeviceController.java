@@ -3,14 +3,8 @@ package com.alhashim.oneIT.controllers;
 import com.alhashim.oneIT.dto.AddDeviceUserDto;
 import com.alhashim.oneIT.dto.DeviceDto;
 import com.alhashim.oneIT.dto.ImportDeviceDto;
-import com.alhashim.oneIT.models.Asset;
-import com.alhashim.oneIT.models.Device;
-import com.alhashim.oneIT.models.Employee;
-import com.alhashim.oneIT.models.SystemLog;
-import com.alhashim.oneIT.repositories.AssetRepository;
-import com.alhashim.oneIT.repositories.DeviceRepository;
-import com.alhashim.oneIT.repositories.EmployeeRepository;
-import com.alhashim.oneIT.repositories.SystemLogRepository;
+import com.alhashim.oneIT.models.*;
+import com.alhashim.oneIT.repositories.*;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +48,9 @@ public class DeviceController {
 
     @Autowired
     SystemLogRepository systemLogRepository;
+
+    @Autowired
+    CommentRepository commentRepository;
 
     @GetMapping("/list")
     public String devicesList(Model model, @RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size )
@@ -567,6 +564,40 @@ public class DeviceController {
         systemLog.setEmployee(currentUser);
         systemLog.setDescription("Update Device Status to:"+deviceStatus);
         systemLogRepository.save(systemLog);
+
+        return "redirect:/device/detail?serialNumber="+serialNumber;
+    }
+
+
+    @PostMapping("/addComment")
+    public String addComment(@RequestParam String serialNumber, @RequestParam String content)
+    {
+        Device device = deviceRepository.findBySerialNumber(serialNumber).orElse(null);
+        if(device ==null)
+        {
+            return "/404";
+        }
+
+        Comment comment = new Comment();
+        comment.setContent(content);
+        comment.setDevice(device);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+
+        comment.setEmployee(currentUser);
+        comment.setCreatedAt(LocalDateTime.now());
+        commentRepository.save(comment);
+
+        // Log the  action
+
+        SystemLog systemLog = new SystemLog();
+        systemLog.setCreatedAt(LocalDateTime.now());
+        systemLog.setEmployee(currentUser);
+        systemLog.setDescription("Add Comment to device #"+device.getSerialNumber());
+        systemLogRepository.save(systemLog);
+
+
 
         return "redirect:/device/detail?serialNumber="+serialNumber;
     }

@@ -144,7 +144,44 @@
     </div>
     <!--/Employee list -->
 
-</div>
+
+
+
+    <!-- device Comments -->
+    <div>
+        <h3>Comments</h3>
+        <div th:if="${device.getComments() != null and !device.getComments().empty}">
+            <ul>
+                <li th:each="comment : ${device.getComments()}">
+                    <strong th:text="${comment.employee.name}">Employee Name</strong>:
+                    <span th:text="${comment.content}">Comment Content</span>
+                    <sup th:text="${comment.createdAt}"></sup>
+                </li>
+            </ul>
+        </div>
+        <div th:if="${device.comments == null or device.comments.empty}">
+            <p>No comments available for this device.</p>
+        </div>
+    </div>
+    <!-- /device Comments -->
+
+
+
+    <hr/>
+    <div class="row">
+        <form method="post" action="/device/addComment" th:with="_csrfToken=${_csrf.token}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+            <textarea class="form-control my-2" id="commentId" name="content" placeholder="Write Your Comment..."></textarea>
+            <input type="hidden" name="serialNumber" th:value="${device.serialNumber}">
+            <input class="btn btn-success my-2" type="submit" value="save">
+        </form>
+
+    </div>
+
+    <hr/>
+
+
+</div> <!-- / Container -->
 
 
 <!-- updateDeviceStatusModal -->
@@ -333,6 +370,13 @@
         });
     });
 </script>
+
+
+
+
+
+
+
 
 
 

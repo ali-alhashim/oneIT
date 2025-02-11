@@ -18,6 +18,10 @@ public class Comment {
     @JoinColumn(name = "ticket_id", nullable = true)
     private Ticket ticket;
 
+    @ManyToOne
+    @JoinColumn(name = "device_id", nullable = true)
+    private Device device;
+
 
     @ManyToOne
     @JoinColumn(name = "request_id", nullable = true)
@@ -77,5 +81,13 @@ public class Comment {
 
     public void setRequest(Request request) {
         this.request = request;
+    }
+
+    public Device getDevice() {
+        return device;
+    }
+
+    public void setDevice(Device device) {
+        this.device = device;
     }
 }
