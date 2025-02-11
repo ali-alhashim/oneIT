@@ -13,7 +13,7 @@
     <div class="row" id="toolbar1">
         <div class="col-4">
 
-            <a class="btn btn-success" href="/device/edit">Update status</a>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#updateDeviceStatusModal">Update status</button>
 
         </div>
 
@@ -147,6 +147,49 @@
 </div>
 
 
+<!-- updateDeviceStatusModal -->
+<div class="modal fade" id="updateDeviceStatusModal" tabindex="-1" aria-labelledby="updateDeviceStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateDeviceStatusModalLabel">Device Status </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <form id="updateDeviceStatusModalForm" method="post" action="/device/updateStatus"  th:with="_csrfToken=${_csrf.token}">
+
+                    <input type="hidden" name="serialNumber"  th:value="${device.serialNumber}"/>
+
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrfToken}" />
+
+                    <div class="mb-3">
+                        <label for="selectStatus" class="form-label">Select Status</label>
+                        <select id="selectStatus" class="form-select" style="width: 100%;" name="deviceStatus">
+                            <option>New</option>
+                            <option>Used</option>
+                            <option>Old</option>
+                            <option>Damaged</option>
+                            <option>Lost</option>
+                        </select>
+                    </div>
+
+
+
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveDeviceStatusButton">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- / updateDeviceStatusModal -->
+
+
+
 <!-- Modal -->
 <div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -219,6 +262,18 @@
           alert('Please select an employee.');
         }
        });
+
+
+
+      $('#saveDeviceStatusButton').on('click', function ()
+     {
+        const form = $('#updateDeviceStatusModalForm');
+
+          form.submit(); // Submit the form if a value is selected
+
+     });
+
+
 
 </script>
 

@@ -547,5 +547,31 @@ public class DeviceController {
 
 
 
+    @PostMapping("/updateStatus")
+    public String updateStatus(@RequestParam String serialNumber, @RequestParam String deviceStatus)
+    {
+        Device device = deviceRepository.findBySerialNumber(serialNumber).orElse(null);
+        if(device ==null)
+        {
+            return "/404";
+        }
+
+        device.setStatus(deviceStatus);
+        deviceRepository.save(device);
+
+        // Log the action
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+        SystemLog systemLog = new SystemLog();
+        systemLog.setCreatedAt(LocalDateTime.now());
+        systemLog.setEmployee(currentUser);
+        systemLog.setDescription("Update Device Status to:"+deviceStatus);
+        systemLogRepository.save(systemLog);
+
+        return "redirect:/device/detail?serialNumber="+serialNumber;
+    }
+
+
+
 
 }
