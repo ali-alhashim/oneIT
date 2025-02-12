@@ -18,6 +18,10 @@ public interface AssetRepository extends JpaRepository<Asset, Long> {
     @Query("SELECT DISTINCT a.employee FROM Asset a WHERE a.device.serialNumber = :serialNumber")
     List<Employee> findEmployeesByDeviceSerialNumber(@Param("serialNumber") String serialNumber);
 
+
+    @Query("SELECT COUNT(e) FROM Asset e WHERE e.employee = :employee AND e.device.category = :category AND e.handoverDate IS NULL")
+    int countByEmployeeAndCategory(@Param("employee") Employee employee, @Param("category") String category);
+
     List<Asset> findByDevice(Device device);
 
     @Query("SELECT a FROM Asset a WHERE a.device.serialNumber = :serialNumber")

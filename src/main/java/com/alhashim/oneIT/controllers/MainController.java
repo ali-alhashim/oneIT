@@ -8,10 +8,7 @@ import com.alhashim.oneIT.models.Document;
 import com.alhashim.oneIT.models.Employee;
 import com.alhashim.oneIT.models.Notification;
 import com.alhashim.oneIT.models.SystemLog;
-import com.alhashim.oneIT.repositories.DeviceRepository;
-import com.alhashim.oneIT.repositories.EmployeeRepository;
-import com.alhashim.oneIT.repositories.NotificationRepository;
-import com.alhashim.oneIT.repositories.SystemLogRepository;
+import com.alhashim.oneIT.repositories.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -56,6 +53,9 @@ public class MainController {
     private DeviceRepository deviceRepository;
 
     @Autowired
+    private AssetRepository assetRepository;
+
+    @Autowired
     NotificationRepository notificationRepository;
 
     @GetMapping({"/dashboard","/",""})
@@ -98,16 +98,16 @@ public class MainController {
             model.addAttribute("emergencyContactName", employee.getEmergencyContactName());
             model.addAttribute("emergencyContactMobile", employee.getEmergencyContactMobile());
 
-            int laptopCount = deviceRepository.countByEmployeeAndCategory(employee, "Laptop");
+            int laptopCount = assetRepository.countByEmployeeAndCategory(employee, "Laptop");
             model.addAttribute("laptopCount",laptopCount);
 
-            int smartPhoneCount = deviceRepository.countByEmployeeAndCategory(employee, "SmartPhone");
+            int smartPhoneCount = assetRepository.countByEmployeeAndCategory(employee, "SmartPhone");
             model.addAttribute("smartPhoneCount",smartPhoneCount);
 
-            int monitorCount = deviceRepository.countByEmployeeAndCategory(employee, "Monitor");
+            int monitorCount = assetRepository.countByEmployeeAndCategory(employee, "Monitor");
             model.addAttribute("monitorCount",monitorCount);
 
-            int printerCount = deviceRepository.countByEmployeeAndCategory(employee, "Printer");
+            int printerCount = assetRepository.countByEmployeeAndCategory(employee, "Printer");
             model.addAttribute("printerCount",printerCount);
 
 
