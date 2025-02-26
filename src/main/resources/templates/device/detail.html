@@ -36,6 +36,15 @@
             <tr>
                 <th>Id</th><td th:text="${device.id}"></td>
             </tr>
+
+            <tr>
+                <th>Created At</th><td th:text="${device.createdAt}"></td>
+            </tr>
+
+            <tr>
+                <th>Acquisition Date</th><td th:text="${device.acquisitionDate}"></td>
+            </tr>
+
             <tr>
                 <th>Serial Number</th><td th:text="${device.serialNumber}"></td>
             </tr>
@@ -47,6 +56,10 @@
             </tr>
             <tr>
                 <th>Description</th><td th:text="${device.description}"></td>
+            </tr>
+
+            <tr>
+                <th>Vendor</th><td th:text="${device.vendor !=null ? device.vendor.name :''}"></td>
             </tr>
 
             <tr>

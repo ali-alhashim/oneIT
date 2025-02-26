@@ -98,6 +98,11 @@ public class SecurityConfig  {
 
                         .permitAll()
                 )
+                .rememberMe(rememberMe -> rememberMe
+                        .key("yourUniqueSecretKey") // Ensures secure tokens across app restarts
+                        .tokenValiditySeconds(30 * 24 * 60 * 60) // 30 days
+                        .rememberMeParameter("rememberMe") // Checkbox name in your form
+                )
 
                 .requestCache(cash -> cash.requestCache(new HttpSessionRequestCache())
 
