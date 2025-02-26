@@ -26,6 +26,9 @@ public class Vendor {
     @OneToMany(mappedBy = "vendor")
     private List<Contact> representatives;
 
+    @OneToMany(mappedBy = "vendor")
+    private List<Device> devices;
+
 
 
     @LastModifiedDate
@@ -145,5 +148,13 @@ public class Vendor {
 
     public void setWebsite(String website) {
         this.website = website;
+    }
+
+    public List<Device> getDevices() {
+        return devices;
+    }
+
+    public void setDevices(List<Device> devices) {
+        this.devices = devices;
     }
 }

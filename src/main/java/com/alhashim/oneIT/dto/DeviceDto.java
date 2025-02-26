@@ -32,6 +32,8 @@ public class DeviceDto {
 
     private String poNumber;
 
+    private Long deviceVendor;
+
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date acquisitionDate;
 
@@ -129,5 +131,13 @@ public class DeviceDto {
 
     public void setModel(String model) {
         this.model = model;
+    }
+
+    public Long getDeviceVendor() {
+        return deviceVendor;
+    }
+
+    public void setDeviceVendor(Long deviceVendor) {
+        this.deviceVendor = deviceVendor;
     }
 }

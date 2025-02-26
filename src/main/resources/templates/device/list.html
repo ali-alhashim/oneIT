@@ -72,9 +72,9 @@
             <th>Photo</th>
             <th style="white-space: nowrap;">Serial Number</th>
             <th>Category</th>
-            <th>Model</th>
-            <th>Manufacture</th>
-            <th>Current User</th>
+            <th><button onclick="sortBy('model')">Model</button></th>
+            <th><button onclick="sortBy('manufacture')">Manufacture</button></th>
+            <th><button onclick="sortBy('user')">Current User</button></th>
             <th style="white-space: nowrap;">Acquisition Date</th>
             <th>Status</th>
             </thead>
@@ -158,6 +158,18 @@
 
 
 </div>
+
+<script>
+    function sortBy(columnName) {
+        let currentUrl = new URL(window.location.href);
+
+        // Update or set the 'sortBy' parameter
+        currentUrl.searchParams.set('sortBy', columnName);
+
+        // Redirect to the updated URL
+        window.location.href = currentUrl.toString();
+    }
+</script>
 
 
 <div th:replace="~{fragments/footer :: footer}"></div>

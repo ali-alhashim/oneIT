@@ -35,7 +35,11 @@
       <td th:text="${record['badgeNumber']}"></td>
       <td th:text="${record['name']}"></td>
       <td th:text="${record['date']}"></td>
-      <td th:text="${record['isWorkingDay']}"  th:class="${ !record['isWorkingDay'] ? 'bg-secondary' : null}"></td>
+
+      <td th:text="${record['isWorkingDay']}"
+          th:class="${record['isWorkingDay'] != null and !record['isWorkingDay'] ? 'bg-secondary' : null}">
+      </td>
+
       <td class="dayName" th:attr="data-date=${record['date']}"></td>
       <td th:text="${record['checkIn']}"></td>
       <td th:text="${record['shiftTimeStart']}"></td>

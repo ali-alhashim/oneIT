@@ -50,6 +50,10 @@ public class Device {
     @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Asset> assets;
 
+    @ManyToOne(optional = true)
+    @JoinColumn(name="vendor_id")
+    private Vendor vendor;
+
 
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -197,5 +201,13 @@ public class Device {
 
     public void setComments(List<Comment> comments) {
         this.comments = comments;
+    }
+
+    public Vendor getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(Vendor vendor) {
+        this.vendor = vendor;
     }
 }

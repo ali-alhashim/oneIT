@@ -44,6 +44,9 @@ public class DeviceController {
     private EmployeeRepository employeeRepository;
 
     @Autowired
+    private VendorRepository vendorRepository;
+
+    @Autowired
     private AssetRepository assetRepository;
 
     @Autowired
@@ -53,7 +56,7 @@ public class DeviceController {
     CommentRepository commentRepository;
 
     @GetMapping("/list")
-    public String devicesList(Model model, @RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size )
+    public String devicesList(Model model, @RequestParam(required = false) String keyword,@RequestParam(required = false) String sortBy, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size )
     {
         Page<Device> devicePage;
 
@@ -73,19 +76,30 @@ public class DeviceController {
         boolean isManager = currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("MANAGER"));
 
         //else none of above so he is user show him only  under him
+
+        if(sortBy !=null && !sortBy.isEmpty())
+        {
+            System.out.println("sortBy ="+sortBy);
+
+        }
+        else
+        {
+            sortBy = "id";
+        }
+
         if(isSupportOrAdminOrHR)
         {
             if(keyword !=null && !keyword.isEmpty())
             {
                 // Implement a paginated search query in your repository
-                devicePage = deviceRepository.findByKeyword(keyword, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+                devicePage = deviceRepository.findByKeyword(keyword, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy)));
                 model.addAttribute("keyword",keyword);
 
             }
             else
             {
                 // Fetch all devices with pagination
-                Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+                Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
                 devicePage = deviceRepository.findAll(pageable);
             }
         }
@@ -155,10 +169,13 @@ public class DeviceController {
           return "/403";
         }
 
+        List<Vendor> vendors = vendorRepository.findAll();
+
         List<Employee> employees = employeeRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
         DeviceDto deviceDto = new DeviceDto();
         model.addAttribute("deviceDto",deviceDto);
         model.addAttribute("pageTitle","Add New Device");
+        model.addAttribute("vendors", vendors);
         model.addAttribute("employees", employees);
 
 
@@ -193,6 +210,12 @@ public class DeviceController {
         device.setAcquisitionDate(deviceDto.getAcquisitionDate());
         device.setPurchasePrice(deviceDto.getPurchasePrice());
         device.setModel(deviceDto.getModel());
+
+        Vendor vendor = vendorRepository.findById(deviceDto.getDeviceVendor()).orElse(null);
+        if(vendor !=null)
+        {
+            device.setVendor(vendor);
+        }
 
         Employee deviceUser = employeeRepository.findByBadgeNumber(deviceDto.getBadgeNumber()).orElse(null);
         if(deviceUser !=null)

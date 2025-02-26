@@ -100,6 +100,27 @@
 
 
             <div class="mb-3">
+                <select class="form-select"  id="deviceVendor"  name="deviceVendor" th:field="${deviceDto.deviceVendor}">
+                    <option value="none">None</option>
+                    <option
+                            th:each="vendor: ${vendors}"
+                            th:value="${vendor.id}"
+                            th:text="${vendor.name} +'-'+ ${vendor.arName}">
+
+                    </option>
+
+                </select>
+            </div>
+            <script>
+                $(document).ready(function() {
+                  $('#deviceVendor').select2();
+                });
+            </script>
+
+
+
+
+            <div class="mb-3">
                 <label for="formFile" class="form-label">Photo</label>
                 <input class="form-control" type="file" id="formFile" name="imageFileName" th:field="${deviceDto.imageFile}">
                 <p th:if="${#fields.hasErrors('imageFile')}" th:errorclass="text-danger" th:errors="${deviceDto.imageFile}"></p>
