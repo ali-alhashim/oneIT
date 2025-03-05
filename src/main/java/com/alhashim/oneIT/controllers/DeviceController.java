@@ -188,7 +188,9 @@ public class DeviceController {
     {
         if(result.hasErrors())
         {
-            return "device/add";
+            String message = result.getAllErrors().toString();
+            model.addAttribute("message", message);
+            return "/404";
         }
 
         Device device = new Device();
@@ -211,10 +213,11 @@ public class DeviceController {
         device.setPurchasePrice(deviceDto.getPurchasePrice());
         device.setModel(deviceDto.getModel());
 
-        Vendor vendor = vendorRepository.findById(deviceDto.getDeviceVendor()).orElse(null);
-        if(vendor !=null)
-        {
-            device.setVendor(vendor);
+        if(deviceDto.getDeviceVendor() !=null && deviceDto.getDeviceVendor() > 0) {
+            Vendor vendor = vendorRepository.findById(deviceDto.getDeviceVendor()).orElse(null);
+            if (vendor != null) {
+                device.setVendor(vendor);
+            }
         }
 
         Employee deviceUser = employeeRepository.findByBadgeNumber(deviceDto.getBadgeNumber()).orElse(null);
@@ -393,28 +396,41 @@ public class DeviceController {
 
 
     @PostMapping("/handover")
-    public String deviceHandover(@RequestParam String assetCode, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date handoverDate, @RequestParam(required = false) String handoverNote)
+    public String deviceHandover(Model model,@RequestParam String assetCode, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date handoverDate, @RequestParam(required = false) String handoverNote)
     {
-        Asset asset = assetRepository.findByCode(assetCode).orElse(null);
-        if(asset !=null)
+        // only admin and support can do this action
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+
+        if(currentUser.isAdmin() || currentUser.isSupport())
         {
-            asset.setHandoverDate(handoverDate);
-            asset.setNote(handoverNote);
-            asset.setUpdatedAt(LocalDateTime.now());
-            assetRepository.save(asset);
+            Asset asset = assetRepository.findByCode(assetCode).orElse(null);
+            if(asset !=null)
+            {
+                asset.setHandoverDate(handoverDate);
+                asset.setNote(handoverNote);
+                asset.setUpdatedAt(LocalDateTime.now());
+                assetRepository.save(asset);
 
-            // Log the  action
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
-            SystemLog systemLog = new SystemLog();
-            systemLog.setCreatedAt(LocalDateTime.now());
-            systemLog.setEmployee(currentUser);
-            systemLog.setDescription("Handover Device Category:"+asset.getDevice().getCategory()+" Serial Number:"+asset.getDevice().getSerialNumber()+"From:"+asset.getEmployee().getName());
-            systemLogRepository.save(systemLog);
-            return "redirect:/device/detail?serialNumber="+asset.getDevice().getSerialNumber();
+                // Log the  action
+
+                SystemLog systemLog = new SystemLog();
+                systemLog.setCreatedAt(LocalDateTime.now());
+                systemLog.setEmployee(currentUser);
+                systemLog.setDescription("Handover Device Category:"+asset.getDevice().getCategory()+" Serial Number:"+asset.getDevice().getSerialNumber()+"From:"+asset.getEmployee().getName());
+                systemLogRepository.save(systemLog);
+                return "redirect:/device/detail?serialNumber="+asset.getDevice().getSerialNumber();
+            }
+            else
+            {
+                return "/404";
+            }
         }
-
+        model.addAttribute("message", "only admin and support can do this action");
         return "/404";
+
+
 
     } //Post handover device
 

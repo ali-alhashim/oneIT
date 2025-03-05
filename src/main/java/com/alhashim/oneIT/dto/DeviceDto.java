@@ -32,7 +32,7 @@ public class DeviceDto {
 
     private String poNumber;
 
-    private Long deviceVendor;
+    private Long deviceVendor ;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date acquisitionDate;

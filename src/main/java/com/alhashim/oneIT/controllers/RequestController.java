@@ -2,10 +2,7 @@ package com.alhashim.oneIT.controllers;
 
 
 import com.alhashim.oneIT.models.*;
-import com.alhashim.oneIT.repositories.EmployeeRepository;
-import com.alhashim.oneIT.repositories.NotificationRepository;
-import com.alhashim.oneIT.repositories.RequestRepository;
-import com.alhashim.oneIT.repositories.SystemLogRepository;
+import com.alhashim.oneIT.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -42,6 +39,9 @@ public class RequestController {
 
     @Autowired
     NotificationRepository notificationRepository;
+
+    @Autowired
+    CommentRepository commentRepository;
 
 
     String[] categoryList = {"Cable",
@@ -527,6 +527,29 @@ public class RequestController {
 
 
         // if current user has right to reject & if he is not approved he can reject
+        return "redirect:/request/detail?id="+id;
+    }
+
+    @PostMapping("/addComment")
+    public String addComment(@RequestParam String content, @RequestParam Long id)
+    {
+        Request request = requestRepository.findById(id).orElse(null);
+        if(request ==null)
+        {
+            return "/404";
+        }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Employee currentUser = employeeRepository.findByBadgeNumber(authentication.getName()).orElse(null);
+
+
+        Comment comment = new Comment();
+        comment.setContent(content);
+        comment.setRequest(request);
+        comment.setEmployee(currentUser);
+        comment.setCreatedAt(LocalDateTime.now());
+        commentRepository.save(comment);
+
         return "redirect:/request/detail?id="+id;
     }
 

@@ -11,8 +11,8 @@
 	<groupId>com.alhashim</groupId>
 	<artifactId>oneIT</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>oneHR</name>
-	<description>HR Management System</description>
+	<name>oneIT</name>
+	<description>IT Management System</description>
 	<url/>
 	<licenses>
 		<license/>

@@ -101,7 +101,7 @@
 
             <div class="mb-3">
                 <select class="form-select"  id="deviceVendor"  name="deviceVendor" th:field="${deviceDto.deviceVendor}">
-                    <option value="none">None</option>
+                    <option value="0">None</option>
                     <option
                             th:each="vendor: ${vendors}"
                             th:value="${vendor.id}"
