@@ -863,7 +863,7 @@ public class EmployeeController {
             //-------------Roles only admin can set admin role roles
 
 
-                Set<Role> roles = employee.getRoles();
+                Set<Role> roles = new HashSet<>();
 
                 if(employeeDto.isIs_MANAGER())
                 {
